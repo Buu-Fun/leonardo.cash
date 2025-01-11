@@ -15,6 +15,7 @@ import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
+import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 
 export default function Page() {
   // Hooks
@@ -39,7 +40,6 @@ export default function Page() {
     }
 
     if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      console.log('Fetching data...');
       const assetContract = new Contract(
         ASSET_ADDRESS,
         IERC20Metadata.abi,
@@ -211,6 +211,8 @@ export default function Page() {
       ) : (
         <Button onPress={() => {}}>Buy tokens</Button>
       )}
+
+      <LeaderBoard n={100} />
     </div>
   );
 }

@@ -75,3 +75,7 @@ export const prettyAmount = (amount: number) => {
   }
   return `${(amount / 1000000).toFixed(2)}M`;
 };
+
+export const truncateAddress = (address: string) => {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};

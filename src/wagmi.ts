@@ -13,8 +13,8 @@ const sepolia = {
 };
 
 const config = getDefaultConfig({
-  appName: 'My RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: 'Leonardo AI',
+  projectId: 'leonardo-ai',
   chains: NODE_ENV === 'production' ? [base] : [sepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
