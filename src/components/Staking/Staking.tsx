@@ -31,7 +31,11 @@ function Staking({ stakingBalance, earnings, redeemFn }: Props) {
             </div>
             <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
           </div>
-          {stakingBalance > 0n && <Button onPress={redeemFn}>Unstake</Button>}
+          {stakingBalance > 0n && (
+            <Button color="primary" onPress={redeemFn}>
+              Unstake
+            </Button>
+          )}
         </div>
       </div>
       <div className={styles.right}>

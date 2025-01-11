@@ -19,15 +19,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Leonardo AI</title>
         <meta name="description" content="Leonardo AI" />
-        <meta
-          property="og:title"
-          content="Housing: Real Estate opportunities for everyone"
-        />
+        <meta property="og:title" content="LeonardoAI" />
         <meta property="og:description" content="Leonardo AI" />
-        <meta
-          property="twitter:title"
-          content="Housing: Real Estate opportunities for everyone"
-        />
+        <meta property="twitter:title" content="LeonardoAI" />
         <meta property="twitter:description" content="Leonardo AI" />
         <link rel="icon" href="/favicon.ico" />
       </head>
