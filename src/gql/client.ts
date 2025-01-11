@@ -1,7 +1,8 @@
-import { NEXT_PUBLIC_PONDER_URL } from '../config';
+// import { PONDER_URL } from '../config';
 import { GraphQLClient, type RequestDocument } from 'graphql-request';
+import { PONDER_URL } from '../config';
 
-const client = new GraphQLClient(NEXT_PUBLIC_PONDER_URL);
+const client = new GraphQLClient(PONDER_URL);
 
 export const ponderRequest = async <T = any>(
   query: RequestDocument,

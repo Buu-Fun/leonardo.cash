@@ -5,9 +5,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import '../output.css';
 import '../styles/globals.css';
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import clsx from 'clsx';
-import { Blocknumber } from '../components/Blocknumber';
+// import { Blocknumber } from '../components/Blocknumber';
 
 export default function RootLayout({
   children,
@@ -34,15 +32,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <Providers>
-          <div className="layout">
-            <header>
-              <ConnectButton />
-            </header>
-            {children}
-            <footer>{/* <Blocknumber /> */}</footer>
-          </div>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

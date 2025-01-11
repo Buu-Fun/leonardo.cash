@@ -3,12 +3,10 @@ import React, { useCallback, useEffect } from 'react';
 import { useAccount, useBlockNumber } from 'wagmi';
 import { Contract } from 'ethers';
 
-import { ASSET_ADDRESS, STAKING_ADDRESS } from '../../config';
-import { useEthersSigner } from '../../utils/ethersAdapter';
-import useDelayedExecution from '../../hooks/useDelayedExecution';
-
-import IERC20Metadata from '../../abis/IERC20Metadata.json';
-import IERC4626 from '../../abis/IERC4626.json';
+import { ASSET_ADDRESS, STAKING_ADDRESS } from '@/src/config';
+import { useEthersSigner } from '@/src/utils/ethersAdapter';
+import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
+import IERC4626 from '@/src/abis/IERC4626.json';
 import { Button, useDisclosure } from '@nextui-org/react';
 import Staking from '@/src/components/Staking/Staking';
 import { DepositModal } from '@/src/components/DepositModal/DepositModal';
@@ -77,7 +75,7 @@ export default function Page() {
       processingDescription: string;
       successTitle: string;
       successDescription: string;
-      tx: Promise<any>;
+      tx: Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     }) => {
       try {
         const toastTx = toast.info(
