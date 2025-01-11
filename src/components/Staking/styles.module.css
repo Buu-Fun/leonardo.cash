@@ -1,0 +1,58 @@
+.layout {
+  display: flex;
+  border: var(--box-border, 1px solid #e1e4e8);
+  border-radius: var(--box-border-radius, 12px);
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 32px;
+  gap: 8px;
+}
+
+.title {
+  display: flex;
+  width: 100%;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.data {
+  display: flex;
+  width: 100%;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.amount {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.value {
+  display: flex;
+  font-weight: 600;
+}
+
+.symbol {
+  display: flex;
+  width: 100%;
+  font-weight: 400;
+  color: var(--text-secondary, #586069);
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+}

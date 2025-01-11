@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+
+  --primary-color-light: #cce5ff;
+  --secondary-color-light: #e2e6ea;
+  --success-color-light: #d4edda;
+  --info-color-light: #d1ecf1;
+  --warning-color-light: #fff3cd;
+  --danger-color-light: #f8d7da;
+  --light-color-light: #fefefe;
+  --dark-color-light: #d6d8d9;
+
+  --primary-color-dark: #0056b3;
+  --secondary-color-dark: #545b62;
+  --success-color-dark: #218838;
+  --info-color-dark: #138496;
+  --warning-color-dark: #d39e00;
+  --danger-color-dark: #721c24;
+
+  --primary-color-hover: #0056b3;
+  --secondary-color-hover: #545b62;
+  --success-color-hover: #1e7e34;
+  --info-color-hover: #117a8b;
+  --warning-color-hover: #d39e00;
+  --danger-color-hover: #6c1c22;
+
+  --font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: space-between;
+}
+
+header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem 2rem;
+  width: 100%;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 2rem;
+  overflow-y: scroll;
+  max-height: 100%;
+}
+
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #333;
+  color: #fff;
+}
