@@ -7,7 +7,7 @@ import { base, sepolia as Sepolia } from 'wagmi/chains';
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
-  NODE_ENV,
+  CHAIN,
   POOL_ADDRESS,
   STAKING_ADDRESS,
   USDC_ADDRESS,
@@ -119,7 +119,7 @@ export default function Page() {
     if (blockNumber.data && processedBlockNumber < blockNumber.data) {
       const variables = {
         where: {
-          chainId: NODE_ENV === 'production' ? base.id : Sepolia.id,
+          chainId: CHAIN === 'base' ? base.id : Sepolia.id,
         },
         limit: nTopStakers,
         orderBy: 'balance',

@@ -1,6 +1,6 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
-import { NODE_ENV } from './config';
+import { CHAIN } from './config';
 
 const sepolia = {
   ...Sepolia,
@@ -15,7 +15,7 @@ const sepolia = {
 const config = getDefaultConfig({
   appName: 'Leonardo AI',
   projectId: 'leonardo-ai',
-  chains: NODE_ENV === 'production' ? [base] : [sepolia],
+  chains: CHAIN === 'base' ? [base] : [sepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 

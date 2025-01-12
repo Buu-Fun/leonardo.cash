@@ -1,5 +1,5 @@
 'use client';
-import { ASSET_METADATA_DECIMALS, NODE_ENV } from '@/src/config';
+import { ASSET_METADATA_DECIMALS } from '@/src/config';
 import { ponderRequest } from '@/src/gql/client';
 import { GetStakers } from '@/src/gql/documents/staking';
 import React, { useCallback } from 'react';
