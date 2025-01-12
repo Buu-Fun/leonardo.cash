@@ -1,0 +1,38 @@
+.layout {
+  display: flex;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Bebas Neue';
+  font-size: 42px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 42px;
+  text-transform: 'uppercase';
+  color: #fff;
+}
+
+.purple {
+  color: #803bf1;
+}
+
+@media screen and (max-width: 768px) {
+  .logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 32px;
+  }
+}
