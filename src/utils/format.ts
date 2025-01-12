@@ -68,7 +68,7 @@ export const tokenArgValue = (name: string, symbol: any) => {
 
 export const prettyAmount = (amount: number) => {
   if (amount < 1000) {
-    return amount;
+    return amount.toFixed(2);
   }
   if (amount < 1000000) {
     return `${(amount / 1000).toFixed(2)}K`;
@@ -77,7 +77,7 @@ export const prettyAmount = (amount: number) => {
 };
 
 export const truncateAddress = (address: string) => {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  return `${address.slice(2, 8)}`;
 };
 
 export function splitStringIntoChunks(

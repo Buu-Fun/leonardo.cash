@@ -4,6 +4,7 @@ import Providers from './providers';
 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Image from 'next/image';
+import { Footer } from '@/src/components/Footer/Footer';
 
 export default function RootLayout({
   children,
@@ -56,7 +57,7 @@ export default function RootLayout({
           <ConnectButton />
         </header>
         {children}
-        <footer>{/* <Blocknumber /> */}</footer>
+        <Footer />
       </div>
     </Providers>
   );
