@@ -30,6 +30,8 @@ import { Staker } from '@/src/gql/types/graphql';
 import { format } from '@/src/utils/format';
 
 const nTopStakers = 100;
+// const totalRewards = ethers.parseUnits('20000000', ASSET_METADATA_DECIMALS);
+const totalRewards = 20000000;
 
 export default function Page() {
   // Hooks
@@ -260,6 +262,7 @@ export default function Page() {
     topStakers.length > 0 ? topStakers[topStakers.length - 1] : undefined;
   const walletIn = stakingBalance > 0n && lastStaker?.balance <= stakingBalance;
   const lastWalletIn = lastStaker?.balance;
+  const totalRewardsUSD = totalRewards * price;
 
   return (
     <main
@@ -296,7 +299,7 @@ export default function Page() {
         {...redeemDisclosure}
       />
       <Rewards
-        totalRewards={430248.23}
+        totalRewards={totalRewardsUSD}
         mininumRequiredStake={
           topStakers.length === nTopStakers ? lastWalletIn.balance : 0n
         }
