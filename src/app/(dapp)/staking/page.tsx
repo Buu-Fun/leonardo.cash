@@ -2,10 +2,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { useAccount, useBlockNumber, useConnect } from 'wagmi';
 import { Contract, ethers } from 'ethers';
+import { base, sepolia as Sepolia } from 'wagmi/chains';
 
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
+  NODE_ENV,
   POOL_ADDRESS,
   STAKING_ADDRESS,
   USDC_ADDRESS,
@@ -20,7 +22,14 @@ import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
-import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { Rewards } from '@/src/components/Rewards/Rewards';
+import { ponderRequest } from '@/src/gql/client';
+import { GetStakers } from '@/src/gql/documents/staking';
+import { Staker } from '@/src/gql/types/graphql';
+import { format } from '@/src/utils/format';
+
+const nTopStakers = 100;
 
 export default function Page() {
   // Hooks
@@ -33,6 +42,7 @@ export default function Page() {
   const redeemDisclosure = useDisclosure();
 
   // State
+  const [topStakers, setTopStakers] = React.useState<Staker[]>([]);
   const [processedBlockNumber, setProcessedBlockNumber] = React.useState(0n);
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
@@ -101,6 +111,33 @@ export default function Page() {
 
     setPrice(price);
   }, [provider]);
+
+  const fetchTopStakers = useCallback(async () => {
+    // Fetch top stakers
+    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
+      const variables = {
+        where: {
+          chainId: NODE_ENV === 'production' ? base.id : Sepolia.id,
+        },
+        limit: nTopStakers,
+        orderBy: 'balance',
+        orderDirection: 'desc',
+      };
+      const { stakers } = await ponderRequest(GetStakers, variables);
+      setTopStakers(stakers.items);
+      // Mock
+      // setTopStakers(
+      //   mockLeaderBoard(
+      //     stakers.items[0] || {
+      //       balance: 0n,
+      //       address: ethers.ZeroAddress,
+      //     },
+      //     n,
+      //   ),
+      // );
+      setProcessedBlockNumber(BigInt(blockNumber.data));
+    }
+  }, [blockNumber.data]);
 
   const handleTx = useCallback(
     async ({
@@ -207,8 +244,7 @@ export default function Page() {
 
   const fetchAll = useCallback(async () => {
     if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      await fetchData();
-      await fetchPrice();
+      await Promise.all([fetchData(), fetchPrice(), fetchTopStakers()]);
       setProcessedBlockNumber(BigInt(blockNumber.data));
     }
   }, [fetchData, fetchPrice, blockNumber.data, processedBlockNumber]);
@@ -220,12 +256,17 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [fetchAll]);
 
+  const lastStaker =
+    topStakers.length > 0 ? topStakers[topStakers.length - 1] : undefined;
+  const walletIn = stakingBalance > 0n && lastStaker?.balance <= stakingBalance;
+  const lastWalletIn = lastStaker?.balance;
+
   return (
     <main
       style={{
         display: 'flex',
         flexDirection: 'column',
-        paddingTop: '60px',
+        // paddingTop: '60px',
         maxWidth: '800px',
         gap: '20px',
       }}
@@ -254,11 +295,20 @@ export default function Page() {
         redeemFn={redeem}
         {...redeemDisclosure}
       />
+      <Rewards
+        totalRewards={430248.23}
+        mininumRequiredStake={
+          topStakers.length === nTopStakers ? lastWalletIn.balance : 0n
+        }
+      />
       {address && (
         <Staking
           stakingBalance={stakingBalance}
           earnings={0n}
           redeemFn={redeemDisclosure.onOpen}
+          lastWalletIn={lastWalletIn}
+          walletIn={walletIn}
+          claimFn={() => console.log('Claiming')}
         />
       )}
       {!address && (
@@ -304,7 +354,7 @@ export default function Page() {
         )
       ) : null}
 
-      <LeaderBoard n={100} />
+      <LeaderBoard n={topStakers.length} topStakers={topStakers} />
     </main>
   );
 }

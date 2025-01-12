@@ -16,7 +16,6 @@ interface Props {
   lastWalletIn: bigint;
   earnings: bigint;
   walletIn: boolean;
-  rank: number;
   redeemFn: () => void;
   claimFn: () => void;
 }
@@ -26,7 +25,6 @@ function Staking({
   stakingBalance,
   earnings,
   walletIn = false,
-  rank = 1,
   redeemFn,
   claimFn,
 }: Props) {
@@ -78,9 +76,7 @@ function Staking({
         {walletIn && (
           <div className={clsx(styles.messageIn, styles.message)}>
             <CheckBadgeIcon className={styles.icon} />
-            <div
-              className={styles.text}
-            >{`You are the top #${rank} staker!`}</div>
+            <div className={styles.text}>{`You are a top staker!`}</div>
           </div>
         )}
       </div>

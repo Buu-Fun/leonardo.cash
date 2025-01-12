@@ -1,0 +1,103 @@
+.layout {
+  display: flex;
+  width: 100%;
+  border: 1px solid #302450;
+  padding: 40px;
+  gap: 20px;
+  white-space: nowrap;
+  background: #0a0a0a;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown {
+  background: #000000;
+}
+
+.dropdownContent {
+  border: none;
+  background: #000000;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+}
+
+.values {
+  display: flex;
+  flex-direction: column;
+  /* gap: 8px; */
+  /* justify-content: flex-start; */
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.amount {
+  font-size: 50px;
+  font-weight: 500;
+}
+
+.moreValues {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 300;
+  gap: 8px;
+}
+
+.moreValuesAmount {
+  color: rgb(255, 255, 255, 0.5);
+}
+
+.moreValuesCircle {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .values {
+    align-items: center;
+  }
+
+  .moreValues {
+    flex-direction: column;
+  }
+
+  .moreValuesCircle {
+    display: none;
+  }
+}

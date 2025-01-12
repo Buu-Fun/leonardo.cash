@@ -4,7 +4,6 @@ import { ponderRequest } from '@/src/gql/client';
 import { GetStakers } from '@/src/gql/documents/staking';
 import React, { useCallback } from 'react';
 import { useAccount, useBlockNumber } from 'wagmi';
-import { base, sepolia as Sepolia } from 'wagmi/chains';
 // import styles from './styles.module.css';
 
 import { Staker } from '@/src/gql/types/graphql';
@@ -29,45 +28,14 @@ import clsx from 'clsx';
 //   return mock;
 // };
 
-export const LeaderBoard = ({ n }: { n: number }) => {
+export const LeaderBoard = ({
+  topStakers,
+  n,
+}: {
+  topStakers: Staker[];
+  n: number;
+}) => {
   const { address } = useAccount();
-  const blockNumber = useBlockNumber({ cacheTime: 1000 });
-
-  const [topStakers, setTopStakers] = React.useState([]);
-  const [processedBlockNumber, setProcessedBlockNumber] = React.useState(0n);
-
-  const fetchTopStakers = useCallback(async () => {
-    // Fetch top stakers
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      const variables = {
-        where: {
-          chainId: NODE_ENV === 'production' ? base.id : Sepolia.id,
-        },
-        limit: n,
-        orderBy: 'balance',
-        orderDirection: 'desc',
-      };
-      const { stakers } = await ponderRequest(GetStakers, variables);
-      setTopStakers(stakers.items);
-      // Mock
-      // setTopStakers(
-      //   mockLeaderBoard(
-      //     stakers.items[0] || {
-      //       balance: 0n,
-      //       address: ethers.ZeroAddress,
-      //     },
-      //     n,
-      //   ),
-      // );
-      setProcessedBlockNumber(BigInt(blockNumber.data));
-    }
-  }, [n, blockNumber.data]);
-
-  React.useEffect(() => {
-    const interval = setInterval(fetchTopStakers, 1000);
-    return () => clearInterval(interval);
-  }, [fetchTopStakers]);
-
   const renderRankingIcon = (index: number) => {
     switch (index) {
       case 0:
