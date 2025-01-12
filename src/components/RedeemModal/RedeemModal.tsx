@@ -71,9 +71,7 @@ export const RedeemModal = ({
 
   const handleRedeem = useCallback(
     (onClose: () => void) => async () => {
-      await redeemFn(
-        ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-      );
+      redeemFn(ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)));
       onClose();
     },
     [amount],

@@ -17,17 +17,17 @@ import { Chip } from '@nextui-org/react';
 import { FirstCrown } from '../icons/FirstCrown';
 import clsx from 'clsx';
 
-const mockLeaderBoard = (staker: Staker, n: number) => {
-  const mockedStaker = {
-    ...staker,
-    balance: 123n * 10n ** 18n,
-    address: ethers.ZeroAddress,
-  } as Staker;
-  const mock = [mockedStaker]
-    .concat(staker)
-    .concat(Array(n - 2).fill(mockedStaker));
-  return mock;
-};
+// const mockLeaderBoard = (staker: Staker, n: number) => {
+//   const mockedStaker = {
+//     ...staker,
+//     balance: 123n * 10n ** 18n,
+//     address: ethers.ZeroAddress,
+//   } as Staker;
+//   const mock = [mockedStaker]
+//     .concat(staker)
+//     .concat(Array(n - 2).fill(mockedStaker));
+//   return mock;
+// };
 
 export const LeaderBoard = ({ n }: { n: number }) => {
   const { address } = useAccount();
@@ -48,8 +48,17 @@ export const LeaderBoard = ({ n }: { n: number }) => {
         orderDirection: 'desc',
       };
       const { stakers } = await ponderRequest(GetStakers, variables);
-      // setTopStakers(stakers.items);
-      setTopStakers(mockLeaderBoard(stakers.items[0], n));
+      setTopStakers(stakers.items);
+      // Mock
+      // setTopStakers(
+      //   mockLeaderBoard(
+      //     stakers.items[0] || {
+      //       balance: 0n,
+      //       address: ethers.ZeroAddress,
+      //     },
+      //     n,
+      //   ),
+      // );
       setProcessedBlockNumber(BigInt(blockNumber.data));
     }
   }, [n, blockNumber.data]);
@@ -137,7 +146,7 @@ export const LeaderBoard = ({ n }: { n: number }) => {
         <tbody>
           {topStakers.map((staker: Staker, index: number) => (
             <tr
-              className={clsx(staker.address === address ? 'you' : '')}
+              className={clsx(staker?.address === address ? 'you' : '')}
               key={uuidV4(ethers.randomBytes(16))}
             >
               <td>

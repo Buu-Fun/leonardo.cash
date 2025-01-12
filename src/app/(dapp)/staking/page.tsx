@@ -154,7 +154,7 @@ export default function Page() {
         signer,
       );
       const tx = assetContract.approve(STAKING_ADDRESS, amount);
-      handleTx({
+      await handleTx({
         processingTitle: 'Approve processing',
         processingDescription: 'Waiting for confirmation...',
         successTitle: 'Approve successful',
@@ -174,7 +174,7 @@ export default function Page() {
         signer,
       );
       const tx = stakingContract.deposit(amount, address);
-      handleTx({
+      await handleTx({
         processingTitle: 'Deposit processing',
         processingDescription: 'Waiting for confirmation...',
         successTitle: 'Deposit successful',
@@ -194,7 +194,7 @@ export default function Page() {
         signer,
       );
       const tx = stakingContract.redeem(amount, address, address);
-      handleTx({
+      await handleTx({
         processingTitle: 'Redeem processing',
         processingDescription: 'Waiting for confirmation...',
         successTitle: 'Redeem successful',
@@ -240,6 +240,7 @@ export default function Page() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
+        theme="dark"
       />
       <DepositModal
         assetBalance={assetBalance}
@@ -283,15 +284,23 @@ export default function Page() {
             Stake more
           </Button>
         ) : (
-          <Button
-            color="primary"
-            onPress={() => {}}
+          <a
+            href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
+            target="_blank"
+            rel="noreferrer"
             style={{
               width: '100%',
             }}
           >
-            Buy tokens
-          </Button>
+            <Button
+              color="primary"
+              style={{
+                width: '100%',
+              }}
+            >
+              Buy $LEONAI
+            </Button>
+          </a>
         )
       ) : null}
 

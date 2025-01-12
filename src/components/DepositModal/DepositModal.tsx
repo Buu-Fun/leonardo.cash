@@ -31,6 +31,7 @@ export const DepositModal = ({
   approveFn,
   stakeFn,
 }: Props) => {
+  const [approving, setApproving] = React.useState(false);
   const [amount, setAmount] = React.useState('');
 
   const handleSetAmount = useCallback(
@@ -72,19 +73,19 @@ export const DepositModal = ({
 
   const handleApprove = useCallback(
     (onClose: () => void) => async () => {
+      setApproving(true);
       await approveFn(
         ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
       );
-      onClose();
+      setApproving(false);
+      // onClose();
     },
     [amount],
   );
 
   const handleStake = useCallback(
     (onClose: () => void) => async () => {
-      await stakeFn(
-        ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-      );
+      stakeFn(ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)));
       onClose();
     },
     [amount],
@@ -151,7 +152,11 @@ export const DepositModal = ({
               {amount !== '' &&
                 (stakingAllowance <
                 ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)) ? (
-                  <Button color="primary" onPress={handleApprove(onClose)}>
+                  <Button
+                    color="primary"
+                    onPress={handleApprove(onClose)}
+                    isLoading={approving}
+                  >
                     Approve
                   </Button>
                 ) : (
