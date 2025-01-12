@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <Providers>
       <div className="layout">
-        <header>
+        <div className="navbar">
           <a href="/">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Image
@@ -55,7 +55,7 @@ export default function RootLayout({
           </a>
 
           <ConnectButton />
-        </header>
+        </div>
         {children}
         <Footer />
       </div>

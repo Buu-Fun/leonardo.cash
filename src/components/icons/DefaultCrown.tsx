@@ -7,8 +7,8 @@ export const DefaultCrown = () => (
     fill="none"
   >
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M0.676531 4.28358L4.9078 30.4648L16.4422 34.0391L16.4422 34.0392L28.1122 37.6555L46.4067 18.4548L31.18 18.6368L26.728 1.32671L26.7962 1.10661L26.6943 1.19565L26.6606 1.06464L26.5924 1.28464L13.1321 13.0439L0.676531 4.28358Z"
       fill="#803BF1"
     />

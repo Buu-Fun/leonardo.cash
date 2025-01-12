@@ -55,7 +55,7 @@ export default function Page() {
   const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
   return (
     <div className="layout">
-      <header>
+      <div className="navbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Image
             src={'/logo.webp'}
@@ -96,7 +96,7 @@ export default function Page() {
         <a href="/staking">
           <Button color="primary">Launch App</Button>
         </a>
-      </header>
+      </div>
       <main style={{ display: 'flex', flexDirection: 'column' }}>
         <h1
           style={{

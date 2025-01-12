@@ -7,8 +7,8 @@ export const ThirdCrown = () => (
     fill="none"
   >
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M0.317241 4.39912L4.59605 30.8745L16.2597 34.4889L16.2596 34.4891L28.0607 38.1461L46.5608 18.7296L31.163 18.9136L26.6612 1.40978L26.7304 1.18646L26.627 1.2768L26.5928 1.14406L26.5237 1.36697L12.9128 13.2579L0.317241 4.39912Z"
       fill="#91826A"
     />

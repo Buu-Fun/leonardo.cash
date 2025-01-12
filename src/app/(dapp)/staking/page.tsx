@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
-import { useAccount, useBlockNumber } from 'wagmi';
+import { useAccount, useBlockNumber, useConnect } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 
 import {
@@ -20,9 +20,11 @@ import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
+import { ConnectButton, useConnectModal } from '@rainbow-me/rainbowkit';
 
 export default function Page() {
   // Hooks
+  const { openConnectModal } = useConnectModal();
   const { address } = useAccount();
   const blockNumber = useBlockNumber({ cacheTime: 5000 });
   const signer = useEthersSigner();
@@ -38,7 +40,7 @@ export default function Page() {
   const [price, setPrice] = React.useState(0);
 
   const fetchData = useCallback(async () => {
-    if (!provider || !address) {
+    if (!address) {
       setAssetBalance(0n);
       setStakingAllowance(0n);
       setStakingBalance(0n);
@@ -224,6 +226,8 @@ export default function Page() {
         display: 'flex',
         flexDirection: 'column',
         paddingTop: '60px',
+        maxWidth: '800px',
+        gap: '20px',
       }}
     >
       <ToastContainer
@@ -249,20 +253,47 @@ export default function Page() {
         redeemFn={redeem}
         {...redeemDisclosure}
       />
-      <Staking
-        stakingBalance={stakingBalance}
-        earnings={0n}
-        redeemFn={redeemDisclosure.onOpen}
-      />
-      {assetBalance > 0n ? (
-        <Button color="primary" onPress={depositDisclosure.onOpen}>
-          Stake more
-        </Button>
-      ) : (
-        <Button color="primary" onPress={() => {}}>
-          Buy tokens
+      {address && (
+        <Staking
+          stakingBalance={stakingBalance}
+          earnings={0n}
+          redeemFn={redeemDisclosure.onOpen}
+        />
+      )}
+      {!address && (
+        <Button
+          color="primary"
+          onPress={openConnectModal}
+          style={{
+            width: '100%',
+          }}
+        >
+          Connect wallet
         </Button>
       )}
+      {address ? (
+        assetBalance > 0n ? (
+          <Button
+            color="primary"
+            onPress={depositDisclosure.onOpen}
+            style={{
+              width: '100%',
+            }}
+          >
+            Stake more
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            onPress={() => {}}
+            style={{
+              width: '100%',
+            }}
+          >
+            Buy tokens
+          </Button>
+        )
+      ) : null}
 
       <LeaderBoard n={100} />
     </main>

@@ -10,7 +10,7 @@ import {
   ModalHeader,
 } from '@nextui-org/react';
 import { ethers } from 'ethers';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 interface Props {
   assetBalance: bigint;
@@ -70,17 +70,12 @@ export const DepositModal = ({
     [assetBalance],
   );
 
-  const handleClose = (onClose: () => void) => () => {
-    setAmount('');
-    onClose();
-  };
-
   const handleApprove = useCallback(
     (onClose: () => void) => async () => {
       await approveFn(
         ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
       );
-      handleClose(onClose)();
+      onClose();
     },
     [amount],
   );
@@ -90,15 +85,27 @@ export const DepositModal = ({
       await stakeFn(
         ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
       );
-      handleClose(onClose)();
+      onClose();
     },
     [amount],
   );
 
   const isInvalid = false;
 
+  useEffect(() => {
+    if (!isOpen) {
+      setAmount('');
+    }
+  }, [isOpen]);
+
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      style={{
+        background: 'black',
+      }}
+    >
       <ModalContent>
         {(onClose) => (
           <>
@@ -111,6 +118,7 @@ export const DepositModal = ({
                 errorMessage="Please enter a valid email"
                 label="Amount"
                 type="text"
+                variant="bordered"
                 value={amount}
                 onValueChange={handleSetAmount}
               />
@@ -137,11 +145,7 @@ export const DepositModal = ({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button
-                color="danger"
-                variant="light"
-                onPress={handleClose(onClose)}
-              >
+              <Button color="danger" variant="light" onPress={onClose}>
                 Close
               </Button>
               {amount !== '' &&

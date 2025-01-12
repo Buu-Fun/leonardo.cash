@@ -10,7 +10,7 @@ import {
   ModalHeader,
 } from '@nextui-org/react';
 import { ethers } from 'ethers';
-import React, { useCallback } from 'react';
+import React, { use, useCallback, useEffect } from 'react';
 
 interface Props {
   sharesBalance: bigint;
@@ -69,25 +69,32 @@ export const RedeemModal = ({
     [sharesBalance],
   );
 
-  const handleClose = (onClose: () => void) => () => {
-    setAmount('');
-    onClose();
-  };
-
   const handleRedeem = useCallback(
     (onClose: () => void) => async () => {
       await redeemFn(
         ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
       );
-      handleClose(onClose)();
+      onClose();
     },
     [amount],
   );
 
+  useEffect(() => {
+    if (isOpen) {
+      setAmount('');
+    }
+  }, [isOpen]);
+
   const isInvalid = false;
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal
+      style={{
+        background: 'black',
+      }}
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+    >
       <ModalContent>
         {(onClose) => (
           <>
@@ -100,6 +107,7 @@ export const RedeemModal = ({
                 errorMessage="Please enter a valid email"
                 label="Amount"
                 type="text"
+                variant="bordered"
                 value={amount}
                 onValueChange={handleSetAmount}
               />
@@ -126,11 +134,7 @@ export const RedeemModal = ({
               </div>
             </ModalBody>
             <ModalFooter>
-              <Button
-                color="danger"
-                variant="light"
-                onPress={handleClose(onClose)}
-              >
+              <Button color="danger" variant="light" onPress={onClose}>
                 Close
               </Button>
               {amount !== '' && (
