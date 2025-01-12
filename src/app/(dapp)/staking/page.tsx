@@ -393,7 +393,7 @@ export default function Page() {
               width: '100%',
             }}
           >
-            Stake more
+            Stake $LEONAI
           </Button>
         ) : (
           <a
