@@ -49,6 +49,32 @@ export default function Page() {
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
   const [price, setPrice] = React.useState(0);
+  const [lastBalance, setLastBalance] = React.useState(0n);
+  const [earnings, setEarnings] = React.useState(0n);
+
+  // const convertAssetsToShares = useCallback(
+  //   async (assets: bigint) => {
+  //     const stakingContract = new Contract(
+  //       STAKING_ADDRESS,
+  //       IERC4626.abi,
+  //       provider,
+  //     );
+  //     return stakingContract.convertToShares(assets);
+  //   },
+  //   [provider],
+  // );
+
+  const convertSharesToAssets = useCallback(
+    async (shares: bigint) => {
+      const stakingContract = new Contract(
+        STAKING_ADDRESS,
+        IERC4626.abi,
+        provider,
+      );
+      return stakingContract.convertToAssets(shares);
+    },
+    [provider],
+  );
 
   const fetchData = useCallback(async () => {
     if (!address) {
@@ -121,7 +147,7 @@ export default function Page() {
           chainId: CHAIN === 'base' ? base.id : Sepolia.id,
         },
         limit: nTopStakers,
-        orderBy: 'balance',
+        orderBy: 'shares',
         orderDirection: 'desc',
       };
       const { stakers } = await ponderRequest(GetStakers, variables);
@@ -136,9 +162,22 @@ export default function Page() {
       //     n,
       //   ),
       // );
+      const lastStaker =
+        stakers.items.length > 0 ? stakers.items[0] : undefined;
+      if (lastStaker) {
+        const innerLastBalance = await convertSharesToAssets(lastStaker.shares);
+        setLastBalance(innerLastBalance);
+      }
       setProcessedBlockNumber(BigInt(blockNumber.data));
     }
   }, [blockNumber.data]);
+
+  const fetchAll = useCallback(async () => {
+    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
+      await Promise.all([fetchData(), fetchPrice(), fetchTopStakers()]);
+      setProcessedBlockNumber(BigInt(blockNumber.data));
+    }
+  }, [fetchData, fetchPrice, blockNumber.data, processedBlockNumber]);
 
   const handleTx = useCallback(
     async ({
@@ -177,7 +216,7 @@ export default function Page() {
         if (toastTx) {
           toast.dismiss(toastTx);
         }
-        fetchData();
+        fetchAll();
       }
     },
     [fetchData],
@@ -243,13 +282,6 @@ export default function Page() {
     [address, signer],
   );
 
-  const fetchAll = useCallback(async () => {
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      await Promise.all([fetchData(), fetchPrice(), fetchTopStakers()]);
-      setProcessedBlockNumber(BigInt(blockNumber.data));
-    }
-  }, [fetchData, fetchPrice, blockNumber.data, processedBlockNumber]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       fetchAll();
@@ -257,9 +289,6 @@ export default function Page() {
     return () => clearInterval(interval);
   }, [fetchAll]);
 
-  const lastStaker =
-    topStakers.length > 0 ? topStakers[topStakers.length - 1] : undefined;
-  const lastBalance = lastStaker?.balance ?? 0n;
   const walletIn = stakingBalance >= lastBalance;
   const totalRewardsUSD = totalRewards * price;
 
@@ -268,7 +297,6 @@ export default function Page() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        // paddingTop: '60px',
         maxWidth: '800px',
         gap: '20px',
       }}
@@ -306,7 +334,7 @@ export default function Page() {
       {address && (
         <Staking
           stakingBalance={stakingBalance}
-          earnings={0n}
+          earnings={earnings}
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}

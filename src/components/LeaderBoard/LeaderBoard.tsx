@@ -1,10 +1,7 @@
 'use client';
 import { ASSET_METADATA_DECIMALS } from '@/src/config';
-import { ponderRequest } from '@/src/gql/client';
-import { GetStakers } from '@/src/gql/documents/staking';
-import React, { useCallback } from 'react';
-import { useAccount, useBlockNumber } from 'wagmi';
-// import styles from './styles.module.css';
+import React from 'react';
+import { useAccount } from 'wagmi';
 
 import { Staker } from '@/src/gql/types/graphql';
 import { prettyAmount, truncateAddress } from '@/src/utils/format';
@@ -147,7 +144,7 @@ export const LeaderBoard = ({
                   {prettyAmount(
                     parseFloat(
                       ethers.formatUnits(
-                        staker.balance.toString(),
+                        staker.shares.toString(),
                         parseInt(ASSET_METADATA_DECIMALS),
                       ),
                     ),

@@ -19,8 +19,11 @@ export const GetStakers = gql`
     ) {
       items {
         address
-        balance
         chainId
+        shares
+        stakedAssets
+        unstakedAssets
+        lastUpdate
       }
       pageInfo {
         startCursor
