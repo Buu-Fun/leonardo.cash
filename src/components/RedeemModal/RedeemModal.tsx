@@ -13,19 +13,21 @@ import { ethers } from 'ethers';
 import React, { use, useCallback, useEffect } from 'react';
 
 interface Props {
-  sharesBalance: bigint;
+  stakingBalance: bigint;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  redeemFn: (amount: bigint) => Promise<void>;
+  withdrawFn: (amount: bigint) => Promise<void>;
+  withdrawAllFn: () => Promise<void>;
 }
 
 const percentages = [25, 50, 75, 100];
 
 export const RedeemModal = ({
-  sharesBalance,
+  stakingBalance,
   isOpen,
   onOpenChange,
-  redeemFn,
+  withdrawFn,
+  withdrawAllFn,
 }: Props) => {
   const [amount, setAmount] = React.useState('');
 
@@ -42,12 +44,12 @@ export const RedeemModal = ({
           innerValue,
           parseInt(ASSET_METADATA_DECIMALS),
         );
-        if (parsedValue <= sharesBalance) {
+        if (parsedValue <= stakingBalance) {
           setAmount(innerValue);
         } else {
           setAmount(
             ethers.formatUnits(
-              sharesBalance,
+              stakingBalance,
               parseInt(ASSET_METADATA_DECIMALS),
             ),
           );
@@ -56,22 +58,30 @@ export const RedeemModal = ({
         console.warn(error);
       }
     },
-    [sharesBalance],
+    [stakingBalance],
   );
 
   const setPercentage = useCallback(
     (percentage: bigint) => {
-      const parsedValue = (sharesBalance * percentage) / 100n;
+      const parsedValue = (stakingBalance * percentage) / 100n;
       setAmount(
         ethers.formatUnits(parsedValue, parseInt(ASSET_METADATA_DECIMALS)),
       );
     },
-    [sharesBalance],
+    [stakingBalance],
   );
 
   const handleRedeem = useCallback(
     (onClose: () => void) => async () => {
-      redeemFn(ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)));
+      const bnAmount = ethers.parseUnits(
+        amount,
+        parseInt(ASSET_METADATA_DECIMALS),
+      );
+      if (bnAmount === stakingBalance) {
+        withdrawAllFn();
+      } else {
+        withdrawFn(bnAmount);
+      }
       onClose();
     },
     [amount],
@@ -112,7 +122,7 @@ export const RedeemModal = ({
                     variant={
                       amount ===
                       ethers.formatUnits(
-                        (sharesBalance * BigInt(percentage)) / 100n,
+                        (stakingBalance * BigInt(percentage)) / 100n,
                         parseInt(ASSET_METADATA_DECIMALS),
                       )
                         ? undefined

@@ -29,7 +29,6 @@ import { GetStakers } from '@/src/gql/documents/staking';
 import { Staker } from '@/src/gql/types/graphql';
 
 const nTopStakers = 100;
-// const totalRewards = ethers.parseUnits('20000000', ASSET_METADATA_DECIMALS);
 const totalRewards = 20000000;
 
 export default function Page() {
@@ -51,6 +50,7 @@ export default function Page() {
   const [price, setPrice] = React.useState(0);
   const [lastBalance, setLastBalance] = React.useState(0n);
   const [earnings, setEarnings] = React.useState(0n);
+  const [sharesBalance, setSharesBalance] = React.useState(0n);
 
   // const convertAssetsToShares = useCallback(
   //   async (assets: bigint) => {
@@ -95,15 +95,21 @@ export default function Page() {
       provider,
     );
 
-    const [innerAssetBalance, innerStakingAllowance, innerStakingBalance] =
-      await Promise.all([
-        assetContract.balanceOf(address),
-        assetContract.allowance(address, STAKING_ADDRESS),
-        stakingContract.maxWithdraw(address),
-      ]);
+    const [
+      innerAssetBalance,
+      innerStakingAllowance,
+      innerStakingBalance,
+      innerSharesBalance,
+    ] = await Promise.all([
+      assetContract.balanceOf(address),
+      assetContract.allowance(address, STAKING_ADDRESS),
+      stakingContract.maxWithdraw(address),
+      stakingContract.balanceOf(address),
+    ]);
     setAssetBalance(innerAssetBalance);
     setStakingAllowance(innerStakingAllowance);
     setStakingBalance(innerStakingBalance);
+    setSharesBalance(innerSharesBalance);
   }, [address, provider]);
 
   const fetchPrice = useCallback(async () => {
@@ -262,7 +268,7 @@ export default function Page() {
     [address, signer],
   );
 
-  const redeem = React.useCallback(
+  const withdraw = React.useCallback(
     async (amount: bigint) => {
       if (!address || !signer) return;
       const stakingContract = new Contract(
@@ -270,17 +276,30 @@ export default function Page() {
         IERC4626.abi,
         signer,
       );
-      const tx = stakingContract.redeem(amount, address, address);
+      const tx = stakingContract.withdraw(amount, address, address);
       await handleTx({
-        processingTitle: 'Redeem processing',
+        processingTitle: 'Withdraw processing',
         processingDescription: 'Waiting for confirmation...',
-        successTitle: 'Redeem successful',
-        successDescription: 'The redeem was successful',
+        successTitle: 'Withdraw successful',
+        successDescription: 'The Withdraw was successful',
         tx,
       });
     },
     [address, signer],
   );
+
+  const withdrawAll = React.useCallback(async () => {
+    if (!address || !signer || sharesBalance === 0n) return;
+    const stakingContract = new Contract(STAKING_ADDRESS, IERC4626.abi, signer);
+    const tx = stakingContract.redeem(sharesBalance, address, address);
+    await handleTx({
+      processingTitle: 'Withdraw processing',
+      processingDescription: 'Waiting for confirmation...',
+      successTitle: 'Withdraw successful',
+      successDescription: 'The Withdraw was successful',
+      tx,
+    });
+  }, [address, signer, sharesBalance]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -321,8 +340,9 @@ export default function Page() {
         {...depositDisclosure}
       />
       <RedeemModal
-        sharesBalance={stakingBalance}
-        redeemFn={redeem}
+        stakingBalance={stakingBalance}
+        withdrawFn={withdraw}
+        withdrawAllFn={withdrawAll}
         {...redeemDisclosure}
       />
       <Rewards
