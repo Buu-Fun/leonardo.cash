@@ -86,13 +86,7 @@ export const RedeemModal = ({
   const isInvalid = false;
 
   return (
-    <Modal
-      style={{
-        background: 'black',
-      }}
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-    >
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="modal">
       <ModalContent>
         {(onClose) => (
           <>

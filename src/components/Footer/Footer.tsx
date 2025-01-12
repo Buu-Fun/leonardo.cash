@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 
 export const Footer = () => {
   return (
-    <footer style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <div className="footer">
       <div
         style={{
           display: 'flex',
@@ -53,6 +53,8 @@ export const Footer = () => {
         <div
           style={{
             marginLeft: '10px',
+            fontSize: '12px',
+            color: '#FFFFFF70',
           }}
         >
           {'© 2024 Leonardo AI. All rights reserved'}
@@ -73,6 +75,6 @@ export const Footer = () => {
         {/* <Instagram />
         <Youtube /> */}
       </div>
-    </footer>
+    </div>
   );
 };

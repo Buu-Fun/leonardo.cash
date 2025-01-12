@@ -100,13 +100,7 @@ export const DepositModal = ({
   }, [isOpen]);
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      style={{
-        background: 'black',
-      }}
-    >
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="modal">
       <ModalContent>
         {(onClose) => (
           <>
