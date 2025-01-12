@@ -2,7 +2,7 @@
 import React from 'react';
 import Providers from './providers';
 import '@rainbow-me/rainbowkit/styles.css';
-import '../output.css';
+// import '../output.css';
 import '../styles/globals.css';
 
 // import { Blocknumber } from '../components/Blocknumber';

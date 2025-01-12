@@ -1,36 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('../../fonts/gg-sans-2/gg\ sans\ Medium.ttf');
-  font-weight: 500;
-}
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('../../fonts/gg-sans-2/gg\ sans\ Bold.ttf');
-  font-weight: 700;
-}
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('../../fonts/gg-sans-2/gg\ sans\ Regular.ttf');
-  font-weight: 400;
-}
-
-@font-face {
-  font-family: 'gg sans';
-  src: url('../../fonts/gg-sans-2/gg\ sans\ Semibold.ttf');
-  font-weight: 600;
-}
-
-@font-face {
-  font-family: 'Bebas Neue';
-  src: url('../../fonts/Bebas_Neue/BebasNeue-Regular.ttf');
-  font-weight: 400;
-}
 
 :root {
   --primary-color: #007bff;
@@ -65,7 +38,8 @@
   --warning-color-hover: #d39e00;
   --danger-color-hover: #6c1c22;
 
-  --font-family: 'gg sans', sans-serif;
+  /* --font-family: 'gg sans', sans-serif; */
+  --font-family: 'Sora', sans-serif;
 }
 
 html,
@@ -108,7 +82,6 @@ main {
   display: flex;
   flex-direction: column;
   padding: 0 20px;
-  /* overflow-y: scroll; */
   text-align: center;
   justify-content: center;
   align-items: center;
@@ -195,7 +168,7 @@ td:first-child {
 h1 {
   color: #fff;
   text-align: center;
-  font-family: 'gg sans';
+  font-family: var(--font-family);
   font-size: 111.971px;
   font-style: normal;
   font-weight: 600;
@@ -206,7 +179,7 @@ h1 {
 
 h2 {
   color: #803bf1;
-  font-family: 'gg sans';
+  font-family: var(--font-family);
   font-size: 52.4px;
   font-style: normal;
   font-weight: 500;
@@ -217,7 +190,7 @@ h2 {
 
 h3 {
   color: #fff;
-  font-family: 'gg sans';
+  font-family: var(--font-family);
   font-size: 23.1px;
   font-style: normal;
   font-weight: 600;

@@ -280,8 +280,8 @@ export default function Page() {
             >
               <span
                 style={{
-                  fontSize: '53px',
-                  lineHeight: '53px',
+                  fontSize: '30px',
+                  lineHeight: '30px',
                 }}
               >
                 Over
