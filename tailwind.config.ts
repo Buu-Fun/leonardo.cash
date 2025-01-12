@@ -31,14 +31,14 @@ module.exports = {
         light: {
           colors: {
             foreground: '#000000',
-            default: '#000000',
+            default: '#FFFFFF0D',
             primary: '#803BF1',
           },
         },
         dark: {
           colors: {
             foreground: '#000000',
-            default: '#000000',
+            default: '#FFFFFF0D',
             primary: '#803BF1',
           },
         },

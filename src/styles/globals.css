@@ -8,10 +8,10 @@
 :root {
   --primary-color: #803bf1;
   --secondary-color: #6c757d;
-  --success-color: #28a745;
+  --success-color: #25f043;
   --info-color: #17a2b8;
   --warning-color: #ffc107;
-  --danger-color: #dc3545;
+  --danger-color: #f02543;
   --light-color: #f8f9fa;
   --dark-color: #343a40;
 
@@ -46,7 +46,7 @@
   --toastify-color-info: var(--primary-color);
   --toastify-color-success: #07bc0c;
   --toastify-color-warning: #f1c40f;
-  --toastify-color-error: hsl(6, 78%, 57%);
+  --toastify-color-error: var(--danger-color);
   --toastify-color-transparent: rgba(255, 255, 255, 0.7);
 
   --toastify-icon-color-info: var(--toastify-color-info);
@@ -99,7 +99,7 @@
     #803bf1,
     #34aadc,
     #5856d6,
-    #ff2d55
+    var(--danger-color)
   );
   --toastify-color-progress-dark: #bb86fc;
   --toastify-color-progress-info: var(--toastify-color-info);
