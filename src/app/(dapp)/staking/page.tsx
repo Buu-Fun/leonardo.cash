@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
-import { useAccount, useBlockNumber, useConnect } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
 
@@ -27,7 +27,6 @@ import { Rewards } from '@/src/components/Rewards/Rewards';
 import { ponderRequest } from '@/src/gql/client';
 import { GetStakers } from '@/src/gql/documents/staking';
 import { Staker } from '@/src/gql/types/graphql';
-import { format } from '@/src/utils/format';
 
 const nTopStakers = 100;
 // const totalRewards = ethers.parseUnits('20000000', ASSET_METADATA_DECIMALS);
@@ -260,8 +259,8 @@ export default function Page() {
 
   const lastStaker =
     topStakers.length > 0 ? topStakers[topStakers.length - 1] : undefined;
-  const walletIn = stakingBalance > 0n && lastStaker?.balance <= stakingBalance;
-  const lastWalletIn = lastStaker?.balance;
+  const lastBalance = lastStaker?.balance ?? 0n;
+  const walletIn = stakingBalance >= lastBalance;
   const totalRewardsUSD = totalRewards * price;
 
   return (
@@ -301,7 +300,7 @@ export default function Page() {
       <Rewards
         totalRewards={totalRewardsUSD}
         mininumRequiredStake={
-          topStakers.length === nTopStakers ? lastWalletIn.balance : 0n
+          topStakers.length === nTopStakers ? lastBalance : 0n
         }
       />
       {address && (
@@ -309,7 +308,7 @@ export default function Page() {
           stakingBalance={stakingBalance}
           earnings={0n}
           redeemFn={redeemDisclosure.onOpen}
-          lastWalletIn={lastWalletIn}
+          lastBalance={lastBalance}
           walletIn={walletIn}
           claimFn={() => console.log('Claiming')}
         />

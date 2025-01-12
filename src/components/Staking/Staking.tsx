@@ -13,7 +13,7 @@ import {
 
 interface Props {
   stakingBalance: bigint;
-  lastWalletIn: bigint;
+  lastBalance: bigint;
   earnings: bigint;
   walletIn: boolean;
   redeemFn: () => void;
@@ -21,7 +21,7 @@ interface Props {
 }
 
 function Staking({
-  lastWalletIn = 100000000n * 10n ** 18n,
+  lastBalance,
   stakingBalance,
   earnings,
   walletIn = false,
@@ -64,7 +64,7 @@ function Staking({
               {`Stake ${prettyAmount(
                 parseFloat(
                   ethers.formatUnits(
-                    (lastWalletIn - stakingBalance).toString(),
+                    (walletIn ? lastBalance - stakingBalance : 0n).toString(),
                     parseInt(ASSET_METADATA_DECIMALS),
                   ),
                 ),
