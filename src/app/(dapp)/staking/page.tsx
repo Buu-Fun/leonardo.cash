@@ -1,10 +1,16 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
 import { useAccount, useBlockNumber } from 'wagmi';
-import { Contract } from 'ethers';
+import { Contract, ethers } from 'ethers';
 
-import { ASSET_ADDRESS, STAKING_ADDRESS } from '@/src/config';
-import { useEthersSigner } from '@/src/utils/ethersAdapter';
+import {
+  ASSET_ADDRESS,
+  ASSET_METADATA_DECIMALS,
+  POOL_ADDRESS,
+  STAKING_ADDRESS,
+  USDC_ADDRESS,
+} from '@/src/config';
+import { useEthersProvider, useEthersSigner } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import IERC4626 from '@/src/abis/IERC4626.json';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -18,8 +24,9 @@ import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 export default function Page() {
   // Hooks
   const { address } = useAccount();
-  const blockNumber = useBlockNumber({ cacheTime: 1000 });
+  const blockNumber = useBlockNumber({ cacheTime: 5000 });
   const signer = useEthersSigner();
+  const provider = useEthersProvider();
   const depositDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
 
@@ -28,40 +35,70 @@ export default function Page() {
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
+  const [price, setPrice] = React.useState(0);
 
   const fetchData = useCallback(async () => {
-    if (!address || !signer) {
+    if (!provider || !address) {
       setAssetBalance(0n);
       setStakingAllowance(0n);
       setStakingBalance(0n);
       return;
     }
+    const assetContract = new Contract(
+      ASSET_ADDRESS,
+      IERC20Metadata.abi,
+      provider,
+    );
 
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      const assetContract = new Contract(
-        ASSET_ADDRESS,
-        IERC20Metadata.abi,
-        signer,
-      );
+    const stakingContract = new Contract(
+      STAKING_ADDRESS,
+      IERC4626.abi,
+      provider,
+    );
 
-      const stakingContract = new Contract(
-        STAKING_ADDRESS,
-        IERC4626.abi,
-        signer,
-      );
+    const [innerAssetBalance, innerStakingAllowance, innerStakingBalance] =
+      await Promise.all([
+        assetContract.balanceOf(address),
+        assetContract.allowance(address, STAKING_ADDRESS),
+        stakingContract.maxWithdraw(address),
+      ]);
+    setAssetBalance(innerAssetBalance);
+    setStakingAllowance(innerStakingAllowance);
+    setStakingBalance(innerStakingBalance);
+  }, [address, provider]);
 
-      const [innerAssetBalance, innerStakingAllowance, innerStakingBalance] =
-        await Promise.all([
-          assetContract.balanceOf(address),
-          assetContract.allowance(address, STAKING_ADDRESS),
-          stakingContract.maxWithdraw(address),
-        ]);
-      setAssetBalance(innerAssetBalance);
-      setStakingAllowance(innerStakingAllowance);
-      setStakingBalance(innerStakingBalance);
-      setProcessedBlockNumber(blockNumber.data);
+  const fetchPrice = useCallback(async () => {
+    if (!provider) {
+      setPrice(0);
+      return;
     }
-  }, [address, blockNumber.data, processedBlockNumber, signer]);
+    const assetContract = new Contract(
+      ASSET_ADDRESS,
+      IERC20Metadata.abi,
+      provider,
+    );
+    const usdcContract = new Contract(
+      USDC_ADDRESS,
+      IERC20Metadata.abi,
+      provider,
+    );
+    const [assetBalanceOfPool, usdcBalanceOfPool, usdcDecimals] =
+      await Promise.all([
+        assetContract.balanceOf(POOL_ADDRESS),
+        usdcContract.balanceOf(POOL_ADDRESS),
+        usdcContract.decimals(),
+      ]);
+
+    const price = parseFloat(
+      ethers.formatUnits(
+        (usdcBalanceOfPool * 10n ** BigInt(ASSET_METADATA_DECIMALS)) /
+          assetBalanceOfPool,
+        usdcDecimals,
+      ),
+    );
+
+    setPrice(price);
+  }, [provider]);
 
   const handleTx = useCallback(
     async ({
@@ -166,10 +203,20 @@ export default function Page() {
     [address, signer],
   );
 
+  const fetchAll = useCallback(async () => {
+    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
+      await fetchData();
+      await fetchPrice();
+      setProcessedBlockNumber(BigInt(blockNumber.data));
+    }
+  }, [fetchData, fetchPrice, blockNumber.data, processedBlockNumber]);
+
   useEffect(() => {
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(() => {
+      fetchAll();
+    }, 1000);
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [fetchAll]);
 
   return (
     <main

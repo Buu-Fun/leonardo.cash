@@ -9,7 +9,7 @@ import { base, sepolia as Sepolia } from 'wagmi/chains';
 
 import { Staker } from '@/src/gql/types/graphql';
 import { prettyAmount, truncateAddress } from '@/src/utils/format';
-import { ethers } from 'ethers';
+import { ethers, uuidV4 } from 'ethers';
 import { SecondCrown } from '../icons/SecondCrown';
 import { ThirdCrown } from '../icons/ThirdCrown';
 import { DefaultCrown } from '../icons/DefaultCrown';
@@ -138,7 +138,7 @@ export const LeaderBoard = ({ n }: { n: number }) => {
           {topStakers.map((staker: Staker, index: number) => (
             <tr
               className={clsx(staker.address === address ? 'you' : '')}
-              key={staker.address}
+              key={uuidV4(ethers.randomBytes(16))}
             >
               <td>
                 {renderRanking(
