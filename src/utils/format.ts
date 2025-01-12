@@ -79,3 +79,19 @@ export const prettyAmount = (amount: number) => {
 export const truncateAddress = (address: string) => {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+export function splitStringIntoChunks(
+  input: string,
+  chunkSize: number,
+): string[] {
+  if (chunkSize <= 0) {
+    return [input];
+  }
+
+  const chunks: string[] = [];
+  for (let i = 0; i < input.length; i += chunkSize) {
+    chunks.push(input.slice(i, i + chunkSize));
+  }
+
+  return chunks;
+}

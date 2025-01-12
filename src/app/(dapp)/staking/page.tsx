@@ -168,14 +168,7 @@
 //   }, [fetchData]);
 
 //   return (
-//     <div
-//       style={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         gap: '1rem',
-//         padding: '1rem',
-//       }}
-//     >
+//     <main>
 //       <ToastContainer
 //         position="bottom-right"
 //         autoClose={5000}
@@ -215,7 +208,7 @@
 //       )}
 
 //       <LeaderBoard n={100} />
-//     </div>
+//     </main>
 //   );
 // }
 
