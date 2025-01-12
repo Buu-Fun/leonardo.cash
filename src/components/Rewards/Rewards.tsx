@@ -18,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import { ethers } from 'ethers';
+import { X } from '../icons/X';
 
 interface Props {
   totalRewards: number;
@@ -43,6 +44,21 @@ export const Rewards = ({ totalRewards, mininumRequiredStake }: Props) => {
 
   return (
     <div className={styles.layout}>
+      {/* X icon */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          padding: '1rem',
+          zIndex: 4,
+        }}
+      >
+        <a href="https://x.com/Leonardo__AI" target="_blank" rel="noreferrer">
+          <X className={styles.button} />
+        </a>
+      </div>
+
       {/* logo */}
       <div className={styles.logoContainer}>
         {/* image */}

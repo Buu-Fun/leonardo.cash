@@ -6,6 +6,7 @@
   gap: 20px;
   white-space: nowrap;
   background: #0a0a0a;
+  position: relative;
 }
 
 .logo {
@@ -81,6 +82,15 @@
   height: 4px;
   border-radius: 50%;
   background: rgb(255, 255, 255, 0.5);
+}
+
+.button {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  opacity: 0.8;
 }
 
 @media (max-width: 768px) {
