@@ -12,9 +12,9 @@
     "codegen": "graphql-codegen",
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
     "lint": "eslint src",
-    "publish:major": "npm version major --tag-version-prefix='' && git push origin master --follow-tags",
-    "publish:minor": "npm version minor --tag-version-prefix='' && git push origin master --follow-tags",
-    "publish:patch": "npm version patch --tag-version-prefix='' && git push origin master --follow-tags"
+    "publish:major": "npm version major --tag-version-prefix='' && git push origin master develop --follow-tags",
+    "publish:minor": "npm version minor --tag-version-prefix='' && git push origin master develop --follow-tags",
+    "publish:patch": "npm version patch --tag-version-prefix='' && git push origin master develop --follow-tags"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
