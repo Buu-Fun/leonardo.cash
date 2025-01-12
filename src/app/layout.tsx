@@ -4,6 +4,7 @@ import Providers from './providers';
 import '@rainbow-me/rainbowkit/styles.css';
 // import '../output.css';
 import '../styles/globals.css';
+import { usePathname } from 'next/navigation';
 
 // import { Blocknumber } from '../components/Blocknumber';
 
@@ -12,6 +13,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <html lang="en">
       <head>
@@ -25,7 +28,28 @@ export default function RootLayout({
         <meta property="twitter:description" content="Leonardo AI" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body>
+      <body
+        style={
+          pathname === '/staking'
+            ? {
+                backgroundImage: `url('/background.png')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'bottom',
+              }
+            : {}
+        }
+      >
+        <div
+          style={{
+            background: 'rgba(0, 0, 0, 0.9)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            height: '100vh',
+            width: '100vw',
+            zIndex: 0,
+          }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>
