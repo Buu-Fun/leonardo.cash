@@ -170,14 +170,14 @@ export default function Page() {
       orderDirection: 'desc',
     };
     const { stakers } = await ponderRequest(GetStakers, variables);
-    const items = mockLeaderBoard(
-      stakers.items[0] || {
-        balance: 0n,
-        address: ethers.ZeroAddress,
-      },
-      nTopStakers,
-    );
-    // const { items } = stakers;
+    // const items = mockLeaderBoard(
+    //   stakers.items[0] || {
+    //     balance: 0n,
+    //     address: ethers.ZeroAddress,
+    //   },
+    //   nTopStakers,
+    // );
+    const { items } = stakers;
     if (items.length > 0) {
       const assetsPromises = items.map(async (staker: Staker) => {
         const assets = await convertSharesToAssets(staker.shares);
