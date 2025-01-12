@@ -3,7 +3,6 @@ import { ASSET_METADATA_DECIMALS } from '@/src/config';
 import React from 'react';
 import { useAccount } from 'wagmi';
 
-import { Staker } from '@/src/gql/types/graphql';
 import { prettyAmount, truncateAddress } from '@/src/utils/format';
 import { ethers, uuidV4 } from 'ethers';
 import { SecondCrown } from '../icons/SecondCrown';
@@ -12,24 +11,13 @@ import { DefaultCrown } from '../icons/DefaultCrown';
 import { Chip } from '@nextui-org/react';
 import { FirstCrown } from '../icons/FirstCrown';
 import clsx from 'clsx';
-
-// const mockLeaderBoard = (staker: Staker, n: number) => {
-//   const mockedStaker = {
-//     ...staker,
-//     balance: 123n * 10n ** 18n,
-//     address: ethers.ZeroAddress,
-//   } as Staker;
-//   const mock = [mockedStaker]
-//     .concat(staker)
-//     .concat(Array(n - 2).fill(mockedStaker));
-//   return mock;
-// };
+import { StakerWithAssets } from '@/src/app/(dapp)/staking/page';
 
 export const LeaderBoard = ({
   topStakers,
   n,
 }: {
-  topStakers: Staker[];
+  topStakers: StakerWithAssets[];
   n: number;
 }) => {
   const { address } = useAccount();
@@ -109,7 +97,7 @@ export const LeaderBoard = ({
           </tr>
         </thead>
         <tbody>
-          {topStakers.map((staker: Staker, index: number) => (
+          {topStakers.map((staker: StakerWithAssets, index: number) => (
             <tr
               className={clsx(staker?.address === address ? 'you' : '')}
               key={uuidV4(ethers.randomBytes(16))}
@@ -144,7 +132,7 @@ export const LeaderBoard = ({
                   {prettyAmount(
                     parseFloat(
                       ethers.formatUnits(
-                        staker.shares.toString(),
+                        staker.assets.toString(),
                         parseInt(ASSET_METADATA_DECIMALS),
                       ),
                     ),

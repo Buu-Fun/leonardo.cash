@@ -5,6 +5,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 // import '../output.css';
 import '../styles/globals.css';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 // import { Blocknumber } from '../components/Blocknumber';
 
@@ -28,20 +29,9 @@ export default function RootLayout({
         <meta property="twitter:description" content="Leonardo AI" />
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body
-        style={
-          pathname === '/staking'
-            ? {
-                backgroundImage: `url('/background.png')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'bottom',
-              }
-            : {}
-        }
-      >
+      <body>
         <div
           style={{
-            background: 'rgba(0, 0, 0, 0.9)',
             position: 'fixed',
             top: 0,
             left: 0,
@@ -49,7 +39,21 @@ export default function RootLayout({
             width: '100vw',
             zIndex: 0,
           }}
-        />
+        >
+          <div
+            style={{
+              background: 'rgba(0, 0, 0, 0.9)',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              height: '100vh',
+              width: '100vw',
+              zIndex: 1,
+            }}
+          />
+          <Image src="/background.png" alt="background" fill />
+        </div>
+
         <Providers>{children}</Providers>
       </body>
     </html>

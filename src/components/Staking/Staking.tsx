@@ -15,6 +15,7 @@ interface Props {
   stakingBalance: bigint;
   lastBalance: bigint;
   earnings: bigint;
+  earningsPerDay: bigint;
   walletIn: boolean;
   redeemFn: () => void;
   claimFn: () => void;
@@ -24,6 +25,7 @@ function Staking({
   lastBalance,
   stakingBalance,
   earnings,
+  earningsPerDay,
   walletIn = false,
   redeemFn,
   claimFn,
@@ -137,7 +139,14 @@ function Staking({
             )}
           </div>
           <div className={styles.description}>
-            The more you stake, the more you earn
+            {`Earning ${prettyAmount(
+              parseFloat(
+                ethers.formatUnits(
+                  earningsPerDay.toString(),
+                  parseInt(ASSET_METADATA_DECIMALS),
+                ),
+              ),
+            )} / day`}
           </div>
         </div>
       </div>

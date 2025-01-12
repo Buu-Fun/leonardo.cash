@@ -31,6 +31,20 @@ import { Staker } from '@/src/gql/types/graphql';
 const nTopStakers = 100;
 const totalRewards = 20000000;
 
+export type StakerWithAssets = Staker & { assets: bigint };
+
+const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
+  const mockedStaker = {
+    ...staker,
+    balance: 123n * 10n ** 18n,
+    address: ethers.ZeroAddress,
+  } as StakerWithAssets;
+  const mock = [mockedStaker]
+    .concat(staker)
+    .concat(Array(n - 2).fill(mockedStaker));
+  return mock;
+};
+
 export default function Page() {
   // Hooks
   const { openConnectModal } = useConnectModal();
@@ -42,7 +56,7 @@ export default function Page() {
   const redeemDisclosure = useDisclosure();
 
   // State
-  const [topStakers, setTopStakers] = React.useState<Staker[]>([]);
+  const [topStakers, setTopStakers] = React.useState<StakerWithAssets[]>([]);
   const [processedBlockNumber, setProcessedBlockNumber] = React.useState(0n);
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
@@ -147,36 +161,33 @@ export default function Page() {
 
   const fetchTopStakers = useCallback(async () => {
     // Fetch top stakers
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      const variables = {
-        where: {
-          chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-        },
-        limit: nTopStakers,
-        orderBy: 'shares',
-        orderDirection: 'desc',
-      };
-      const { stakers } = await ponderRequest(GetStakers, variables);
-      setTopStakers(stakers.items);
-      // Mock
-      // setTopStakers(
-      //   mockLeaderBoard(
-      //     stakers.items[0] || {
-      //       balance: 0n,
-      //       address: ethers.ZeroAddress,
-      //     },
-      //     n,
-      //   ),
-      // );
-      const lastStaker =
-        stakers.items.length > 0 ? stakers.items[0] : undefined;
-      if (lastStaker) {
-        const innerLastBalance = await convertSharesToAssets(lastStaker.shares);
-        setLastBalance(innerLastBalance);
-      }
-      setProcessedBlockNumber(BigInt(blockNumber.data));
+    const variables = {
+      where: {
+        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+      },
+      limit: nTopStakers,
+      orderBy: 'shares',
+      orderDirection: 'desc',
+    };
+    const { stakers } = await ponderRequest(GetStakers, variables);
+    const items = mockLeaderBoard(
+      stakers.items[0] || {
+        balance: 0n,
+        address: ethers.ZeroAddress,
+      },
+      nTopStakers,
+    );
+    // const { items } = stakers;
+    if (items.length > 0) {
+      const assetsPromises = items.map(async (staker: Staker) => {
+        const assets = await convertSharesToAssets(staker.shares);
+        return { ...staker, assets };
+      });
+      const stakersWithAssets = await Promise.all(assetsPromises);
+      setTopStakers(stakersWithAssets);
+      setLastBalance(stakersWithAssets[stakersWithAssets.length - 1].assets);
     }
-  }, [blockNumber.data]);
+  }, [blockNumber.data, convertSharesToAssets]);
 
   const fetchAll = useCallback(async () => {
     if (blockNumber.data && processedBlockNumber < blockNumber.data) {
@@ -355,6 +366,7 @@ export default function Page() {
         <Staking
           stakingBalance={stakingBalance}
           earnings={earnings}
+          earningsPerDay={0n}
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}
@@ -404,7 +416,7 @@ export default function Page() {
         )
       ) : null}
 
-      <LeaderBoard n={topStakers.length} topStakers={topStakers} />
+      <LeaderBoard n={nTopStakers} topStakers={topStakers} />
     </main>
   );
 }
