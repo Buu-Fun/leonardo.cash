@@ -1,24 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface UseDynamicAmountParams {
-  startTime: number; // segundos (p.ej., Math.floor(Date.now() / 1000))
-  endTime: number; // segundos
-  offset: number; // valor inicial
-  toAdd: number; // total a sumar desde startTime hasta endTime
-  updateIntervalMs?: number; // periodo de actualización en milisegundos
+  startTime: number;
+  endTime: number;
+  offset: number;
+  toAdd: number;
+  updateIntervalMs?: number;
 }
 
 export const useDynamicAmount = ({
-  startTime,
-  endTime,
+  startTime, // ms
+  endTime, // ms
   offset,
   toAdd,
-  updateIntervalMs = 10,
+  updateIntervalMs = 100,
 }: UseDynamicAmountParams) => {
   const [amount, setAmount] = useState(offset);
   useEffect(() => {
     const updateAmount = () => {
-      const now = Math.floor(Date.now() / 1000);
+      const now = Date.now();
       if (now >= endTime) {
         setAmount(offset + toAdd);
         return;

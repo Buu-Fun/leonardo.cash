@@ -32,12 +32,12 @@ export const Rewards = ({
   totalRewardsPerDay,
   mininumRequiredStake,
 }: Props) => {
-  const now = useMemo(() => Math.floor(Date.now() / 1000), []);
+  const now = useMemo(() => Date.now(), []);
   const totalRewardsAmount = useDynamicAmount({
     offset: totalRewards,
     toAdd: totalRewardsPerDay,
     startTime: now,
-    endTime: now + 86400,
+    endTime: now + 86400000,
   });
   const [isCopied, setIsCopied] = useState(false);
 
@@ -129,7 +129,7 @@ export const Rewards = ({
         {/* value */}
         <div className={styles.amount}>{`$ ${format({
           value: totalRewardsAmount,
-          minDecimals: 2,
+          minDecimals: 4,
           maxDecimals: 4,
         })}`}</div>
 
