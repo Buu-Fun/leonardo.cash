@@ -26,7 +26,7 @@ import {
   GetStakers,
   GetStakingRewardGlobals,
   GetStakingRewards,
-} from '@/src/gql/documents/staking';
+} from '@/src/gql/documents/ponder';
 import {
   Staker,
   StakingReward,
@@ -240,6 +240,7 @@ export const StakingProvider = ({ children }: Props) => {
     const variables = {
       where: {
         chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        address: STAKING_ADDRESS,
         staker: address,
       },
       limit: 1,
@@ -300,7 +301,7 @@ export const StakingProvider = ({ children }: Props) => {
     fetchAll();
     const interval = setInterval(() => {
       fetchAll();
-    }, 5000);
+    }, 1000);
     return () => clearInterval(interval);
   }, [fetchAll]);
 

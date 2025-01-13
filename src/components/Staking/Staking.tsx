@@ -1,7 +1,7 @@
 'use client';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './styles.module.css';
-import { prettyAmount } from '../../utils/format';
+import { format, prettyAmount } from '../../utils/format';
 import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
 import { Button } from '@nextui-org/react';
 import { ethers } from 'ethers';
@@ -10,6 +10,7 @@ import {
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 
 interface Props {
   stakingBalance: bigint;
@@ -30,6 +31,24 @@ function Staking({
   redeemFn,
   claimFn,
 }: Props) {
+  const now = useMemo(() => Date.now(), [earnings, earningsPerDay]);
+  const earningsAmount = useDynamicAmount({
+    offset: parseFloat(
+      ethers.formatUnits(
+        earnings.toString(),
+        parseInt(ASSET_METADATA_DECIMALS),
+      ),
+    ),
+    toAdd: parseFloat(
+      ethers.formatUnits(
+        earningsPerDay.toString(),
+        parseInt(ASSET_METADATA_DECIMALS),
+      ),
+    ),
+    startTime: now,
+    endTime: now + 86400000,
+  });
+
   return (
     <div
       className={clsx(
@@ -121,16 +140,12 @@ function Staking({
           <div className={styles.data}>
             <div className={styles.amount}>
               <div className={styles.value}>
-                {prettyAmount(
-                  parseFloat(
-                    ethers.formatUnits(
-                      earnings.toString(),
-                      parseInt(ASSET_METADATA_DECIMALS),
-                    ),
-                  ),
-                )}
+                {format({
+                  value: earningsAmount,
+                  minDecimals: 4,
+                  maxDecimals: 4,
+                })}
               </div>
-              <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
             </div>
             {earnings > 0n && (
               <Button

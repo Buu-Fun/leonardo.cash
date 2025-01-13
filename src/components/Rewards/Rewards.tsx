@@ -32,7 +32,7 @@ export const Rewards = ({
   totalRewardsPerDay,
   mininumRequiredStake,
 }: Props) => {
-  const now = useMemo(() => Date.now(), []);
+  const now = useMemo(() => Date.now(), [totalRewards, totalRewardsPerDay]);
   const totalRewardsAmount = useDynamicAmount({
     offset: totalRewards,
     toAdd: totalRewardsPerDay,

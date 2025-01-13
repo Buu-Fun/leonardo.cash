@@ -6,9 +6,12 @@ import { Contract, ethers } from 'ethers';
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
+  CHAIN,
+  REWARDS_ADDRESS,
   STAKING_ADDRESS,
 } from '@/src/config';
 import { useEthersSigner } from '@/src/utils/ethersAdapter';
+import RewardsUpgradeable from '@/src/abis/RewardsUpgradeable.json';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import IERC4626 from '@/src/abis/IERC4626.json';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -20,9 +23,12 @@ import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
-import { Staker } from '@/src/gql/types/graphql';
+import { SignedStakingReward, Staker } from '@/src/gql/types/graphql';
 import { getBoosterValue } from './utils';
 import { useStaking } from '@/src/context/staking.context';
+import { serverRequest } from '@/src/gql/client';
+import { GetSignedStakingReward } from '@/src/gql/documents/backend';
+import { base, sepolia as Sepolia } from 'wagmi/chains';
 
 const nTopStakers = 100;
 
@@ -83,7 +89,7 @@ export default function Page() {
           { autoClose: false },
         );
         const response = await tx;
-        await response.wait();
+        await response.wait(2);
         toast.success(
           <Toast title={successTitle} description={successDescription} />,
         );
@@ -165,6 +171,52 @@ export default function Page() {
     [address, signer],
   );
 
+  const claim = React.useCallback(async () => {
+    if (!address || !signer) return;
+
+    const { getSignedStakingReward } = (await serverRequest(
+      GetSignedStakingReward,
+      {
+        input: {
+          chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+          stakerAddress: address,
+        },
+      },
+    )) as { getSignedStakingReward: SignedStakingReward | undefined };
+    if (!getSignedStakingReward) {
+      toast.error(
+        <Toast
+          title="Error"
+          description={'An error occurred while processing the transaction'}
+        />,
+      );
+      return;
+    }
+
+    const rewardContract = new Contract(
+      REWARDS_ADDRESS,
+      RewardsUpgradeable.abi,
+      signer,
+    );
+
+    const tx = rewardContract.claim(
+      getSignedStakingReward.asset,
+      getSignedStakingReward.vault,
+      getSignedStakingReward.staker,
+      getSignedStakingReward.amount,
+      getSignedStakingReward.signer,
+      getSignedStakingReward.signature,
+    );
+
+    await handleTx({
+      processingTitle: 'Claim processing',
+      processingDescription: 'Waiting for confirmation...',
+      successTitle: 'Claim successful',
+      successDescription: 'The Claim was successful',
+      tx,
+    });
+  }, [address, signer]);
+
   const withdrawAll = React.useCallback(async () => {
     if (!address || !signer || sharesBalance === 0n) return;
     const stakingContract = new Contract(STAKING_ADDRESS, IERC4626.abi, signer);
@@ -214,7 +266,7 @@ export default function Page() {
   }
 
   const earnings = stakingReward
-    ? BigInt(stakingReward.amount) + currentReward
+    ? BigInt(stakingReward.available) + currentReward
     : 0n;
   const totalRewardsUSD =
     parseFloat(
@@ -274,7 +326,7 @@ export default function Page() {
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}
-          claimFn={() => console.log('Claiming')}
+          claimFn={claim}
         />
       )}
       {!address && (
