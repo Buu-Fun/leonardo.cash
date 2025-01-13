@@ -17,9 +17,9 @@ module.exports = {
       layout: {
         disabledOpacity: '0.3', // opacity-[0.3]
         radius: {
-          small: '0px', // rounded-small
-          medium: '0px', // rounded-medium
-          large: '0px', // rounded-large
+          // small: '0px', // rounded-small
+          // medium: '0px', // rounded-medium
+          // large: '0px', // rounded-large
         },
         borderWidth: {
           small: '1px', // border-small

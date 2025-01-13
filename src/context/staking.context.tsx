@@ -135,7 +135,6 @@ export const StakingProvider = ({ children }: Props) => {
       await Promise.all([
         assetContract.balanceOf(address),
         assetContract.allowance(address, STAKING_ADDRESS),
-        stakingContract.maxWithdraw(address),
         stakingContract.balanceOf(address),
       ]);
     setAssetBalance(innerAssetBalance);
@@ -301,7 +300,7 @@ export const StakingProvider = ({ children }: Props) => {
     fetchAll();
     const interval = setInterval(() => {
       fetchAll();
-    }, 1000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [fetchAll]);
 
@@ -331,6 +330,7 @@ export const StakingProvider = ({ children }: Props) => {
       staker,
       stakingReward,
       stakingRewardGlobal,
+      fetchAll,
     ],
   );
 

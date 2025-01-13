@@ -16,7 +16,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           theme={darkTheme({
             accentColor: '#803bf1',
             accentColorForeground: 'white',
-            borderRadius: 'none',
+            // borderRadius: 'none',
             fontStack: 'system',
             overlayBlur: 'small',
           })}

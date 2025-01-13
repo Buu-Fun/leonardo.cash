@@ -77,7 +77,7 @@
   --toastify-toast-padding: 14px;
   --toastify-toast-min-height: 64px;
   --toastify-toast-max-height: 800px;
-  --toastify-toast-bd-radius: 0px;
+  --toastify-toast-bd-radius: 16px;
   --toastify-toast-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --toastify-font-family: var(--font-family);
   --toastify-z-index: 9999;
@@ -177,12 +177,16 @@ table {
   align-items: flex-start;
   width: 100%;
   border: 1px solid #302450;
+  border-radius: 16px;
+  /* overflow: hidden; */
 }
 
 thead {
   display: flex;
   background: #421e7c;
   width: 100%;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
 }
 
 tbody {
@@ -198,6 +202,7 @@ tbody {
   font-weight: 400;
   line-height: 20px; /* 139.86% */
   /* text-transform: uppercase; */
+  border-radius: 0 0 16px 16px;
 }
 
 th {
@@ -217,9 +222,14 @@ tr {
   padding: 30px 40px;
 }
 
+tr:last-child {
+  border-radius: 16px 16px;
+}
+
 .you {
   transform: scale(1.05);
   background: rgb(30, 13, 57);
+  border-radius: 16px;
 }
 
 td {
@@ -273,10 +283,6 @@ h3 {
   line-height: 32px; /* 138.528% */
   letter-spacing: -0.16px;
   text-transform: uppercase;
-}
-
-button {
-  /* text-transform: uppercase; */
 }
 
 .landing-boxes {

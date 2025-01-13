@@ -267,6 +267,7 @@ export default function Page() {
 
   const withdrawAll = React.useCallback(async () => {
     if (!address || !signer || sharesBalance === 0n) return;
+
     const stakingContract = new Contract(STAKING_ADDRESS, IERC4626.abi, signer);
     const tx = stakingContract.redeem(sharesBalance, address, address);
     await handleTx({
@@ -284,33 +285,39 @@ export default function Page() {
   let earningPerDay = 0n;
   let totalRewards = 0n;
   let totalRewardsPerDay = 0n;
-  const pos = address
-    ? topStakers.map((staker) => staker.staker).indexOf(address)
-    : -1;
 
-  if (pos >= 0 && staker && stakingRewardGlobal && stakingReward && price) {
+  if (stakingRewardGlobal) {
+    const pos = address
+      ? topStakers.map((staker) => staker.staker).indexOf(address)
+      : -1;
+
     const now = BigInt(Math.floor(Date.now() / 1000));
-    const timeSinceStart = now - BigInt(stakingRewardGlobal.startTime);
     const timeSinceLastUpdate = now - BigInt(stakingRewardGlobal.lastUpdate);
+    const timeSinceStart = now - BigInt(stakingRewardGlobal.startTime);
     const rewardsInLastPeriod =
       (BigInt(stakingRewardGlobal.totalRewards) * timeSinceLastUpdate) /
       (BigInt(stakingRewardGlobal.endTime) -
         BigInt(stakingRewardGlobal.startTime));
-    const totalBoostedShares = topStakers.reduce(
-      (acc: bigint, account: Staker, index: number) => {
-        const boostedShare = getBoosterValue(index) * BigInt(account.shares);
-        return acc + boostedShare;
-      },
-      0n,
-    ) as bigint;
-    const boostedShares = getBoosterValue(pos) * BigInt(staker.shares);
-    currentReward = (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
-    earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
+
     totalRewards =
       (BigInt(stakingRewardGlobal.totalRewards) * timeSinceStart) /
       (BigInt(stakingRewardGlobal.endTime) -
         BigInt(stakingRewardGlobal.startTime));
     totalRewardsPerDay = (totalRewards * 86400n) / timeSinceStart;
+
+    if (pos >= 0 && staker && stakingRewardGlobal && stakingReward && price) {
+      const totalBoostedShares = topStakers.reduce(
+        (acc: bigint, account: Staker, index: number) => {
+          const boostedShare = getBoosterValue(index) * BigInt(account.shares);
+          return acc + boostedShare;
+        },
+        0n,
+      ) as bigint;
+      const boostedShares = getBoosterValue(pos) * BigInt(staker.shares);
+      currentReward =
+        (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
+      earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
+    }
   }
 
   const earnings = stakingReward

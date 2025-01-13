@@ -31,7 +31,7 @@ const Box = ({
       alignItems: 'center',
       position: 'relative',
       backgroundColor,
-      // borderRadius: '32px',
+      borderRadius: '32px',
       overflow: 'hidden',
       ...style,
     }}
