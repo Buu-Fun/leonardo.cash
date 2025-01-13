@@ -23,7 +23,11 @@ import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
-import { SignedStakingReward, Staker } from '@/src/gql/types/graphql';
+import {
+  SignedStakingReward,
+  Staker,
+  StakingRewardGlobal,
+} from '@/src/gql/types/graphql';
 import { getBoosterValue } from './utils';
 import { useStaking } from '@/src/context/staking.context';
 import { serverRequest } from '@/src/gql/client';
@@ -45,6 +49,50 @@ export type StakerWithAssets = Staker & { assets: bigint };
 //     .concat(Array(n - 2).fill(mockedStaker));
 //   return mock;
 // };
+
+export type StakerWithAssetsAndEarnings = StakerWithAssets & {
+  earningPerDay: bigint;
+  earningPerDayUSD: number;
+};
+
+const calculateEarningPerDayStakers = ({
+  topStakers,
+  stakingRewardGlobal,
+  price,
+}: {
+  topStakers: Staker[];
+  stakingRewardGlobal: StakingRewardGlobal;
+  price: number;
+}) => {
+  const now = BigInt(Math.floor(Date.now() / 1000));
+  const timeSinceLastUpdate = now - BigInt(stakingRewardGlobal.lastUpdate);
+  const rewardsInLastPeriod =
+    (BigInt(stakingRewardGlobal.totalRewards) * timeSinceLastUpdate) /
+    (BigInt(stakingRewardGlobal.endTime) -
+      BigInt(stakingRewardGlobal.startTime));
+  const totalBoostedShares = topStakers.reduce(
+    (acc: bigint, account: Staker, index: number) => {
+      const boostedShare = getBoosterValue(index) * BigInt(account.shares);
+      return acc + boostedShare;
+    },
+    0n,
+  ) as bigint;
+  return topStakers.map((staker, index) => {
+    const boostedShares = getBoosterValue(index) * BigInt(staker.shares);
+    const currentReward =
+      (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
+    const earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
+    const earningPerDayUSD =
+      parseFloat(
+        ethers.formatUnits(earningPerDay, parseInt(ASSET_METADATA_DECIMALS)),
+      ) * price;
+    return {
+      ...staker,
+      earningPerDay,
+      earningPerDayUSD,
+    } as StakerWithAssetsAndEarnings;
+  });
+};
 
 export default function Page() {
   // Hooks
@@ -372,7 +420,18 @@ export default function Page() {
         )
       ) : null}
 
-      <LeaderBoard n={nTopStakers} topStakers={topStakers} />
+      <LeaderBoard
+        n={nTopStakers}
+        topStakers={
+          stakingRewardGlobal
+            ? calculateEarningPerDayStakers({
+                topStakers,
+                stakingRewardGlobal,
+                price,
+              })
+            : []
+        }
+      />
     </main>
   );
 }

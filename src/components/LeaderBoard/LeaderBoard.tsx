@@ -11,13 +11,13 @@ import { DefaultCrown } from '../icons/DefaultCrown';
 import { Chip } from '@nextui-org/react';
 import { FirstCrown } from '../icons/FirstCrown';
 import clsx from 'clsx';
-import { StakerWithAssets } from '@/src/app/(dapp)/staking/page';
+import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
 
 export const LeaderBoard = ({
   topStakers,
   n,
 }: {
-  topStakers: StakerWithAssets[];
+  topStakers: StakerWithAssetsAndEarnings[];
   n: number;
 }) => {
   const { address } = useAccount();
@@ -97,46 +97,55 @@ export const LeaderBoard = ({
           </tr>
         </thead>
         <tbody>
-          {topStakers.map((staker: StakerWithAssets, index: number) => (
-            <tr
-              className={clsx(staker?.address === address ? 'you' : '')}
-              key={uuidV4(ethers.randomBytes(16))}
-            >
-              <td>
-                {renderRanking(index, staker.staker, staker.staker === address)}
-              </td>
-              <td
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: 'fit-content',
-                  whiteSpace: 'nowrap',
-                  alignItems: 'flex-end',
-                  justifyContent: 'center',
-                }}
+          {topStakers.map(
+            (staker: StakerWithAssetsAndEarnings, index: number) => (
+              <tr
+                className={clsx(staker.staker === address ? 'you' : '')}
+                key={uuidV4(ethers.randomBytes(16))}
               >
-                <div>$350.233 / day</div>
-                <div
+                <td>
+                  {renderRanking(
+                    index,
+                    staker.staker,
+                    staker.staker === address,
+                  )}
+                </td>
+                <td
                   style={{
                     display: 'flex',
-                    color: 'rgba(255, 255, 255, 0.45)',
-                    fontSize: '14px',
-                    gap: '4px',
+                    flexDirection: 'column',
+                    width: 'fit-content',
+                    whiteSpace: 'nowrap',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
                   }}
                 >
-                  <span>Total staked:</span>
-                  {prettyAmount(
-                    parseFloat(
-                      ethers.formatUnits(
-                        staker.assets.toString(),
-                        parseInt(ASSET_METADATA_DECIMALS),
+                  {/* <div>$350.233 / day</div> */}
+                  <div>{`$ ${prettyAmount(
+                    staker.earningPerDayUSD,
+                  )} / day`}</div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: 'rgba(255, 255, 255, 0.45)',
+                      fontSize: '14px',
+                      gap: '4px',
+                    }}
+                  >
+                    <span>Total staked:</span>
+                    {prettyAmount(
+                      parseFloat(
+                        ethers.formatUnits(
+                          staker.assets.toString(),
+                          parseInt(ASSET_METADATA_DECIMALS),
+                        ),
                       ),
-                    ),
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ),
+          )}
         </tbody>
       </table>
     </div>
