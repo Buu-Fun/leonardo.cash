@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "leonardo.cash",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Leonardo Cash",
   "scripts": {
     "depcheck": "node_modules/.bin/depcheck",
