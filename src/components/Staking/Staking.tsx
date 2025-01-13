@@ -153,9 +153,10 @@ function Staking({
                 onPress={claimFn}
                 style={{
                   color: 'white',
+                  width: '100%',
                 }}
               >
-                Claim
+                Claim and Stake
               </Button>
             )}
           </div>

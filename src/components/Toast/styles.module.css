@@ -1,8 +1,28 @@
 .toast {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: var(--font-family);
+  padding: 10px;
+  gap: 4px;
+  font-size: 12px;
+  text-align: left;
 }
 
 .title {
+  color: #fff;
+  font-size: 14px;
 }
 
-.description {
+.info {
+  color: var(--primary-color);
+}
+
+.error {
+  color: var(--danger-color);
+}
+
+.success {
+  color: var(--success-color);
 }

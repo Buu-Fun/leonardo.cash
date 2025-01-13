@@ -198,6 +198,9 @@ export const StakingProvider = ({ children }: Props) => {
         assets: innerStakingBalance,
       });
       setStakingBalance(innerStakingBalance);
+    } else {
+      setStaker(undefined);
+      setStakingBalance(0n);
     }
   }, [address, convertSharesToAssets]);
 
@@ -274,17 +277,17 @@ export const StakingProvider = ({ children }: Props) => {
   }, []);
 
   const fetchAll = useCallback(async () => {
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      await Promise.all([
-        fetchData(),
-        fetchPrice(),
-        fetchTopStakers(),
-        fetchStaker(),
-        fetchStakingReward(),
-        fetchStakingRewardGlobal(),
-      ]);
-      setProcessedBlockNumber(BigInt(blockNumber.data));
-    }
+    // if (blockNumber.data && processedBlockNumber < blockNumber.data) {
+    await Promise.all([
+      fetchData(),
+      fetchPrice(),
+      fetchTopStakers(),
+      fetchStaker(),
+      fetchStakingReward(),
+      fetchStakingRewardGlobal(),
+    ]);
+    // setProcessedBlockNumber(BigInt(blockNumber.data));
+    // }
   }, [
     fetchData,
     fetchPrice,
@@ -292,8 +295,6 @@ export const StakingProvider = ({ children }: Props) => {
     fetchStaker,
     fetchStakingReward,
     fetchStakingRewardGlobal,
-    blockNumber.data,
-    processedBlockNumber,
   ]);
 
   useEffect(() => {

@@ -137,14 +137,19 @@ export default function Page() {
           { autoClose: false },
         );
         const response = await tx;
-        await response.wait(2);
+        await response.wait();
         toast.success(
-          <Toast title={successTitle} description={successDescription} />,
+          <Toast
+            type="success"
+            title={successTitle}
+            description={successDescription}
+          />,
         );
       } catch (error) {
         console.error(error);
         toast.error(
           <Toast
+            type="error"
             title="Error"
             description={'An error occurred while processing the transaction'}
           />,
@@ -257,10 +262,10 @@ export default function Page() {
     );
 
     await handleTx({
-      processingTitle: 'Claim processing',
+      processingTitle: 'Claim and Stake processing',
       processingDescription: 'Waiting for confirmation...',
-      successTitle: 'Claim successful',
-      successDescription: 'The Claim was successful',
+      successTitle: 'Claim and Stake  successful',
+      successDescription: 'The Claim and Stake  was successful',
       tx,
     });
   }, [address, signer]);
