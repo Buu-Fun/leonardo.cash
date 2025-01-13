@@ -37,12 +37,17 @@ export type Query = {
   _meta?: Maybe<Meta>;
   staker?: Maybe<Staker>;
   stakers: StakerPage;
+  stakingReward?: Maybe<StakingReward>;
+  stakingRewardGlobal?: Maybe<StakingRewardGlobal>;
+  stakingRewardGlobals: StakingRewardGlobalPage;
+  stakingRewards: StakingRewardPage;
 };
 
 
 export type QueryStakerArgs = {
   address: Scalars['String']['input'];
   chainId: Scalars['Float']['input'];
+  staker: Scalars['String']['input'];
 };
 
 
@@ -55,6 +60,39 @@ export type QueryStakersArgs = {
   where?: InputMaybe<StakerFilter>;
 };
 
+
+export type QueryStakingRewardArgs = {
+  address: Scalars['String']['input'];
+  chainId: Scalars['Float']['input'];
+  staker: Scalars['String']['input'];
+};
+
+
+export type QueryStakingRewardGlobalArgs = {
+  address: Scalars['String']['input'];
+  chainId: Scalars['Float']['input'];
+};
+
+
+export type QueryStakingRewardGlobalsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<StakingRewardGlobalFilter>;
+};
+
+
+export type QueryStakingRewardsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  where?: InputMaybe<StakingRewardFilter>;
+};
+
 export type Staker = {
   __typename?: 'Staker';
   address: Scalars['String']['output'];
@@ -62,6 +100,7 @@ export type Staker = {
   lastUpdate: Scalars['BigInt']['output'];
   shares: Scalars['BigInt']['output'];
   stakedAssets: Scalars['BigInt']['output'];
+  staker: Scalars['String']['output'];
   unstakedAssets: Scalars['BigInt']['output'];
 };
 
@@ -110,6 +149,16 @@ export type StakerFilter = {
   stakedAssets_lte?: InputMaybe<Scalars['BigInt']['input']>;
   stakedAssets_not?: InputMaybe<Scalars['BigInt']['input']>;
   stakedAssets_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  staker?: InputMaybe<Scalars['String']['input']>;
+  staker_contains?: InputMaybe<Scalars['String']['input']>;
+  staker_ends_with?: InputMaybe<Scalars['String']['input']>;
+  staker_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staker_not?: InputMaybe<Scalars['String']['input']>;
+  staker_not_contains?: InputMaybe<Scalars['String']['input']>;
+  staker_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  staker_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staker_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  staker_starts_with?: InputMaybe<Scalars['String']['input']>;
   unstakedAssets?: InputMaybe<Scalars['BigInt']['input']>;
   unstakedAssets_gt?: InputMaybe<Scalars['BigInt']['input']>;
   unstakedAssets_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -127,6 +176,194 @@ export type StakerPage = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type StakingReward = {
+  __typename?: 'StakingReward';
+  address: Scalars['String']['output'];
+  amount: Scalars['BigInt']['output'];
+  available: Scalars['BigInt']['output'];
+  chainId: Scalars['Int']['output'];
+  claimed: Scalars['BigInt']['output'];
+  lastUpdate: Scalars['BigInt']['output'];
+  staker: Scalars['String']['output'];
+};
+
+export type StakingRewardFilter = {
+  AND?: InputMaybe<Array<InputMaybe<StakingRewardFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<StakingRewardFilter>>>;
+  address?: InputMaybe<Scalars['String']['input']>;
+  address_contains?: InputMaybe<Scalars['String']['input']>;
+  address_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not?: InputMaybe<Scalars['String']['input']>;
+  address_not_contains?: InputMaybe<Scalars['String']['input']>;
+  address_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  address_starts_with?: InputMaybe<Scalars['String']['input']>;
+  amount?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  amount_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not?: InputMaybe<Scalars['BigInt']['input']>;
+  amount_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  available?: InputMaybe<Scalars['BigInt']['input']>;
+  available_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  available_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  available_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  available_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  available_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  available_not?: InputMaybe<Scalars['BigInt']['input']>;
+  available_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  chainId?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  chainId_lt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_lte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  claimed?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  claimed_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_not?: InputMaybe<Scalars['BigInt']['input']>;
+  claimed_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  lastUpdate?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  lastUpdate_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_not?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  staker?: InputMaybe<Scalars['String']['input']>;
+  staker_contains?: InputMaybe<Scalars['String']['input']>;
+  staker_ends_with?: InputMaybe<Scalars['String']['input']>;
+  staker_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staker_not?: InputMaybe<Scalars['String']['input']>;
+  staker_not_contains?: InputMaybe<Scalars['String']['input']>;
+  staker_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  staker_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staker_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  staker_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type StakingRewardGlobal = {
+  __typename?: 'StakingRewardGlobal';
+  address: Scalars['String']['output'];
+  chainId: Scalars['Int']['output'];
+  endTime: Scalars['BigInt']['output'];
+  lastUpdate: Scalars['BigInt']['output'];
+  startTime: Scalars['BigInt']['output'];
+  totalRewards: Scalars['BigInt']['output'];
+  totalShares: Scalars['BigInt']['output'];
+};
+
+export type StakingRewardGlobalFilter = {
+  AND?: InputMaybe<Array<InputMaybe<StakingRewardGlobalFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<StakingRewardGlobalFilter>>>;
+  address?: InputMaybe<Scalars['String']['input']>;
+  address_contains?: InputMaybe<Scalars['String']['input']>;
+  address_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not?: InputMaybe<Scalars['String']['input']>;
+  address_not_contains?: InputMaybe<Scalars['String']['input']>;
+  address_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  address_starts_with?: InputMaybe<Scalars['String']['input']>;
+  chainId?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_gte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  chainId_lt?: InputMaybe<Scalars['Int']['input']>;
+  chainId_lte?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not?: InputMaybe<Scalars['Int']['input']>;
+  chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  endTime?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  endTime_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_not?: InputMaybe<Scalars['BigInt']['input']>;
+  endTime_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  lastUpdate?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  lastUpdate_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_not?: InputMaybe<Scalars['BigInt']['input']>;
+  lastUpdate_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  startTime?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  startTime_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_not?: InputMaybe<Scalars['BigInt']['input']>;
+  startTime_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  totalRewards?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  totalRewards_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalRewards_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  totalShares?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  totalShares_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_not?: InputMaybe<Scalars['BigInt']['input']>;
+  totalShares_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+};
+
+export type StakingRewardGlobalPage = {
+  __typename?: 'StakingRewardGlobalPage';
+  items: Array<StakingRewardGlobal>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type StakingRewardPage = {
+  __typename?: 'StakingRewardPage';
+  items: Array<StakingReward>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type GetStakingRewardsQueryVariables = Exact<{
+  where?: InputMaybe<StakingRewardFilter>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetStakingRewardsQuery = { __typename?: 'Query', stakingRewards: { __typename?: 'StakingRewardPage', items: Array<{ __typename?: 'StakingReward', chainId: number, address: string, staker: string, amount: any, claimed: any, available: any, lastUpdate: any }>, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
+export type GetStakingRewardGlobalsQueryVariables = Exact<{
+  where?: InputMaybe<StakingRewardGlobalFilter>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetStakingRewardGlobalsQuery = { __typename?: 'Query', stakingRewardGlobals: { __typename?: 'StakingRewardGlobalPage', items: Array<{ __typename?: 'StakingRewardGlobal', chainId: number, address: string, startTime: any, endTime: any, totalRewards: any, totalShares: any, lastUpdate: any }>, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+
 export type GetStakersQueryVariables = Exact<{
   where?: InputMaybe<StakerFilter>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -137,7 +374,9 @@ export type GetStakersQueryVariables = Exact<{
 }>;
 
 
-export type GetStakersQuery = { __typename?: 'Query', stakers: { __typename?: 'StakerPage', items: Array<{ __typename?: 'Staker', address: string, chainId: number, shares: any, stakedAssets: any, unstakedAssets: any, lastUpdate: any }>, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
+export type GetStakersQuery = { __typename?: 'Query', stakers: { __typename?: 'StakerPage', items: Array<{ __typename?: 'Staker', chainId: number, address: string, staker: string, shares: any, stakedAssets: any, unstakedAssets: any, lastUpdate: any }>, pageInfo: { __typename?: 'PageInfo', startCursor?: string | null, endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean } } };
 
 
-export const GetStakersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakerFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"shares"}},{"kind":"Field","name":{"kind":"Name","value":"stakedAssets"}},{"kind":"Field","name":{"kind":"Name","value":"unstakedAssets"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakersQuery, GetStakersQueryVariables>;
+export const GetStakingRewardsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakingRewards"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakingRewardFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakingRewards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"staker"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"claimed"}},{"kind":"Field","name":{"kind":"Name","value":"available"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakingRewardsQuery, GetStakingRewardsQueryVariables>;
+export const GetStakingRewardGlobalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakingRewardGlobals"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakingRewardGlobalFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakingRewardGlobals"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"totalRewards"}},{"kind":"Field","name":{"kind":"Name","value":"totalShares"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakingRewardGlobalsQuery, GetStakingRewardGlobalsQueryVariables>;
+export const GetStakersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakerFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"staker"}},{"kind":"Field","name":{"kind":"Name","value":"shares"}},{"kind":"Field","name":{"kind":"Name","value":"stakedAssets"}},{"kind":"Field","name":{"kind":"Name","value":"unstakedAssets"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakersQuery, GetStakersQueryVariables>;

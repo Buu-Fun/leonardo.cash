@@ -1,5 +1,77 @@
 import { gql } from 'graphql-request';
 
+export const GetStakingRewards = gql`
+  query GetStakingRewards(
+    $where: StakingRewardFilter
+    $orderBy: String
+    $orderDirection: String
+    $limit: Int
+    $after: String
+    $before: String
+  ) {
+    stakingRewards(
+      where: $where
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      limit: $limit
+      after: $after
+      before: $before
+    ) {
+      items {
+        chainId
+        address
+        staker
+        amount
+        claimed
+        available
+        lastUpdate
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+
+export const GetStakingRewardGlobals = gql`
+  query GetStakingRewardGlobals(
+    $where: StakingRewardGlobalFilter
+    $orderBy: String
+    $orderDirection: String
+    $limit: Int
+    $after: String
+    $before: String
+  ) {
+    stakingRewardGlobals(
+      where: $where
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      limit: $limit
+      after: $after
+      before: $before
+    ) {
+      items {
+        chainId
+        address
+        startTime
+        endTime
+        totalRewards
+        totalShares
+        lastUpdate
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        hasPreviousPage
+      }
+    }
+  }
+`;
+
 export const GetStakers = gql`
   query GetStakers(
     $where: StakerFilter
@@ -18,8 +90,9 @@ export const GetStakers = gql`
       before: $before
     ) {
       items {
-        address
         chainId
+        address
+        staker
         shares
         stakedAssets
         unstakedAssets

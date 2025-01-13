@@ -133,7 +133,13 @@ function Staking({
               <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
             </div>
             {earnings > 0n && (
-              <Button color="primary" onPress={claimFn}>
+              <Button
+                color="primary"
+                onPress={claimFn}
+                style={{
+                  color: 'white',
+                }}
+              >
                 Claim
               </Button>
             )}

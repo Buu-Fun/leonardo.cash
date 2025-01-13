@@ -22,12 +22,15 @@ import { X } from '../icons/X';
 
 interface Props {
   totalRewards: number;
+  totalRewardsPerDay: number;
   mininumRequiredStake: bigint;
 }
 
-const days = 3 * 30;
-
-export const Rewards = ({ totalRewards, mininumRequiredStake }: Props) => {
+export const Rewards = ({
+  totalRewards,
+  totalRewardsPerDay,
+  mininumRequiredStake,
+}: Props) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -126,7 +129,7 @@ export const Rewards = ({ totalRewards, mininumRequiredStake }: Props) => {
         <div className={styles.moreValues}>
           <div>
             {`$ ${format({
-              value: totalRewards / days,
+              value: totalRewardsPerDay,
               minDecimals: 2,
               maxDecimals: 2,
             })} PER DAY`}

@@ -25,25 +25,33 @@ import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
 import { ponderRequest } from '@/src/gql/client';
-import { GetStakers } from '@/src/gql/documents/staking';
-import { Staker } from '@/src/gql/types/graphql';
+import {
+  GetStakers,
+  GetStakingRewardGlobals,
+  GetStakingRewards,
+} from '@/src/gql/documents/staking';
+import {
+  Staker,
+  StakingReward,
+  StakingRewardGlobal,
+} from '@/src/gql/types/graphql';
+import { getBoosterValue } from './utils';
 
 const nTopStakers = 100;
-const totalRewards = 20000000;
 
 export type StakerWithAssets = Staker & { assets: bigint };
 
-const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
-  const mockedStaker = {
-    ...staker,
-    balance: 123n * 10n ** 18n,
-    address: ethers.ZeroAddress,
-  } as StakerWithAssets;
-  const mock = [mockedStaker]
-    .concat(staker)
-    .concat(Array(n - 2).fill(mockedStaker));
-  return mock;
-};
+// const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
+//   const mockedStaker = {
+//     ...staker,
+//     balance: 123n * 10n ** 18n,
+//     address: ethers.ZeroAddress,
+//   } as StakerWithAssets;
+//   const mock = [mockedStaker]
+//     .concat(staker)
+//     .concat(Array(n - 2).fill(mockedStaker));
+//   return mock;
+// };
 
 export default function Page() {
   // Hooks
@@ -63,20 +71,11 @@ export default function Page() {
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
   const [price, setPrice] = React.useState(0);
   const [lastBalance, setLastBalance] = React.useState(0n);
-  const [earnings, setEarnings] = React.useState(0n);
   const [sharesBalance, setSharesBalance] = React.useState(0n);
-
-  // const convertAssetsToShares = useCallback(
-  //   async (assets: bigint) => {
-  //     const stakingContract = new Contract(
-  //       STAKING_ADDRESS,
-  //       IERC4626.abi,
-  //       provider,
-  //     );
-  //     return stakingContract.convertToShares(assets);
-  //   },
-  //   [provider],
-  // );
+  const [staker, setStaker] = React.useState<Staker>();
+  const [stakingReward, setStakingReward] = React.useState<StakingReward>();
+  const [stakingRewardGlobal, setStakingRewardGlobal] =
+    React.useState<StakingRewardGlobal>();
 
   const convertSharesToAssets = useCallback(
     async (shares: bigint) => {
@@ -159,6 +158,24 @@ export default function Page() {
     setPrice(price);
   }, [provider]);
 
+  const fetchStaker = useCallback(async () => {
+    if (!address) {
+      setStaker(undefined);
+      return;
+    }
+    const variables = {
+      where: {
+        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        staker: address,
+      },
+      limit: 1,
+    };
+    const { stakers } = await ponderRequest(GetStakers, variables);
+    if (stakers.items.length > 0) {
+      setStaker(stakers.items[0]);
+    }
+  }, [address]);
+
   const fetchTopStakers = useCallback(async () => {
     // Fetch top stakers
     const variables = {
@@ -189,12 +206,69 @@ export default function Page() {
     }
   }, [blockNumber.data, convertSharesToAssets]);
 
+  const fetchStakingReward = useCallback(async () => {
+    if (!address) {
+      setStakingReward(undefined);
+      return;
+    }
+    const variables = {
+      where: {
+        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        staker: address,
+      },
+      limit: 1,
+    };
+
+    const { stakingRewards } = await ponderRequest(
+      GetStakingRewards,
+      variables,
+    );
+
+    if (stakingRewards.items.length > 0) {
+      setStakingReward(stakingRewards.items[0]);
+    }
+  }, [address]);
+
+  const fetchStakingRewardGlobal = useCallback(async () => {
+    const variables = {
+      where: {
+        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+      },
+      limit: 1,
+    };
+
+    const { stakingRewardGlobals } = await ponderRequest(
+      GetStakingRewardGlobals,
+      variables,
+    );
+
+    if (stakingRewardGlobals.items.length > 0) {
+      setStakingRewardGlobal(stakingRewardGlobals.items[0]);
+    }
+  }, []);
+
   const fetchAll = useCallback(async () => {
     if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      await Promise.all([fetchData(), fetchPrice(), fetchTopStakers()]);
+      await Promise.all([
+        fetchData(),
+        fetchPrice(),
+        fetchTopStakers(),
+        fetchStaker(),
+        fetchStakingReward(),
+        fetchStakingRewardGlobal(),
+      ]);
       setProcessedBlockNumber(BigInt(blockNumber.data));
     }
-  }, [fetchData, fetchPrice, blockNumber.data, processedBlockNumber]);
+  }, [
+    fetchData,
+    fetchPrice,
+    fetchTopStakers,
+    fetchStaker,
+    fetchStakingReward,
+    fetchStakingRewardGlobal,
+    blockNumber.data,
+    processedBlockNumber,
+  ]);
 
   const handleTx = useCallback(
     async ({
@@ -320,7 +394,51 @@ export default function Page() {
   }, [fetchAll]);
 
   const walletIn = stakingBalance >= lastBalance;
-  const totalRewardsUSD = totalRewards * price;
+
+  let currentReward = 0n;
+  let earningPerDay = 0n;
+  let totalRewards = 0n;
+  let totalRewardsPerDay = 0n;
+  const pos = address
+    ? topStakers.map((staker) => staker.staker).indexOf(address)
+    : -1;
+
+  if (pos >= 0 && staker && stakingRewardGlobal && stakingReward && price) {
+    const now = BigInt(Math.floor(Date.now() / 1000));
+    const timeSinceStart = now - BigInt(stakingRewardGlobal.startTime);
+    const timeSinceLastUpdate = now - BigInt(stakingRewardGlobal.lastUpdate);
+    const rewardsInLastPeriod =
+      (BigInt(stakingRewardGlobal.totalRewards) * timeSinceLastUpdate) /
+      (BigInt(stakingRewardGlobal.endTime) -
+        BigInt(stakingRewardGlobal.startTime));
+    const totalBoostedShares = topStakers.reduce(
+      (acc: bigint, account: Staker, index: number) => {
+        const boostedShare = getBoosterValue(index) * BigInt(account.shares);
+        return acc + boostedShare;
+      },
+      0n,
+    ) as bigint;
+    const boostedShares = getBoosterValue(pos) * BigInt(staker.shares);
+    currentReward = (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
+    earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
+    totalRewards =
+      (BigInt(stakingRewardGlobal.totalRewards) * timeSinceStart) /
+      (BigInt(stakingRewardGlobal.endTime) -
+        BigInt(stakingRewardGlobal.startTime));
+    totalRewardsPerDay = (totalRewards * 86400n) / timeSinceStart;
+  }
+
+  const earnings = stakingReward
+    ? BigInt(stakingReward.amount) + currentReward
+    : 0n;
+  const totalRewardsUSD =
+    parseFloat(
+      ethers.formatUnits(totalRewards, parseInt(ASSET_METADATA_DECIMALS)),
+    ) * price;
+  const totalRewardsPerDayUSD =
+    parseFloat(
+      ethers.formatUnits(totalRewardsPerDay, parseInt(ASSET_METADATA_DECIMALS)),
+    ) * price;
 
   return (
     <main
@@ -358,6 +476,7 @@ export default function Page() {
       />
       <Rewards
         totalRewards={totalRewardsUSD}
+        totalRewardsPerDay={totalRewardsPerDayUSD}
         mininumRequiredStake={
           topStakers.length === nTopStakers ? lastBalance : 0n
         }
@@ -366,7 +485,7 @@ export default function Page() {
         <Staking
           stakingBalance={stakingBalance}
           earnings={earnings}
-          earningsPerDay={0n}
+          earningsPerDay={earningPerDay}
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}
