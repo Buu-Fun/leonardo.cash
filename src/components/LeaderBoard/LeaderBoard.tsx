@@ -103,11 +103,7 @@ export const LeaderBoard = ({
               key={uuidV4(ethers.randomBytes(16))}
             >
               <td>
-                {renderRanking(
-                  index,
-                  staker.address,
-                  staker.address === address,
-                )}
+                {renderRanking(index, staker.staker, staker.staker === address)}
               </td>
               <td
                 style={{
