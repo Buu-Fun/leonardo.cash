@@ -1,18 +1,14 @@
 'use client';
-import React, { useCallback, useEffect } from 'react';
-import { useAccount, useBlockNumber } from 'wagmi';
+import React, { useCallback } from 'react';
+import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
-import { base, sepolia as Sepolia } from 'wagmi/chains';
 
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
-  CHAIN,
-  POOL_ADDRESS,
   STAKING_ADDRESS,
-  USDC_ADDRESS,
 } from '@/src/config';
-import { useEthersProvider, useEthersSigner } from '@/src/utils/ethersAdapter';
+import { useEthersSigner } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import IERC4626 from '@/src/abis/IERC4626.json';
 import { Button, useDisclosure } from '@nextui-org/react';
@@ -24,18 +20,9 @@ import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
-import { ponderRequest } from '@/src/gql/client';
-import {
-  GetStakers,
-  GetStakingRewardGlobals,
-  GetStakingRewards,
-} from '@/src/gql/documents/staking';
-import {
-  Staker,
-  StakingReward,
-  StakingRewardGlobal,
-} from '@/src/gql/types/graphql';
+import { Staker } from '@/src/gql/types/graphql';
 import { getBoosterValue } from './utils';
+import { useStaking } from '@/src/context/staking.context';
 
 const nTopStakers = 100;
 
@@ -57,218 +44,23 @@ export default function Page() {
   // Hooks
   const { openConnectModal } = useConnectModal();
   const { address } = useAccount();
-  const blockNumber = useBlockNumber({ cacheTime: 5000 });
   const signer = useEthersSigner();
-  const provider = useEthersProvider();
   const depositDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
 
-  // State
-  const [topStakers, setTopStakers] = React.useState<StakerWithAssets[]>([]);
-  const [processedBlockNumber, setProcessedBlockNumber] = React.useState(0n);
-  const [assetBalance, setAssetBalance] = React.useState(0n);
-  const [stakingBalance, setStakingBalance] = React.useState(0n);
-  const [stakingAllowance, setStakingAllowance] = React.useState(0n);
-  const [price, setPrice] = React.useState(0);
-  const [lastBalance, setLastBalance] = React.useState(0n);
-  const [sharesBalance, setSharesBalance] = React.useState(0n);
-  const [staker, setStaker] = React.useState<Staker>();
-  const [stakingReward, setStakingReward] = React.useState<StakingReward>();
-  const [stakingRewardGlobal, setStakingRewardGlobal] =
-    React.useState<StakingRewardGlobal>();
-
-  const convertSharesToAssets = useCallback(
-    async (shares: bigint) => {
-      const stakingContract = new Contract(
-        STAKING_ADDRESS,
-        IERC4626.abi,
-        provider,
-      );
-      return stakingContract.convertToAssets(shares);
-    },
-    [provider],
-  );
-
-  const fetchData = useCallback(async () => {
-    if (!address) {
-      setAssetBalance(0n);
-      setStakingAllowance(0n);
-      setStakingBalance(0n);
-      return;
-    }
-    const assetContract = new Contract(
-      ASSET_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-
-    const stakingContract = new Contract(
-      STAKING_ADDRESS,
-      IERC4626.abi,
-      provider,
-    );
-
-    const [
-      innerAssetBalance,
-      innerStakingAllowance,
-      innerStakingBalance,
-      innerSharesBalance,
-    ] = await Promise.all([
-      assetContract.balanceOf(address),
-      assetContract.allowance(address, STAKING_ADDRESS),
-      stakingContract.maxWithdraw(address),
-      stakingContract.balanceOf(address),
-    ]);
-    setAssetBalance(innerAssetBalance);
-    setStakingAllowance(innerStakingAllowance);
-    setStakingBalance(innerStakingBalance);
-    setSharesBalance(innerSharesBalance);
-  }, [address, provider]);
-
-  const fetchPrice = useCallback(async () => {
-    if (!provider) {
-      setPrice(0);
-      return;
-    }
-    const assetContract = new Contract(
-      ASSET_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const usdcContract = new Contract(
-      USDC_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const [assetBalanceOfPool, usdcBalanceOfPool, usdcDecimals] =
-      await Promise.all([
-        assetContract.balanceOf(POOL_ADDRESS),
-        usdcContract.balanceOf(POOL_ADDRESS),
-        usdcContract.decimals(),
-      ]);
-
-    const price = parseFloat(
-      ethers.formatUnits(
-        (usdcBalanceOfPool * 10n ** BigInt(ASSET_METADATA_DECIMALS)) /
-          assetBalanceOfPool,
-        usdcDecimals,
-      ),
-    );
-
-    setPrice(price);
-  }, [provider]);
-
-  const fetchStaker = useCallback(async () => {
-    if (!address) {
-      setStaker(undefined);
-      return;
-    }
-    const variables = {
-      where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-        staker: address,
-      },
-      limit: 1,
-    };
-    const { stakers } = await ponderRequest(GetStakers, variables);
-    if (stakers.items.length > 0) {
-      setStaker(stakers.items[0]);
-    }
-  }, [address]);
-
-  const fetchTopStakers = useCallback(async () => {
-    // Fetch top stakers
-    const variables = {
-      where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-      },
-      limit: nTopStakers,
-      orderBy: 'shares',
-      orderDirection: 'desc',
-    };
-    const { stakers } = await ponderRequest(GetStakers, variables);
-    // const items = mockLeaderBoard(
-    //   stakers.items[0] || {
-    //     balance: 0n,
-    //     address: ethers.ZeroAddress,
-    //   },
-    //   nTopStakers,
-    // );
-    const { items } = stakers;
-    if (items.length > 0) {
-      const assetsPromises = items.map(async (staker: Staker) => {
-        const assets = await convertSharesToAssets(staker.shares);
-        return { ...staker, assets };
-      });
-      const stakersWithAssets = await Promise.all(assetsPromises);
-      setTopStakers(stakersWithAssets);
-      setLastBalance(stakersWithAssets[stakersWithAssets.length - 1].assets);
-    }
-  }, [blockNumber.data, convertSharesToAssets]);
-
-  const fetchStakingReward = useCallback(async () => {
-    if (!address) {
-      setStakingReward(undefined);
-      return;
-    }
-    const variables = {
-      where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-        staker: address,
-      },
-      limit: 1,
-    };
-
-    const { stakingRewards } = await ponderRequest(
-      GetStakingRewards,
-      variables,
-    );
-
-    if (stakingRewards.items.length > 0) {
-      setStakingReward(stakingRewards.items[0]);
-    }
-  }, [address]);
-
-  const fetchStakingRewardGlobal = useCallback(async () => {
-    const variables = {
-      where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-      },
-      limit: 1,
-    };
-
-    const { stakingRewardGlobals } = await ponderRequest(
-      GetStakingRewardGlobals,
-      variables,
-    );
-
-    if (stakingRewardGlobals.items.length > 0) {
-      setStakingRewardGlobal(stakingRewardGlobals.items[0]);
-    }
-  }, []);
-
-  const fetchAll = useCallback(async () => {
-    if (blockNumber.data && processedBlockNumber < blockNumber.data) {
-      await Promise.all([
-        fetchData(),
-        fetchPrice(),
-        fetchTopStakers(),
-        fetchStaker(),
-        fetchStakingReward(),
-        fetchStakingRewardGlobal(),
-      ]);
-      setProcessedBlockNumber(BigInt(blockNumber.data));
-    }
-  }, [
-    fetchData,
-    fetchPrice,
-    fetchTopStakers,
-    fetchStaker,
-    fetchStakingReward,
-    fetchStakingRewardGlobal,
-    blockNumber.data,
-    processedBlockNumber,
-  ]);
+  const {
+    topStakers,
+    assetBalance,
+    stakingAllowance,
+    sharesBalance,
+    stakingBalance,
+    price,
+    lastBalance,
+    staker,
+    stakingReward,
+    stakingRewardGlobal,
+    fetchAll,
+  } = useStaking();
 
   const handleTx = useCallback(
     async ({
@@ -310,7 +102,7 @@ export default function Page() {
         fetchAll();
       }
     },
-    [fetchData],
+    [fetchAll],
   );
 
   const approve = React.useCallback(
@@ -385,13 +177,6 @@ export default function Page() {
       tx,
     });
   }, [address, signer, sharesBalance]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchAll();
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [fetchAll]);
 
   const walletIn = stakingBalance >= lastBalance;
 

@@ -36,7 +36,6 @@ export const RedeemModal = ({
       try {
         const innerValue = value.replace(/,/g, '.'); // 3.1415
         if (innerValue === '') {
-          console.log('innerValue === ""');
           setAmount('');
           return;
         }

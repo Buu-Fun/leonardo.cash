@@ -16,9 +16,10 @@ import {
   ClipboardIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ethers } from 'ethers';
 import { X } from '../icons/X';
+import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 
 interface Props {
   totalRewards: number;
@@ -31,6 +32,13 @@ export const Rewards = ({
   totalRewardsPerDay,
   mininumRequiredStake,
 }: Props) => {
+  const now = useMemo(() => Math.floor(Date.now() / 1000), []);
+  const totalRewardsAmount = useDynamicAmount({
+    offset: totalRewards,
+    toAdd: totalRewardsPerDay,
+    startTime: now,
+    endTime: now + 86400,
+  });
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -120,9 +128,9 @@ export const Rewards = ({
 
         {/* value */}
         <div className={styles.amount}>{`$ ${format({
-          value: totalRewards,
+          value: totalRewardsAmount,
           minDecimals: 2,
-          maxDecimals: 2,
+          maxDecimals: 4,
         })}`}</div>
 
         {/* more values */}
