@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 
@@ -124,7 +124,6 @@ export default function Page() {
     stakingRewardGlobal,
     coolingDownAssets,
     fetchAll,
-    convertSharesToAssets,
   } = useStaking();
 
   const handleTx = useCallback(
@@ -295,13 +294,19 @@ export default function Page() {
     const tx = stakingContract.requestRedeem(sharesBalance);
     await handleTx({
       confirmingDescription: `Requesting to withdraw ${prettyAmount(
-        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+        parseFloat(
+          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
+        ),
       )} ${ASSET_METADATA_SYMBOL}`,
       processingDescription: `Requesting to withdraw ${prettyAmount(
-        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+        parseFloat(
+          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
+        ),
       )} ${ASSET_METADATA_SYMBOL}`,
       successDescription: `The request to withdraw ${prettyAmount(
-        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+        parseFloat(
+          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
+        ),
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });

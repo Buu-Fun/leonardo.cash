@@ -222,26 +222,10 @@ export const StakingProvider = ({ children }: Props) => {
       orderDirection: 'desc',
     };
     const { stakers } = await ponderRequest(GetStakers, variables);
-    // const items = mockLeaderBoard(
-    //   stakers.items[0] || {
-    //     balance: 0n,
-    //     address: ethers.ZeroAddress,
-    //   },
-    //   nTopStakers,
-    // );
     const { items } = stakers;
     if (items.length > 0) {
-      // const assetsPromises = items.map(async (staker: Staker) => {
-      //   const [assets, coolingDownAssets] = await Promise.all([
-      //     convertSharesToAssets(staker.shares),
-      //     convertSharesToAssets(staker.coolingDown),
-      //   ]);
-      //   return { ...staker, assets, coolingDownAssets };
-      // });
-      // const stakersWithAssets = await Promise.all(assetsPromises);
-      // setTopStakers(stakersWithAssets);
+      // setTopStakers(mockLeaderBoard(items[0], nTopStakers));
       setTopStakers(items);
-      // setLastBalance(items[items.length - 1].assets);
     }
   }, [convertSharesToAssets]);
 
