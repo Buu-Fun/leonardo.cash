@@ -13,7 +13,7 @@ import {
 import { useEthersSigner } from '@/src/utils/ethersAdapter';
 import RewardsUpgradeable from '@/src/abis/RewardsUpgradeable.json';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
-import IERC4626 from '@/src/abis/IERC4626.json';
+import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
 import { Button, useDisclosure } from '@nextui-org/react';
 import Staking from '@/src/components/Staking/Staking';
 import { DepositModal } from '@/src/components/DepositModal/DepositModal';
@@ -189,7 +189,7 @@ export default function Page() {
       if (!address || !signer) return;
       const stakingContract = new Contract(
         STAKING_ADDRESS,
-        IERC4626.abi,
+        StakingUpgradeable.abi,
         signer,
       );
       const tx = stakingContract.deposit(amount, address);
@@ -209,7 +209,7 @@ export default function Page() {
       if (!address || !signer) return;
       const stakingContract = new Contract(
         STAKING_ADDRESS,
-        IERC4626.abi,
+        StakingUpgradeable.abi,
         signer,
       );
       const tx = stakingContract.withdraw(amount, address, address);
@@ -273,7 +273,11 @@ export default function Page() {
   const withdrawAll = React.useCallback(async () => {
     if (!address || !signer || sharesBalance === 0n) return;
 
-    const stakingContract = new Contract(STAKING_ADDRESS, IERC4626.abi, signer);
+    const stakingContract = new Contract(
+      STAKING_ADDRESS,
+      StakingUpgradeable.abi,
+      signer,
+    );
     const tx = stakingContract.redeem(sharesBalance, address, address);
     await handleTx({
       processingTitle: 'Withdraw processing',

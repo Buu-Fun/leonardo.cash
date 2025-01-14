@@ -20,7 +20,7 @@ import {
 } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
-import IERC4626 from '@/src/abis/IERC4626.json';
+import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
 import { ponderRequest } from '@/src/gql/client';
 import {
   GetStakers,
@@ -105,7 +105,7 @@ export const StakingProvider = ({ children }: Props) => {
     async (shares: bigint) => {
       const stakingContract = new Contract(
         STAKING_ADDRESS,
-        IERC4626.abi,
+        StakingUpgradeable.abi,
         provider,
       );
       return stakingContract.convertToAssets(shares);
@@ -127,7 +127,7 @@ export const StakingProvider = ({ children }: Props) => {
 
     const stakingContract = new Contract(
       STAKING_ADDRESS,
-      IERC4626.abi,
+      StakingUpgradeable.abi,
       provider,
     );
 
