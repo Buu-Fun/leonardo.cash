@@ -4,6 +4,7 @@
   "version": "0.0.8",
   "description": "Leonardo Cash",
   "scripts": {
+    "test": "npx mocha",
     "depcheck": "node_modules/.bin/depcheck",
     "build": "next build",
     "dev": "next dev",
@@ -49,9 +50,11 @@
     "eslint-plugin-react": "7.34.4",
     "globals": "15.8.0",
     "husky": "9.0.11",
+    "mocha": "^11.0.1",
     "postcss": "8.4.47",
     "prettier": "3.3.3",
     "tailwindcss": "^3.4.14",
+    "ts-node": "^10.9.2",
     "typescript-eslint": "8.11.0"
   },
   "type": "module"

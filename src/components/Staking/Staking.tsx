@@ -18,6 +18,8 @@ interface Props {
   earnings: bigint;
   earningsPerDay: bigint;
   walletIn: boolean;
+  coolingDown: bigint;
+  releaseTime: bigint;
   redeemFn: () => void;
   claimFn: () => void;
 }
@@ -28,6 +30,8 @@ function Staking({
   earnings,
   earningsPerDay,
   walletIn = false,
+  coolingDown,
+  releaseTime,
   redeemFn,
   claimFn,
 }: Props) {
@@ -48,6 +52,10 @@ function Staking({
     startTime: now,
     endTime: now + 86400000,
   });
+
+  const nowForRelease = BigInt(Math.floor(Date.now() / 1000));
+  const lockedAmount =
+    releaseTime > nowForRelease ? stakingBalance : stakingBalance - coolingDown;
 
   return (
     <div
@@ -114,7 +122,7 @@ function Staking({
                 {prettyAmount(
                   parseFloat(
                     ethers.formatUnits(
-                      stakingBalance.toString(),
+                      lockedAmount.toString(),
                       parseInt(ASSET_METADATA_DECIMALS),
                     ),
                   ),

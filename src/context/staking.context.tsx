@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { useAccount, useBlockNumber } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
 
@@ -51,6 +51,7 @@ interface StakingState {
   staker?: StakerWithAssets;
   stakingReward?: StakingReward;
   stakingRewardGlobal?: StakingRewardGlobal;
+  coolingDownAssets: bigint;
   fetchAll: () => Promise<void>;
 }
 
@@ -79,17 +80,16 @@ const StakingContext = createContext<StakingState>({
   staker: undefined,
   stakingReward: undefined,
   stakingRewardGlobal: undefined,
+  coolingDownAssets: 0n,
   fetchAll: async () => {},
 });
 
 export const StakingProvider = ({ children }: Props) => {
   const { address } = useAccount();
-  const blockNumber = useBlockNumber();
   const provider = useEthersProvider();
 
   // State
   const [topStakers, setTopStakers] = React.useState<StakerWithAssets[]>([]);
-  const [processedBlockNumber, setProcessedBlockNumber] = React.useState(0n);
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
@@ -100,6 +100,7 @@ export const StakingProvider = ({ children }: Props) => {
   const [stakingReward, setStakingReward] = React.useState<StakingReward>();
   const [stakingRewardGlobal, setStakingRewardGlobal] =
     React.useState<StakingRewardGlobal>();
+  const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
 
   const convertSharesToAssets = useCallback(
     async (shares: bigint) => {
@@ -190,14 +191,16 @@ export const StakingProvider = ({ children }: Props) => {
     };
     const { stakers } = await ponderRequest(GetStakers, variables);
     if (stakers.items.length > 0) {
-      const innerStakingBalance = await convertSharesToAssets(
-        stakers.items[0].shares,
-      );
+      const [innerStakingBalance, innerCoolingDownAssets] = await Promise.all([
+        convertSharesToAssets(stakers.items[0].shares),
+        convertSharesToAssets(stakers.items[0].coolingDown),
+      ]);
       setStaker({
         ...stakers.items[0],
         assets: innerStakingBalance,
       });
       setStakingBalance(innerStakingBalance);
+      setCoolingDownAssets(innerCoolingDownAssets);
     } else {
       setStaker(undefined);
       setStakingBalance(0n);
@@ -318,6 +321,7 @@ export const StakingProvider = ({ children }: Props) => {
       staker,
       stakingReward,
       stakingRewardGlobal,
+      coolingDownAssets,
       fetchAll,
     }),
     [
@@ -331,6 +335,7 @@ export const StakingProvider = ({ children }: Props) => {
       staker,
       stakingReward,
       stakingRewardGlobal,
+      coolingDownAssets,
       fetchAll,
     ],
   );

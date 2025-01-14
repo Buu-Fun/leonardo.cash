@@ -40,10 +40,11 @@ export function timeDifference(date: number) {
   const day = 24 * hour;
   const week = 7 * day;
 
-  const suffix = isFuture ? 'to go' : 'ago';
+  const suffix = isFuture ? 'left' : 'ago';
 
   if (absDiffInSeconds < minute) {
-    return `less than 1 min ${suffix}`;
+    const seconds = Math.floor(absDiffInSeconds);
+    return `${seconds} second${seconds > 1 ? 's' : ''} ${suffix}`;
   }
   if (absDiffInSeconds < hour) {
     const minutes = Math.floor(absDiffInSeconds / minute);

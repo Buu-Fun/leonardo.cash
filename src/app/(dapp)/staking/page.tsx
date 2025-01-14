@@ -6,6 +6,7 @@ import { Contract, ethers } from 'ethers';
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
+  ASSET_METADATA_SYMBOL,
   CHAIN,
   REWARDS_ADDRESS,
   STAKING_ADDRESS,
@@ -28,11 +29,16 @@ import {
   Staker,
   StakingRewardGlobal,
 } from '@/src/gql/types/graphql';
-import { getBoosterValue } from './utils';
 import { useStaking } from '@/src/context/staking.context';
 import { serverRequest } from '@/src/gql/client';
-import { GetSignedStakingReward } from '@/src/gql/documents/backend';
+import { GetSignedStakingReward } from '@/src/gql/documents/server';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
+import {
+  calculateSharesSinceLastUpdate,
+  getBoosterValue,
+} from '@/src/utils/shares';
+import { prettyAmount } from '@/src/utils/format';
+import Cooldown from '@/src/components/Cooldown/Cooldown';
 
 const nTopStakers = 100;
 
@@ -113,35 +119,49 @@ export default function Page() {
     staker,
     stakingReward,
     stakingRewardGlobal,
+    coolingDownAssets,
     fetchAll,
   } = useStaking();
 
   const handleTx = useCallback(
     async ({
-      processingTitle,
+      confirmingDescription,
       processingDescription,
-      successTitle,
       successDescription,
       tx,
     }: {
-      processingTitle: string;
+      confirmingDescription: string;
       processingDescription: string;
-      successTitle: string;
       successDescription: string;
       tx: Promise<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
     }) => {
-      let toastTx;
+      let confirmingToast;
+      let processingToast;
       try {
-        toastTx = toast.info(
-          <Toast title={processingTitle} description={processingDescription} />,
+        confirmingToast = toast.info(
+          <Toast
+            title={'Confirming operation'}
+            description={confirmingDescription}
+          />,
           { autoClose: false },
         );
         const response = await tx;
+        toast.dismiss(confirmingToast);
+
+        processingToast = toast.info(
+          <Toast
+            title={'Processing operation'}
+            description={processingDescription}
+          />,
+          { autoClose: false },
+        );
         await response.wait();
+        toast.dismiss(processingToast);
+
         toast.success(
           <Toast
             type="success"
-            title={successTitle}
+            title={'Operation successful'}
             description={successDescription}
           />,
         );
@@ -150,13 +170,16 @@ export default function Page() {
         toast.error(
           <Toast
             type="error"
-            title="Error"
+            title="An error occurred"
             description={'An error occurred while processing the transaction'}
           />,
         );
       } finally {
-        if (toastTx) {
-          toast.dismiss(toastTx);
+        if (confirmingToast) {
+          toast.dismiss(confirmingToast);
+        }
+        if (processingToast) {
+          toast.dismiss(processingToast);
         }
         fetchAll();
       }
@@ -174,10 +197,21 @@ export default function Page() {
       );
       const tx = assetContract.approve(STAKING_ADDRESS, amount);
       await handleTx({
-        processingTitle: 'Approve processing',
-        processingDescription: 'Waiting for confirmation...',
-        successTitle: 'Approve successful',
-        successDescription: 'The approval was successful',
+        confirmingDescription: `Approving ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL} to be staked`,
+        processingDescription: `Approving ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL} to be staked`,
+        successDescription: `The approval of ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL} was successful`,
         tx,
       });
     },
@@ -194,17 +228,28 @@ export default function Page() {
       );
       const tx = stakingContract.deposit(amount, address);
       await handleTx({
-        processingTitle: 'Deposit processing',
-        processingDescription: 'Waiting for confirmation...',
-        successTitle: 'Deposit successful',
-        successDescription: 'The deposit was successful',
+        confirmingDescription: `Staking ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL}`,
+        processingDescription: `Staking ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL}`,
+        successDescription: `The staking of ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL} was successful`,
         tx,
       });
     },
     [address, signer],
   );
 
-  const withdraw = React.useCallback(
+  const requestWithdraw = React.useCallback(
     async (amount: bigint) => {
       if (!address || !signer) return;
       const stakingContract = new Contract(
@@ -212,17 +257,80 @@ export default function Page() {
         StakingUpgradeable.abi,
         signer,
       );
-      const tx = stakingContract.withdraw(amount, address, address);
+      const tx = stakingContract.requestWithdraw(amount);
       await handleTx({
-        processingTitle: 'Withdraw processing',
-        processingDescription: 'Waiting for confirmation...',
-        successTitle: 'Withdraw successful',
-        successDescription: 'The Withdraw was successful',
+        confirmingDescription: `Requesting to withdraw ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL}`,
+        processingDescription: `Requesting to withdraw ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL}`,
+        successDescription: `The request to withdraw ${prettyAmount(
+          parseFloat(
+            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+          ),
+        )} ${ASSET_METADATA_SYMBOL} was successful`,
         tx,
       });
     },
     [address, signer],
   );
+
+  const requestWithdrawAll = React.useCallback(async () => {
+    if (!address || !signer || sharesBalance === 0n) return;
+
+    const stakingContract = new Contract(
+      STAKING_ADDRESS,
+      StakingUpgradeable.abi,
+      signer,
+    );
+    const tx = stakingContract.requestRedeem(sharesBalance);
+    await handleTx({
+      confirmingDescription: `Requesting to withdraw ${prettyAmount(
+        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      processingDescription: `Requesting to withdraw ${prettyAmount(
+        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      successDescription: `The request to withdraw ${prettyAmount(
+        parseFloat(ethers.formatUnits(stakingBalance, ASSET_METADATA_DECIMALS)),
+      )} ${ASSET_METADATA_SYMBOL} was successful`,
+      tx,
+    });
+  }, [address, signer, sharesBalance]);
+
+  const withdrawAll = React.useCallback(async () => {
+    if (!address || !signer || sharesBalance === 0n || !staker) return;
+
+    const stakingContract = new Contract(
+      STAKING_ADDRESS,
+      StakingUpgradeable.abi,
+      signer,
+    );
+    const tx = stakingContract.redeem(staker.coolingDown, address, address);
+    await handleTx({
+      confirmingDescription: `Withdrawing ${prettyAmount(
+        parseFloat(
+          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+        ),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      processingDescription: `Withdrawing ${prettyAmount(
+        parseFloat(
+          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+        ),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      successDescription: `The withdrawal of ${prettyAmount(
+        parseFloat(
+          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+        ),
+      )} ${ASSET_METADATA_SYMBOL} was successful`,
+      tx,
+    });
+  }, [address, signer, sharesBalance]);
 
   const claim = React.useCallback(async () => {
     if (!address || !signer) return;
@@ -236,7 +344,7 @@ export default function Page() {
         },
       },
     )) as { getSignedStakingReward: SignedStakingReward | undefined };
-    if (!getSignedStakingReward) {
+    if (!getSignedStakingReward?.amount) {
       toast.error(
         <Toast
           title="Error"
@@ -262,31 +370,18 @@ export default function Page() {
     );
 
     await handleTx({
-      processingTitle: 'Claim and Stake processing',
-      processingDescription: 'Waiting for confirmation...',
-      successTitle: 'Claim and Stake  successful',
-      successDescription: 'The Claim and Stake  was successful',
+      confirmingDescription: `Claiming ${prettyAmount(
+        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      processingDescription: `Claiming ${prettyAmount(
+        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+      )} ${ASSET_METADATA_SYMBOL}`,
+      successDescription: `The claim of ${prettyAmount(
+        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+      )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
   }, [address, signer]);
-
-  const withdrawAll = React.useCallback(async () => {
-    if (!address || !signer || sharesBalance === 0n) return;
-
-    const stakingContract = new Contract(
-      STAKING_ADDRESS,
-      StakingUpgradeable.abi,
-      signer,
-    );
-    const tx = stakingContract.redeem(sharesBalance, address, address);
-    await handleTx({
-      processingTitle: 'Withdraw processing',
-      processingDescription: 'Waiting for confirmation...',
-      successTitle: 'Withdraw successful',
-      successDescription: 'The Withdraw was successful',
-      tx,
-    });
-  }, [address, signer, sharesBalance]);
 
   const walletIn = stakingBalance >= lastBalance;
 
@@ -314,24 +409,37 @@ export default function Page() {
         BigInt(stakingRewardGlobal.startTime));
     totalRewardsPerDay = (totalRewards * 86400n) / timeSinceStart;
 
-    if (pos >= 0 && staker && stakingRewardGlobal && stakingReward && price) {
+    if (pos >= 0 && staker && stakingRewardGlobal && price) {
       const totalBoostedShares = topStakers.reduce(
         (acc: bigint, account: Staker, index: number) => {
-          const boostedShare = getBoosterValue(index) * BigInt(account.shares);
-          return acc + boostedShare;
+          return (
+            acc +
+            getBoosterValue(index) *
+              calculateSharesSinceLastUpdate({
+                staker: account,
+                now,
+                timeSinceLastUpdate,
+              })
+          );
         },
         0n,
       ) as bigint;
-      const boostedShares = getBoosterValue(pos) * BigInt(staker.shares);
       currentReward =
-        (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
+        (rewardsInLastPeriod *
+          calculateSharesSinceLastUpdate({
+            staker,
+            now,
+            timeSinceLastUpdate,
+          }) *
+          getBoosterValue(pos)) /
+        totalBoostedShares;
       earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
     }
   }
 
   const earnings = stakingReward
     ? BigInt(stakingReward.available) + currentReward
-    : 0n;
+    : currentReward;
   const totalRewardsUSD =
     parseFloat(
       ethers.formatUnits(totalRewards, parseInt(ASSET_METADATA_DECIMALS)),
@@ -371,8 +479,8 @@ export default function Page() {
       />
       <RedeemModal
         stakingBalance={stakingBalance}
-        withdrawFn={withdraw}
-        withdrawAllFn={withdrawAll}
+        withdrawFn={requestWithdraw}
+        withdrawAllFn={requestWithdrawAll}
         {...redeemDisclosure}
       />
       <Rewards
@@ -385,11 +493,13 @@ export default function Page() {
       {address && (
         <Staking
           stakingBalance={stakingBalance}
+          coolingDown={BigInt(staker?.coolingDown || 0)}
           earnings={earnings}
           earningsPerDay={earningPerDay}
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}
+          releaseTime={BigInt(staker?.releaseTime || 0)}
           claimFn={claim}
         />
       )}
@@ -404,6 +514,7 @@ export default function Page() {
           Connect wallet
         </Button>
       )}
+
       {address ? (
         assetBalance > 0n ? (
           <Button
@@ -435,6 +546,13 @@ export default function Page() {
           </a>
         )
       ) : null}
+
+      <Cooldown
+        coolingDown={BigInt(staker?.coolingDown || 0)}
+        releaseTime={BigInt(staker?.releaseTime || 0)}
+        coolingDownAssets={coolingDownAssets}
+        withdrawAllFn={withdrawAll}
+      />
 
       <LeaderBoard
         n={nTopStakers}
