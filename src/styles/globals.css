@@ -141,12 +141,15 @@ body {
   align-items: center;
   padding: 10px 20px;
   width: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(6.300000190734863px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(7.300000190734863px);
   position: fixed;
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
+  max-width: 1300px;
+  border-radius: 32px;
+  margin-top: 12px;
 }
 
 main {
@@ -157,7 +160,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 1700px;
+  max-width: 1000px;
   margin: 120px 20px;
   z-index: 2;
 }
@@ -172,6 +175,8 @@ main {
   width: 100%;
   justify-content: space-between;
   z-index: 1;
+  max-width: 1300px;
+  border-radius: 32px;
 }
 
 table {
@@ -333,6 +338,30 @@ h3 {
   transform: scale(1.02);
   filter: drop-shadow(0px 0px 80px rgb(128, 59, 241, 0.5));
 }
+
+@keyframes levitate {
+  0%, 100% {
+    transform: translateY(0); /* Default position */
+  }
+  50% {
+    transform: translateY(-10px); /* Slight upward movement */
+  }
+}
+
+.parent {
+  display: inline-block;
+}
+
+.child {
+  display: inline-block;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Apply the levitate effect to the child when the parent is hovered */
+.parent:hover .child {
+  animation: levitate 3s ease-in-out infinite;
+}
+
 
 .pageLogo {
   width: 80px;

@@ -57,7 +57,7 @@ export const Footer = () => {
             color: '#FFFFFF70',
           }}
         >
-          {'© 2024 Leonardo AI. All rights reserved'}
+          {'© 2025 Leonardo AI - All rights reserved'}
         </div>
         {/* <div>{'Terms and Conditions, Privacy Policy, Copyright Notice'}</div> */}
       </div>

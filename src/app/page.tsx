@@ -195,6 +195,7 @@ export default function Page() {
               </div>
 
               <div
+                className="child"
                 style={{
                   display: 'flex',
                   textAlign: 'start',
@@ -219,6 +220,7 @@ export default function Page() {
                 />
 
                 <div
+                  className="child"
                   style={{
                     marginTop: '60px',
                     marginLeft: '-15px',
@@ -263,8 +265,8 @@ export default function Page() {
               </span>
               <span
                 style={{
-                  fontSize: '72px',
-                  lineHeight: '72px',
+                  fontSize: '64px',
+                  lineHeight: '64px',
                 }}
               >
                 $300K
@@ -296,8 +298,8 @@ export default function Page() {
               </span>
               <span
                 style={{
-                  fontSize: '92px',
-                  lineHeight: '92px',
+                  fontSize: '74px',
+                  lineHeight: '74px',
                 }}
               >
                 DAO

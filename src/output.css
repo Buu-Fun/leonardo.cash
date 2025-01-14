@@ -3975,6 +3975,7 @@ body {
   padding: 1rem 2rem;
   background-color: #333;
   color: #fff;
+  max-width: 1000px;
 }
 
 .file\:cursor-pointer::file-selector-button {
