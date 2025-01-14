@@ -484,6 +484,7 @@ export default function Page() {
         stakingBalance={stakingBalance}
         withdrawFn={requestWithdraw}
         withdrawAllFn={requestWithdrawAll}
+        coolDownTime={BigInt(stakingRewardGlobal?.cooldownTime || 0)}
         {...redeemDisclosure}
       />
       <Rewards
