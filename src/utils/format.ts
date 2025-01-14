@@ -48,19 +48,19 @@ export function timeDifference(date: number) {
   }
   if (absDiffInSeconds < hour) {
     const minutes = Math.floor(absDiffInSeconds / minute);
-    return `less than ${minutes} minute${minutes > 1 ? 's' : ''} ${suffix}`;
+    return `less than ${minutes + 1} minute${minutes > 1 ? 's' : ''} ${suffix}`;
   }
   if (absDiffInSeconds < day) {
     const hours = Math.floor(absDiffInSeconds / hour);
-    return `less than ${hours} hour${hours > 1 ? 's' : ''} ${suffix}`;
+    return `less than ${hours + 1} hour${hours > 1 ? 's' : ''} ${suffix}`;
   }
   if (absDiffInSeconds < week) {
     const days = Math.floor(absDiffInSeconds / day);
-    return `less than ${days} day${days > 1 ? 's' : ''} ${suffix}`;
+    return `less than ${days + 1} day${days > 1 ? 's' : ''} ${suffix}`;
   }
 
   const weeks = Math.floor(absDiffInSeconds / week);
-  return `less than ${weeks} week${weeks > 1 ? 's' : ''} ${suffix}`;
+  return `less than ${weeks + 1} week${weeks > 1 ? 's' : ''} ${suffix}`;
 }
 
 export const tokenArgValue = (name: string, symbol: any) => {
