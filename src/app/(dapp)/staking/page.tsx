@@ -473,6 +473,9 @@ export default function Page() {
       <DepositModal
         assetBalance={assetBalance}
         stakingAllowance={stakingAllowance}
+        lastBalance={lastBalance}
+        stakingBalance={stakingBalance}
+        cooldownTime={BigInt(stakingRewardGlobal?.cooldownTime || 0)}
         approveFn={approve}
         stakeFn={deposit}
         {...depositDisclosure}

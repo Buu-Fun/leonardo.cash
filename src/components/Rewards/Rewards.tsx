@@ -124,7 +124,7 @@ export const Rewards = ({
       {/* values */}
       <div className={styles.values}>
         {/* subtitle */}
-        <div className={styles.subtitle}>Total $leonai leonardo reward</div>
+        <div className={styles.subtitle}>Total rewards distributed</div>
 
         {/* value */}
         <div className={styles.amount}>{`$ ${format({

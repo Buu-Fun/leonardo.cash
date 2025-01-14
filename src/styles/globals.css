@@ -341,8 +341,8 @@ h3 {
 }
 
 .modal {
-  background: #101010;
-  border: 1px solid #302450;
+  background: transparent;
+  width: 100%;
 }
 
 @media screen and (max-width: 1300px) {
