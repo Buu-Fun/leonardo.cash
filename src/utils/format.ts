@@ -42,7 +42,7 @@ export function timeDifference(date: number) {
 
   const suffix = isFuture ? 'left' : 'ago';
 
-  if (absDiffInSeconds < minute) {
+  if (absDiffInSeconds < minute * 2) {
     const seconds = Math.floor(absDiffInSeconds);
     return `${seconds} second${seconds > 1 ? 's' : ''} ${suffix}`;
   }

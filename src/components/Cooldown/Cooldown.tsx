@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 import clsx from 'clsx';
 import { prettyAmount, timeDifference } from '@/src/utils/format';
@@ -21,11 +21,21 @@ function Cooldown({
   releaseTime,
   withdrawAllFn,
 }: Props) {
-  const unlocked = BigInt(Math.floor(Date.now() / 1000)) >= releaseTime;
+  const [now, setNow] = useState(BigInt(Math.floor(Date.now() / 1000)));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNow(BigInt(Math.floor(Date.now() / 1000)));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const unlocked = releaseTime <= now;
 
   if (coolingDown === 0n) {
     return null;
   }
+
   return (
     <div className={styles.layout}>
       {/* left */}
