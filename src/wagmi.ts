@@ -6,11 +6,11 @@ const sepolia = {
   ...Sepolia,
   rpcUrls: {
     ...Sepolia.rpcUrls,
-    default: {
-      http: [
-        'https://eth-sepolia.g.alchemy.com/v2/WddzdzI2o9S3COdT73d5w6AIogbKq4X-',
-      ],
-    },
+    // default: {
+    //   http: [
+    //     'https://eth-sepolia.g.alchemy.com/v2/WddzdzI2o9S3COdT73d5w6AIogbKq4X-',
+    //   ],
+    // },
   },
 };
 

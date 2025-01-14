@@ -1,17 +1,24 @@
-class PromiseQueue {
+export class PromiseQueue {
   private queue: Promise<void>;
   private running: boolean;
   private lastTask: Promise<void> | null;
 
-  constructor() {
+  constructor(private defaultSleepTime = 1000) {
     this.queue = Promise.resolve();
     this.running = false;
     this.lastTask = null;
   }
 
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   add<T>(task: () => Promise<T>): Promise<void> {
     this.running = true;
-    const newTask = this.queue.then(() => task()) as Promise<void>;
+
+    const newTask = this.queue
+      .then(() => this.sleep(this.defaultSleepTime))
+      .then(() => task()) as Promise<void>;
 
     this.lastTask = newTask;
 
@@ -30,5 +37,3 @@ class PromiseQueue {
     return this.running;
   }
 }
-
-export default PromiseQueue;

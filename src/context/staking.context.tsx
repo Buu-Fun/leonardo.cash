@@ -53,21 +53,22 @@ interface StakingState {
   stakingRewardGlobal?: StakingRewardGlobal;
   coolingDownAssets: bigint;
   fetchAll: () => Promise<void>;
+  convertSharesToAssets: (shares: bigint) => Promise<bigint>;
 }
 
 const nTopStakers = 100;
 
-// const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
-//   const mockedStaker = {
-//     ...staker,
-//     balance: 123n * 10n ** 18n,
-//     address: ethers.ZeroAddress,
-//   } as StakerWithAssets;
-//   const mock = [mockedStaker]
-//     .concat(staker)
-//     .concat(Array(n - 2).fill(mockedStaker));
-//   return mock;
-// };
+const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
+  const mockedStaker = {
+    ...staker,
+    balance: 123n * 10n ** 18n,
+    staker: ethers.ZeroAddress,
+  } as StakerWithAssets;
+  const mock = [mockedStaker]
+    .concat(staker)
+    .concat(Array(n - 2).fill(mockedStaker));
+  return mock;
+};
 
 const StakingContext = createContext<StakingState>({
   assetBalance: 0n,
@@ -82,6 +83,7 @@ const StakingContext = createContext<StakingState>({
   stakingRewardGlobal: undefined,
   coolingDownAssets: 0n,
   fetchAll: async () => {},
+  convertSharesToAssets: async () => 0n,
 });
 
 export const StakingProvider = ({ children }: Props) => {
@@ -94,13 +96,14 @@ export const StakingProvider = ({ children }: Props) => {
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
   const [price, setPrice] = React.useState(0);
-  const [lastBalance, setLastBalance] = React.useState(0n);
+  // const [lastBalance, setLastBalance] = React.useState(0n);
   const [sharesBalance, setSharesBalance] = React.useState(0n);
   const [staker, setStaker] = React.useState<StakerWithAssets>();
   const [stakingReward, setStakingReward] = React.useState<StakingReward>();
   const [stakingRewardGlobal, setStakingRewardGlobal] =
     React.useState<StakingRewardGlobal>();
   const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
+  const [lastBalance, setLastBalance] = React.useState(0n);
 
   const convertSharesToAssets = useCallback(
     async (shares: bigint) => {
@@ -204,6 +207,7 @@ export const StakingProvider = ({ children }: Props) => {
     } else {
       setStaker(undefined);
       setStakingBalance(0n);
+      setCoolingDownAssets(0n);
     }
   }, [address, convertSharesToAssets]);
 
@@ -227,13 +231,17 @@ export const StakingProvider = ({ children }: Props) => {
     // );
     const { items } = stakers;
     if (items.length > 0) {
-      const assetsPromises = items.map(async (staker: Staker) => {
-        const assets = await convertSharesToAssets(staker.shares);
-        return { ...staker, assets };
-      });
-      const stakersWithAssets = await Promise.all(assetsPromises);
-      setTopStakers(stakersWithAssets);
-      setLastBalance(stakersWithAssets[stakersWithAssets.length - 1].assets);
+      // const assetsPromises = items.map(async (staker: Staker) => {
+      //   const [assets, coolingDownAssets] = await Promise.all([
+      //     convertSharesToAssets(staker.shares),
+      //     convertSharesToAssets(staker.coolingDown),
+      //   ]);
+      //   return { ...staker, assets, coolingDownAssets };
+      // });
+      // const stakersWithAssets = await Promise.all(assetsPromises);
+      // setTopStakers(stakersWithAssets);
+      setTopStakers(items);
+      // setLastBalance(items[items.length - 1].assets);
     }
   }, [convertSharesToAssets]);
 
@@ -300,6 +308,15 @@ export const StakingProvider = ({ children }: Props) => {
     fetchStakingRewardGlobal,
   ]);
 
+  const fetchLastBalance = useCallback(async () => {
+    if (topStakers.length >= nTopStakers) {
+      const lastBalance = await convertSharesToAssets(
+        BigInt(topStakers[topStakers.length - 1].shares),
+      );
+      setLastBalance(lastBalance);
+    }
+  }, [topStakers]);
+
   useEffect(() => {
     fetchAll();
     const interval = setInterval(() => {
@@ -307,6 +324,10 @@ export const StakingProvider = ({ children }: Props) => {
     }, 5000);
     return () => clearInterval(interval);
   }, [fetchAll]);
+
+  useEffect(() => {
+    fetchLastBalance();
+  }, [fetchLastBalance]);
 
   // Memoize the context value
   const value = useMemo<StakingState>(
@@ -323,6 +344,7 @@ export const StakingProvider = ({ children }: Props) => {
       stakingRewardGlobal,
       coolingDownAssets,
       fetchAll,
+      convertSharesToAssets,
     }),
     [
       assetBalance,
@@ -337,6 +359,7 @@ export const StakingProvider = ({ children }: Props) => {
       stakingRewardGlobal,
       coolingDownAssets,
       fetchAll,
+      convertSharesToAssets,
     ],
   );
 

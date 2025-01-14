@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 
@@ -42,19 +42,10 @@ import Cooldown from '@/src/components/Cooldown/Cooldown';
 
 const nTopStakers = 100;
 
-export type StakerWithAssets = Staker & { assets: bigint };
-
-// const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
-//   const mockedStaker = {
-//     ...staker,
-//     balance: 123n * 10n ** 18n,
-//     address: ethers.ZeroAddress,
-//   } as StakerWithAssets;
-//   const mock = [mockedStaker]
-//     .concat(staker)
-//     .concat(Array(n - 2).fill(mockedStaker));
-//   return mock;
-// };
+export type StakerWithAssets = Staker & {
+  assets: bigint;
+  coolingDownAssets: bigint;
+};
 
 export type StakerWithAssetsAndEarnings = StakerWithAssets & {
   earningPerDay: bigint;
@@ -78,13 +69,25 @@ const calculateEarningPerDayStakers = ({
       BigInt(stakingRewardGlobal.startTime));
   const totalBoostedShares = topStakers.reduce(
     (acc: bigint, account: Staker, index: number) => {
-      const boostedShare = getBoosterValue(index) * BigInt(account.shares);
-      return acc + boostedShare;
+      const boostedShares =
+        getBoosterValue(index) *
+        calculateSharesSinceLastUpdate({
+          staker: account,
+          now,
+          timeSinceLastUpdate,
+        });
+      return acc + boostedShares;
     },
     0n,
   ) as bigint;
   return topStakers.map((staker, index) => {
-    const boostedShares = getBoosterValue(index) * BigInt(staker.shares);
+    const boostedShares =
+      getBoosterValue(index) *
+      calculateSharesSinceLastUpdate({
+        staker,
+        now,
+        timeSinceLastUpdate,
+      });
     const currentReward =
       (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
     const earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
@@ -121,6 +124,7 @@ export default function Page() {
     stakingRewardGlobal,
     coolingDownAssets,
     fetchAll,
+    convertSharesToAssets,
   } = useStaking();
 
   const handleTx = useCallback(
@@ -315,17 +319,26 @@ export default function Page() {
     await handleTx({
       confirmingDescription: `Withdrawing ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+          ethers.formatUnits(
+            coolingDownAssets,
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
         ),
       )} ${ASSET_METADATA_SYMBOL}`,
       processingDescription: `Withdrawing ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+          ethers.formatUnits(
+            coolingDownAssets,
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
         ),
       )} ${ASSET_METADATA_SYMBOL}`,
       successDescription: `The withdrawal of ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(coolingDownAssets, ASSET_METADATA_DECIMALS),
+          ethers.formatUnits(
+            coolingDownAssets,
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
         ),
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
@@ -383,6 +396,8 @@ export default function Page() {
     });
   }, [address, signer]);
 
+  const now = BigInt(Math.floor(Date.now() / 1000));
+
   const walletIn = stakingBalance >= lastBalance;
 
   let currentReward = 0n;
@@ -395,7 +410,6 @@ export default function Page() {
       ? topStakers.map((staker) => staker.staker).indexOf(address)
       : -1;
 
-    const now = BigInt(Math.floor(Date.now() / 1000));
     const timeSinceLastUpdate = now - BigInt(stakingRewardGlobal.lastUpdate);
     const timeSinceStart = now - BigInt(stakingRewardGlobal.startTime);
     const rewardsInLastPeriod =
@@ -559,6 +573,7 @@ export default function Page() {
       />
 
       <LeaderBoard
+        now={now}
         n={nTopStakers}
         topStakers={
           stakingRewardGlobal
