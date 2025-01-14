@@ -15,6 +15,8 @@ import {
   ChevronDownIcon,
   ClipboardIcon,
   MagnifyingGlassIcon,
+  MapIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
 import { ethers } from 'ethers';
@@ -96,6 +98,28 @@ export const Rewards = ({
               padding: 0,
             }}
           >
+            <DropdownItem key="bubblemaps">
+              <a
+                href="https://app.bubblemaps.io/base/token/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
+                target="_blank"
+                rel="noreferrer"
+                className={styles.dropdownItem}
+              >
+                <MapIcon width={24} height={24} />
+                <span>Bubblemaps</span>
+              </a>
+            </DropdownItem>
+            <DropdownItem key="skynet">
+              <a
+                href="https://skynet.certik.com/tools/token-scan/base/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
+                target="_blank"
+                rel="noreferrer"
+                className={styles.dropdownItem}
+              >
+                <ShieldCheckIcon width={24} height={24} />
+                <span>Skynet audit</span>
+              </a>
+            </DropdownItem>
             <DropdownItem key="copy" onPress={handleCopy}>
               <div className={styles.dropdownItem}>
                 {isCopied ? (
