@@ -31,7 +31,11 @@ export default function RootLayout({
         <meta property="og:image" content="https://i.imgur.com/VHCMRSy.jpeg"/>
         <meta property="og:url" content="https://leonardo.cash"/>
         <meta property="og:type" content="website"/>
-
+        <link
+          href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
+          rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
