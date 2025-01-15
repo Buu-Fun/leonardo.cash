@@ -27,13 +27,13 @@
 
 .right {
   display: flex;
-  gap: 20px;
+  gap: 10px;
 }
 
 .up {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .down {
@@ -75,4 +75,9 @@
 
 .button:hover {
   opacity: 0.8;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
 }
