@@ -172,7 +172,20 @@ export const DepositModal = ({
             {isAllowed && (
               <div className={styles.bottom}>
                 <div className={styles.amount}>
-                  <div className={styles.label}>Amount to Stake</div>
+                  <div className={styles.labels}>
+                    <div className={styles.label}>Amount to Stake</div>
+                    <div
+                      className={styles.label}
+                      style={{
+                        color: 'var(--text-color-muted)',
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => setPercentage(BigInt(100))}
+                    >{`Balance: ${format({
+                      value: assetBalance.toString(),
+                      decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
+                    })}`}</div>
+                  </div>
                   <input
                     type="text"
                     value={amount}

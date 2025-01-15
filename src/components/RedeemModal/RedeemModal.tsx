@@ -4,7 +4,7 @@ import { Button, Modal, ModalContent } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.css';
-import { extractHours } from '@/src/utils/format';
+import { extractHours, format } from '@/src/utils/format';
 import Disclaimer from '../Disclaimer/Disclaimer';
 
 interface Props {
@@ -116,7 +116,20 @@ export const RedeemModal = ({
 
             <div className={styles.bottom}>
               <div className={styles.amount}>
-                <div className={styles.label}>Amount to Unstake</div>
+                <div className={styles.labels}>
+                  <div className={styles.label}>Amount to Unstake</div>
+                  <div
+                    className={styles.label}
+                    style={{
+                      color: 'var(--text-color-muted)',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => setPercentage(BigInt(100))}
+                  >{`Balance: ${format({
+                    value: stakingBalance.toString(),
+                    decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
+                  })}`}</div>
+                </div>
                 <input
                   type="text"
                   value={amount}
