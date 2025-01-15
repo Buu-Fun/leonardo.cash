@@ -88,7 +88,7 @@
   flex-direction: row;
   gap: 0;
   padding: 28.5px 20px;
-  background: linear-gradient(220deg, rgb(129, 59, 241, 0.6) 0%, #222222 80%);
+  background: linear-gradient(220deg, rgb(129, 59, 241) 0%, #222222 80%);
 }
 
 .buyNowBoxText {

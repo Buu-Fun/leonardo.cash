@@ -91,13 +91,17 @@ export default function Page() {
   return (
     <div className="layout">
       <SwapModal {...swapDisclosure} />
-      <div className="navbar">
-        <PageLogo />
 
-        <a href="/staking">
-          <Button color="primary">Launch App</Button>
-        </a>
+      <div className="navbarContainer">
+        <div className="navbar">
+          <PageLogo />
+
+          <a href="/staking">
+            <Button color="primary">Launch App</Button>
+          </a>
+        </div>
       </div>
+
       <main style={{ display: 'flex', flexDirection: 'column' }}>
         <h1
           style={{

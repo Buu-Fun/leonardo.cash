@@ -1,3 +1,55 @@
+.layout {
+  width: 100%;
+  max-width: 1300px;
+  padding: 0 20px;
+  z-index: 1;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 32px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  width: 100%;
+  justify-content: space-between;
+  border-radius: 32px 32px 0 0;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+.logoTextFirst,
+.logoTextSecond {
+  font-size: 42px;
+  line-height: 42px;
+  font-weight: 700;
+  font-style: italic;
+  font-family: Bebas Neue;
+  text-transform: uppercase;
+}
+
+.logoTextFirst {
+  color: #ffffff;
+  letter-spacing: -0.072px;
+  margin-left: -10px;
+}
+
+.logoTextSecond {
+  color: #803bf1;
+  letter-spacing: -0.072px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+}
+
 .button {
   cursor: pointer;
   transition: all 0.3s ease;

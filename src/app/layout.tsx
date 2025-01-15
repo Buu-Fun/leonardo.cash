@@ -4,7 +4,6 @@ import Providers from './providers';
 import '@rainbow-me/rainbowkit/styles.css';
 // import '../output.css';
 import '../styles/globals.css';
-import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
 // import { Blocknumber } from '../components/Blocknumber';
@@ -14,8 +13,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <html lang="en">
       <head>

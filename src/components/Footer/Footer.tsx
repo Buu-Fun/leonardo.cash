@@ -9,71 +9,34 @@ import styles from './styles.module.css';
 
 export const Footer = () => {
   return (
-    <div className="footer">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            fontFamily: 'Bebas Neue',
-            fontSize: '20px',
-            fontStyle: 'italic',
-            fontWeight: '700',
-            lineHeight: '42.939px',
-            letterSpacing: '-0.072px',
-            textTransform: 'uppercase',
-          }}
-        >
-          <Image
-            src={'/logo.webp'}
-            alt="Logo LeonardoAI"
-            width={40}
-            height={40}
-          />
-          <span
+    <div className={styles.layout}>
+      <div className={styles.container}>
+        <div className={styles.left}>
+          <div
             style={{
-              color: '#FFFFFF',
+              marginLeft: '10px',
+              fontSize: '12px',
+              color: '#FFFFFF70',
             }}
           >
-            LEONARDO
-          </span>
-          <span
-            style={{
-              color: '#803BF1',
-            }}
-          >
-            AI
-          </span>
+            {'© 2025 Leonardo AI - All rights reserved'}
+          </div>
+          {/* <div>{'Terms and Conditions, Privacy Policy, Copyright Notice'}</div> */}
         </div>
-        <div
-          style={{
-            marginLeft: '10px',
-            fontSize: '12px',
-            color: '#FFFFFF70',
-          }}
-        >
-          {'© 2025 Leonardo AI - All rights reserved'}
-        </div>
-        {/* <div>{'Terms and Conditions, Privacy Policy, Copyright Notice'}</div> */}
-      </div>
-      <div style={{ display: 'flex', gap: '10px' }}>
-        {/* <Discord
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {/* <Discord
           className={styles.button}
           onClick={() => {
             window.open('https://discord.com/', '_blank');
           }}
         /> */}
-        <a href="https://x.com/Leonardo__AI" target="_blank" rel="noreferrer">
-          <X className={styles.button} />
-        </a>
+          <a href="https://x.com/Leonardo__AI" target="_blank" rel="noreferrer">
+            <X className={styles.button} />
+          </a>
 
-        {/* <Instagram />
+          {/* <Instagram />
         <Youtube /> */}
+        </div>
       </div>
     </div>
   );
