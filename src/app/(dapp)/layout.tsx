@@ -14,12 +14,14 @@ export default function RootLayout({
   return (
     <Providers>
       <div className="layout">
-        <div className="navbar">
-          <a href="/">
-            <PageLogo />
-          </a>
+        <div className="navbarContainer">
+          <div className="navbar">
+            <a href="/">
+              <PageLogo />
+            </a>
 
-          <ConnectButton />
+            <ConnectButton />
+          </div>
         </div>
         {children}
         <Footer />
