@@ -139,7 +139,12 @@ export default function Page() {
           />,
           { autoClose: false },
         );
-        const response = await tx;
+        const response = await Promise.race([
+          tx,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 60000),
+          ),
+        ]);
         toast.dismiss(confirmingToast);
 
         processingToast = toast.info(
@@ -159,8 +164,27 @@ export default function Page() {
             description={successDescription}
           />,
         );
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        if (error.message === 'timeout') {
+          toast.error(
+            <Toast
+              type="error"
+              title="Timeout"
+              description={'The transaction took too long to be confirmed'}
+            />,
+          );
+          return;
+        }
+        if (error.code === 'ACTION_REJECTED') {
+          toast.error(
+            <Toast
+              type="error"
+              title="Transaction rejected"
+              description={'The transaction was rejected by the user'}
+            />,
+          );
+          return;
+        }
         toast.error(
           <Toast
             type="error"
