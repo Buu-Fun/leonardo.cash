@@ -106,14 +106,26 @@ export default function Page() {
         <h1
           style={{
             marginTop: '60px',
+            fontSize: '100px',
+            marginBottom: '10px',
           }}
         >
           HELLO
         </h1>
-        <h2>{'I’m Leonardo AI'}</h2>
+        <h2
+          style={{
+            fontSize: '50px',
+            textTransform: 'uppercase',
+            marginTop: '10px',
+          }}
+        >
+          {'I’m Leonardo AI'}
+        </h2>
         <h3
           style={{
             marginBottom: '60px',
+            fontSize: '20px',
+            textTransform: 'uppercase',
           }}
         >
           {
