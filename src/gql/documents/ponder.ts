@@ -95,8 +95,6 @@ export const GetStakers = gql`
         address
         staker
         shares
-        stakedAssets
-        unstakedAssets
         coolingDown
         releaseTime
         lastUpdate
