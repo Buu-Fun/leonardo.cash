@@ -11,21 +11,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <Providers>
-      <div className="layout">
-        <div className="navbarContainer">
-          <div className="navbar">
-            <a href="/">
-              <PageLogo />
-            </a>
+  // return (
+  //   <Providers>
+  //     <div className="layout">
+  //       <div className="navbarContainer">
+  //         <div className="navbar">
+  //           <a href="/">
+  //             <PageLogo />
+  //           </a>
 
-            <ConnectButton />
-          </div>
-        </div>
-        {children}
-        <Footer />
-      </div>
-    </Providers>
-  );
+  //           <ConnectButton />
+  //         </div>
+  //       </div>
+  //       {children}
+  //       <Footer />
+  //     </div>
+  //   </Providers>
+  // );
+  return null;
 }

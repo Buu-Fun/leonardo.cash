@@ -304,8 +304,61 @@ h3 {
   width: 100%;
 }
 
+.carouselContainer {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 32px;
+  border: 1px solid #302450;
+}
+
+.carouselBlurLeft,
+.carouselBlurRight {
+  position: absolute;
+  top: 0;
+  width: 20%;
+  height: 100%;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.carouselBlurLeft {
+  left: 0;
+  background: transparent;
+}
+
+.carouselBlurRight {
+  right: 0;
+  background: transparent;
+}
+
+.carousel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: slide 20s infinite;
+  width: 100%;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
 @media screen and (max-width: 768px) {
   main {
     margin: 80px 20px;
   }
+}
+
+blockquote {
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

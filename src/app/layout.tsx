@@ -5,6 +5,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 // import '../output.css';
 import '../styles/globals.css';
 import Image from 'next/image';
+import Script from 'next/script';
 
 // import { Blocknumber } from '../components/Blocknumber';
 
@@ -25,6 +26,12 @@ export default function RootLayout({
         <meta property="twitter:title" content="LeonardoAI" />
         <meta property="twitter:description" content="Leonardo AI" />
         <link rel="icon" href="/favicon.ico" />
+
+        <link
+          href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
+          rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
       </head>
       <body>
         <div
