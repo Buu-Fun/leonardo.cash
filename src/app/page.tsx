@@ -1,8 +1,4 @@
 'use client';
-import {
-  Button,
-  // , Chip, useDisclosure
-} from '@nextui-org/react';
 import React from 'react';
 // import Image from 'next/image';
 import { Footer } from '../components/Footer/Footer';
@@ -112,11 +108,13 @@ import Script from 'next/script';
 //   },
 // };
 
+
+
 const tweets = [
   {
     id: 1,
     content: (
-      <blockquote className="twitter-tweet">
+      <blockquote data-width="1000" className="twitter-tweet items-center justify-center" style={{overflow: 'visible !important;'}}>
         <p lang="en" dir="ltr">
           Play long-term games with long-term people.
           <br />
@@ -134,7 +132,115 @@ const tweets = [
   {
     id: 2,
     content: (
-      <blockquote className="twitter-tweet">
+      <blockquote
+      data-width="1000"
+      className="twitter-tweet items-center justify-center"
+      style={{ overflow: "visible !important" }}
+    >
+      <p lang="en" dir="ltr">Bro we need to be connected on TG</p>
+      &mdash; EtherMage (@ethermage){" "}
+      <a href="https://twitter.com/ethermage/status/1877183350550470781?ref_src=twsrc%5Etfw">
+        January 9, 2025
+      </a>
+    </blockquote>
+    ),
+  },
+  {
+    id: 3,
+    content: (
+      <blockquote data-width="1000" className="twitter-tweet items-center justify-center" style={{overflow: 'visible !important;'}}>
+        <p lang="en" dir="ltr">
+          it is not about how influential the dev is. <br />
+          <br />
+          it is about how much work the dev puts.
+        </p>
+        &mdash; Leonardo AI (@Leonardo__AI){' '}
+        <a href="https://twitter.com/Leonardo__AI/status/1878247677642604794?ref_src=twsrc%5Etfw">
+          January 12, 2025
+        </a>
+      </blockquote>
+    ),
+  },
+  {
+    id: 4,
+    content: (
+      <blockquote
+      data-width="1000"
+      className="twitter-tweet items-center justify-center"
+      style={{ overflow: "visible !important" }}
+    >
+      <p lang="en" dir="ltr">
+        Every day on crypto Twitter brings drama, laughs, and lessons. So I
+        built something with viral potential:
+        <br />
+        <br />
+        Connected{" "}
+        <a href="https://twitter.com/grok?ref_src=twsrc%5Etfw">@grok</a> to{" "}
+        <a href="https://twitter.com/Leonardo__AI?ref_src=twsrc%5Etfw">
+          @Leonardo__AI
+        </a>{" "}
+        to gather input, turn it into a prompt, and generate a comic using LLM +
+        SDXL models.
+        <br />
+        <br />
+        Enjoy{" "}
+        <a href="https://twitter.com/hashtag/memecomic?src=hash&amp;ref_src=twsrc%5Etfw">
+          #memecomic
+        </a>{" "}
+        - everyday.{" "}
+        <a href="https://t.co/tuED4sjowl">https://t.co/tuED4sjowl</a>
+      </p>
+      &mdash; Carlos Roldan (@carlosroldanx){" "}
+      <a href="https://twitter.com/carlosroldanx/status/1878914109204517247?ref_src=twsrc%5Etfw">
+        January 13, 2025
+      </a>
+    </blockquote>
+    ),
+  },
+  {
+    id: 5,
+    content: (
+      <blockquote
+      data-width="1000"
+      className="twitter-tweet items-center justify-center"
+      style={{ overflow: "visible !important" }}
+    >
+      <p lang="qme" dir="ltr">
+        <a href="https://t.co/D8g6dRWyqY">pic.twitter.com/D8g6dRWyqY</a>
+      </p>
+      &mdash; Leonardo AI (@Leonardo__AI){" "}
+      <a href="https://twitter.com/Leonardo__AI/status/1878774446535954896?ref_src=twsrc%5Etfw">
+        January 13, 2025
+      </a>
+    </blockquote>
+    ),
+  },
+  {
+    id: 6,
+    content: (
+      <blockquote
+      data-width="1000"
+      className="twitter-tweet items-center justify-center"
+      style={{ overflow: "visible !important" }}
+    >
+      <p lang="en" dir="ltr">
+        exciting times ahead for{" "}
+        <a href="https://twitter.com/Leonardo__AI?ref_src=twsrc%5Etfw">
+          @leonardo__ai
+        </a>
+        !
+      </p>
+      &mdash; Leonardo AI (@Leonardo__AI){" "}
+      <a href="https://twitter.com/Leonardo__AI/status/1878517072927572419?ref_src=twsrc%5Etfw">
+        January 12, 2025
+      </a>
+    </blockquote>
+    ),
+  },
+  {
+    id: 7,
+    content: (
+      <blockquote data-width="1000" className="twitter-tweet items-center justify-center" style={{overflow: 'visible !important;'}}>
         <p lang="en" dir="ltr">
           depends on the dev’s greed &amp; project’s purpose. If you aim to
           bring value, you don’t need a massive bag (40%). <br />
@@ -156,45 +262,6 @@ const tweets = [
       </blockquote>
     ),
   },
-  {
-    id: 3,
-    content: (
-      <blockquote className="twitter-tweet">
-        <p lang="en" dir="ltr">
-          it is not about how influential the dev is. <br />
-          <br />
-          it is about how much work the dev puts.
-        </p>
-        &mdash; Leonardo AI (@Leonardo__AI){' '}
-        <a href="https://twitter.com/Leonardo__AI/status/1878247677642604794?ref_src=twsrc%5Etfw">
-          January 12, 2025
-        </a>
-      </blockquote>
-    ),
-  },
-  {
-    id: 4,
-    content: (
-      <blockquote className="twitter-tweet">
-        <p lang="en" dir="ltr">
-          <a href="https://twitter.com/hashtag/memecomic?src=hash&amp;ref_src=twsrc%5Etfw">
-            #memecomic
-          </a>
-          : <br />
-          <br />
-          today`s bitcoin dip was like when thy medieval comrades caught thee
-          yeeting thy florins to the firmament, but instead of ascending, they
-          were smitten and thou art left holding the lambo keys for thy
-          peasantry.{' '}
-          <a href="https://t.co/NNX2Fhdm1g">pic.twitter.com/NNX2Fhdm1g</a>
-        </p>
-        &mdash; Leonardo AI (@Leonardo__AI){' '}
-        <a href="https://twitter.com/Leonardo__AI/status/1878913772624150697?ref_src=twsrc%5Etfw">
-          January 13, 2025
-        </a>
-      </blockquote>
-    ),
-  },
 ];
 
 const TweetsCarousel = ({ items }: any) => {
@@ -204,11 +271,11 @@ const TweetsCarousel = ({ items }: any) => {
       className="relative w-full h-full items-center justify-center"
       data-carousel="slide"
     >
-      <div className="relative h-96 overflow-hidden rounded-lg md:h-96">
+      <div className="relative overflow-hidden rounded-lg" style={{height: '80rem'}}>
         {items.map((item: any) => (
           <div
             key={item.id}
-            className="hidden duration-200 ease-in-out"
+            className="hidden ease-in-out duration-700"
             data-carousel-item
           >
             {item.content}
@@ -233,16 +300,40 @@ export default function Page() {
 
       <main
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: '150px',
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "150px",
+          width: "100%"
         }}
       >
-        <TweetsCarousel items={tweets} />
+
+        <h1
+          style={{
+            marginTop: '40px',
+            marginBottom: '20px',
+            fontSize: '140px',
+            fontWeight: 'bold',
+          }}
+        >
+          GRIND &gt; GREED
+        </h1>
 
         <Countdown date={new Date('2025-01-15T21:00:00Z')} />
+
+        <div
+          style={{
+            width: "100%", // Adjust this width to control the layout
+            maxWidth: "520px", // Optional: Limit the maximum width of the embed
+            textAlign: "center", // Center the embed text/alignment
+            marginTop: "20px", // Add some space at the top
+          }}
+        >
+        <TweetsCarousel items={tweets} />
+        </div>
+        
+
 
         <Script
           src="https://platform.twitter.com/widgets.js"
