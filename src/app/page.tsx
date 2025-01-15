@@ -10,52 +10,79 @@ import clsx from 'clsx';
 import { PageLogo } from '../components/PageLogo/PageLogo';
 import { SwapModal } from '../components/SwapModal/SwapModal';
 
+import styles from './page.module.css';
+
 const Box = ({
   children,
+  href,
+  onClick,
   backgroundImage,
-  backgroundColor = '#222222',
+  backgroundColor,
   className,
   style,
-  onClick,
 }: {
+  onClick?: () => void;
   children: React.ReactNode;
+  href?: string;
   backgroundImage?: string;
   backgroundColor?: string;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
-}) => (
-  <div
-    className={clsx('box', className)}
-    onClick={onClick}
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative',
-      backgroundColor,
-      borderRadius: '32px',
-      overflow: 'hidden',
-      cursor: onClick ? 'pointer' : 'default',
-      ...style,
-    }}
-  >
-    {backgroundImage && (
-      <Image
-        src={backgroundImage}
-        alt="Background Box"
-        fill
+}) => {
+  const active = href || onClick;
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={clsx(styles.box, active && styles.active, className)}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          backgroundColor: backgroundColor || undefined,
+          ...style,
         }}
-      />
-    )}
-    {children}
-  </div>
-);
+      >
+        {backgroundImage && (
+          <Image
+            src={backgroundImage}
+            alt="Background Box"
+            fill
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          />
+        )}
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className={clsx(styles.box, active && styles.active, className)}
+      style={{
+        backgroundColor: backgroundColor || undefined,
+        ...style,
+      }}
+    >
+      {backgroundImage && (
+        <Image
+          src={backgroundImage}
+          alt="Background Box"
+          fill
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
+      {children}
+    </div>
+  );
+};
 
 export default function Page() {
   const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
@@ -64,13 +91,17 @@ export default function Page() {
   return (
     <div className="layout">
       <SwapModal {...swapDisclosure} />
-      <div className="navbar">
-        <PageLogo />
 
-        <a href="/staking">
-          <Button color="primary">Launch App</Button>
-        </a>
+      <div className="navbarContainer">
+        <div className="navbar">
+          <PageLogo />
+
+          <a href="/staking">
+            <Button color="primary">Launch App</Button>
+          </a>
+        </div>
       </div>
+
       <main style={{ display: 'flex', flexDirection: 'column' }}>
         <h1
           style={{
@@ -90,414 +121,128 @@ export default function Page() {
           }
         </h3>
 
-        <div className="landing-boxes">
-          <div className="first-column">
-            <Box backgroundColor="#803BF1">
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  fontSize: '28px',
-                  gap: '30px',
-                  padding: '80px 20px',
-                  fontWeight: 600,
-                }}
-              >
-                <span>IMAGE-TO-3D</span>
-                <span> All freely tradable. </span>
-                <span> Zero slippage. </span>
-              </div>
+        <div className={styles.landingBoxes}>
+          <div className={styles.firstColumn}>
+            <Box className={styles.imageTo3DBox}>
+              <span>IMAGE-TO-3D</span>
+              <span> All freely tradable. </span>
+              <span> Zero slippage. </span>
             </Box>
 
-            <Box>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  fontSize: '24px',
-                  padding: '30px 40px',
-                  fontWeight: 600,
-                  textAlign: 'start',
-                }}
-              >
-                {chunkedAddress.map((chunk, index) => {
-                  if (index === chunkedAddress.length - 1) {
-                    return (
-                      <div key={chunk} style={{ display: 'flex', gap: '4px' }}>
-                        <div>{chunk}</div>
-                        <Copy text={ASSET_ADDRESS} />
-                      </div>
-                    );
-                  }
-                  return <div key={chunk}>{chunk}</div>;
-                })}
+            <Box className={styles.contractAddressBox}>
+              {chunkedAddress.map((chunk, index) => {
+                if (index === chunkedAddress.length - 1) {
+                  return (
+                    <div key={chunk} className={styles.contractAddressSplit}>
+                      <div>{chunk}</div>
+                      <Copy text={ASSET_ADDRESS} />
+                    </div>
+                  );
+                }
+                return <div key={chunk}>{chunk}</div>;
+              })}
 
-                <div
-                  style={{
-                    display: 'flex',
-                    gap: '4px',
-                    fontSize: '13px',
-                    position: 'absolute',
-                    backgroundColor: '#803BF1',
-                    color: '#FFFFFF',
-                    padding: '10px',
-                    width: '300px',
-                    bottom: '0',
-                    right: '0',
-                    whiteSpace: 'nowrap',
-                    transform: 'translate(80px, -25px) rotate(-32deg)',
-                    textAlign: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  CONTRACT ADDRESS
-                </div>
-              </div>
+              <div className={styles.contractAddress}>CONTRACT ADDRESS</div>
             </Box>
 
             <Box
+              className={styles.buyNowBox}
               onClick={() => swapDisclosure.onOpen()}
-              style={{
-                flexDirection: 'row',
-                padding: '28.5px 20px',
-                gap: '0',
-                background:
-                  'linear-gradient(220deg,rgb(129, 59, 241, 0.6) 0%, #222222 80%)',
-              }}
+              href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
             >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  fontSize: '30px',
-                  fontWeight: 600,
-                  justifyContent: 'flex-start',
-                  textAlign: 'start',
-                }}
-              >
-                <div
-                  style={{
-                    color: '#803BF1',
-                    fontWeight: 800,
-                    lineHeight: '48px',
-                  }}
-                >
-                  BUY NOW
-                </div>
-                <div
-                  style={{
-                    fontSize: '42px',
-                    lineHeight: '42px',
-                  }}
-                >
-                  $LEONAI
-                </div>
+              <div className={styles.buyNowBoxText}>
+                <div className={styles.buyNowBuyNow}>BUY NOW</div>
+                <div className={styles.buyNowLeonai}>$LEONAI</div>
               </div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'start',
-                  marginLeft: '-10px',
-                }}
-              >
+              <div className={styles.tokens}>
                 <Image
                   src="/leonai.png"
                   alt="$LEONAI"
+                  className={styles.leonaiTokenImage}
                   width={80}
                   height={80}
-                  style={{
-                    transform: 'rotate(-15deg)',
-                    marginBottom: '60px',
-                    marginRight: '-10px',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    zIndex: 1,
-                    minWidth: '80px',
-                    minHeight: '80px',
-                  }}
                 />
 
-                <div
-                  style={{
-                    marginTop: '60px',
-                    marginLeft: '-15px',
-                    transform: 'rotate(15deg)',
-                    borderRadius: '16px',
-                    overflow: 'hidden',
-                    backgroundColor: '#FFFFFF',
-                    width: '80px',
-                    height: '80px',
-                    minWidth: '80px',
-                    minHeight: '80px',
-                  }}
-                >
+                <div className={styles.uniswapToken}>
                   <Image
+                    className={styles.uniswapTokenImage}
                     src="/uniswap.svg"
                     alt="$UNI"
                     fill
-                    style={{
-                      scale: 1.4,
-                      transform: 'rotate(-25deg)',
-                    }}
                   />
                 </div>
               </div>
             </Box>
           </div>
-          <div className="second-column">
-            <Box
-              style={{
-                fontWeight: 700,
-                padding: '40px 20px',
-                gap: '6px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '30px',
-                  lineHeight: '30px',
-                }}
-              >
-                Over
-              </span>
-              <span
-                style={{
-                  fontSize: '72px',
-                  lineHeight: '72px',
-                }}
-              >
-                $300K
-              </span>
-              <span
-                style={{
-                  fontSize: '30px',
-                  lineHeight: '30px',
-                }}
-              >
-                PER DAY
-              </span>
+          <div className={styles.secondColumn}>
+            <Box className={styles.over300k}>
+              <span className={styles.over300kFirst}>Over</span>
+              <span className={styles.over300kSecond}>$300K</span>
+              <span className={styles.over300kThird}>PER DAY</span>
             </Box>
 
-            <Box
-              style={{
-                fontWeight: 700,
-                padding: '40px 20px',
-                gap: '6px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '32px',
-                  lineHeight: '32px',
-                }}
-              >
-                VOTE
-              </span>
-              <span
-                style={{
-                  fontSize: '92px',
-                  lineHeight: '92px',
-                }}
-              >
-                DAO
-              </span>
+            <Box className={styles.voteDao}>
+              <span className={styles.voteDaoFirst}>VOTE</span>
+              <span className={styles.voteDaoSecond}>DAO</span>
             </Box>
 
-            <Box
-              style={{
-                minWidth: 380,
-                height: 280,
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  width: 280,
-                  height: 600,
-                  top: 30,
-                }}
-              >
-                <div
-                  style={{
-                    position: 'relative',
-                    width: 280,
-                    height: 600,
-                    borderRadius: '50px',
-                    overflow: 'hidden',
-                  }}
-                >
+            <Box className={styles.xBox} href="https://x.com/Leonardo__AI">
+              <div className={styles.xBoxScreenContainer}>
+                <div className={styles.xBoxScreen}>
                   <Image src="/screen.png" alt="Screen" fill />
                 </div>
               </div>
-              <div
-                style={{
-                  position: 'absolute',
-                  width: 300,
-                  height: 600,
-                  top: 30,
-                }}
-              >
-                <div
-                  style={{
-                    position: 'relative',
-                    width: 300,
-                    height: 600,
-                  }}
-                >
+              <div className={styles.xBoxPhoneContainer}>
+                <div className={styles.xBoxPhone}>
                   <Image src="/phone.png" alt="Phone" fill />
                 </div>
               </div>
             </Box>
 
-            <Box
-              style={{
-                gridColumn: 'span 2',
-              }}
-            >
-              <div className="logo">
+            <Box className={styles.logoBox}>
+              <div className={styles.logo}>
                 <Image
                   src={'/logo.webp'}
                   alt="Logo LeonardoAI"
-                  width={180}
-                  height={180}
+                  width={150}
+                  height={150}
                 />
-                <span
-                  style={{
-                    color: '#FFFFFF',
-                    fontFamily: 'Bebas Neue',
-                    fontSize: '84px',
-                    fontStyle: 'italic',
-                    fontWeight: '700',
-                    lineHeight: '84px',
-                    letterSpacing: '-0.072px',
-                    textTransform: 'uppercase',
-                    marginLeft: '-20px',
-                  }}
-                >
-                  LEONARDO
-                </span>
-                <span
-                  style={{
-                    color: '#803BF1',
-                    fontFamily: 'Bebas Neue',
-                    fontSize: '84px',
-                    fontStyle: 'italic',
-                    fontWeight: '700',
-                    lineHeight: '84px',
-                    letterSpacing: '-0.072px',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  AI
-                </span>
               </div>
+              <span className={styles.logoTextFirst}>LEONARDO</span>
+              <span className={styles.logoTextSecond}>AI</span>
             </Box>
 
-            <Box backgroundColor="#803BF1" style={{ padding: '40px 0px' }}>
-              <span
-                style={{
-                  fontSize: '24px',
-                  fontWeight: 600,
-                }}
-              >
-                Launching
-              </span>
-              <span
-                style={{
-                  fontSize: '60px',
-                  fontWeight: 600,
-                }}
-              >
-                Q1 2025
-              </span>
+            <Box className={styles.launchingBox}>
+              <span className={styles.launchingBoxFirst}>Launching</span>
+              <span className={styles.launchingBoxSecond}>Q1 2025</span>
             </Box>
 
-            <Box
-              style={{
-                padding: '20px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '24px',
-                  fontWeight: 600,
-                }}
-              >
-                Tech stack
-              </span>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '8px',
-                  padding: '20px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  placeItems: 'center',
-                }}
-              >
-                <Chip size="lg" color="primary" variant="bordered">
+            <Box className={styles.techStackBox}>
+              <span>Tech stack</span>
+              <div className={styles.techStackGrid}>
+                <Chip size="md" color="primary" variant="bordered">
                   G.A.M.E.
                 </Chip>
-                <Chip size="lg" color="primary" variant="bordered">
+                <Chip size="md" color="primary" variant="bordered">
                   COMIC-AI
                 </Chip>
-                <Chip size="lg" color="primary" variant="bordered">
+                <Chip size="md" color="primary" variant="bordered">
                   Virtuals
                 </Chip>
-                <Chip size="lg" color="primary" variant="bordered">
+                <Chip size="md" color="primary" variant="bordered">
                   More
                 </Chip>
               </div>
             </Box>
 
-            <Box
-              style={{
-                gridColumn: 'span 2',
-                padding: '40px 20px',
-                gap: '4px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '30px',
-                  lineHeight: '30px',
-                  fontWeight: 600,
-                }}
-              >
-                REWARDING ONLY THE
-              </span>
-              <div
-                className={clsx('responsive')}
-                style={{
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: '57px',
-                    lineHeight: '57px',
-                    fontWeight: 600,
-                    color: '#803BF1',
-                  }}
-                >
-                  TOP 100
-                </span>
-                <span
-                  style={{
-                    fontSize: '57px',
-                    lineHeight: '57px',
-                    fontWeight: 600,
-                  }}
-                >
-                  STAKERS
-                </span>
+            <Box className={styles.stakeBox} href="/staking">
+              <span className={styles.stakeBoxFirst}>REWARDING ONLY THE</span>
+              <div className={styles.stakeBoxSecond}>
+                <div className={styles.stakeBoxSecondInnerFirst}>TOP 100</div>
+                <div className={styles.stakeBoxSecondInnerSecond}>STAKERS</div>
               </div>
-              <a href="/staking">
-                <Button color="primary">STAKE NOW</Button>
-              </a>
+              <Button color="primary">STAKE NOW</Button>
             </Box>
           </div>
         </div>

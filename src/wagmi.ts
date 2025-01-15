@@ -1,6 +1,6 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { base as Base, sepolia as Sepolia } from 'wagmi/chains';
-import { CHAIN, ALCHEMY_API_KEY } from './config';
+import { CHAIN, ALCHEMY_API_KEY, WALLETCONNECT_API_KEY } from './config';
 
 let sepolia = Sepolia;
 let base = Base;
@@ -29,7 +29,7 @@ if (ALCHEMY_API_KEY) {
 }
 const config = getDefaultConfig({
   appName: 'Leonardo AI',
-  projectId: 'leonardo-ai',
+  projectId: WALLETCONNECT_API_KEY as string,
   chains: CHAIN === 'base' ? [base] : [sepolia],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });

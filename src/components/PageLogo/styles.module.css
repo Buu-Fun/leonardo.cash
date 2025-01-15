@@ -1,5 +1,8 @@
 .layout {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo {
@@ -8,21 +11,25 @@
   position: relative;
 }
 
-.title {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: 'Bebas Neue';
-  font-size: 42px;
-  font-style: italic;
+.logoTextFirst,
+.logoTextSecond {
+  font-size: 40px;
+  line-height: 40px;
   font-weight: 700;
-  line-height: 42px;
-  text-transform: 'uppercase';
-  color: #fff;
+  font-style: italic;
+  font-family: Bebas Neue;
+  text-transform: uppercase;
 }
 
-.purple {
+.logoTextFirst {
+  color: #ffffff;
+  letter-spacing: -0.072px;
+  margin-left: -4px;
+}
+
+.logoTextSecond {
   color: #803bf1;
+  letter-spacing: -0.072px;
 }
 
 @media screen and (max-width: 768px) {
@@ -31,8 +38,8 @@
     height: 60px;
   }
 
-  .title {
-    font-size: 32px;
-    line-height: 32px;
+  .logoTextFirst,
+  .logoTextSecond {
+    display: none;
   }
 }

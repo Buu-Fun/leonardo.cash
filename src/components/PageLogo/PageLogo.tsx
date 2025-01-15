@@ -8,10 +8,8 @@ export const PageLogo = () => {
       <div className={styles.logo}>
         <Image src={'/logo.webp'} alt="Logo LeonardoAI" fill />
       </div>
-      <div className={styles.title}>
-        <div>LEONARDO</div>
-        <div className={styles.purple}>AI</div>
-      </div>
+      <span className={styles.logoTextFirst}>LEONARDO</span>
+      <span className={styles.logoTextSecond}>AI</span>
     </div>
   );
 };

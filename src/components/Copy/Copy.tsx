@@ -28,9 +28,14 @@ const Copy = ({ text, duration = 2000 }: CopyProps) => {
       title={isCopied ? 'Copied!' : 'Copy to clipboard'}
     >
       {isCopied ? (
-        <CheckIcon className="h-6 w-6 text-green-500" />
+        <CheckIcon
+          className="h-6 w-6"
+          style={{
+            stroke: 'var(--success-color)',
+          }}
+        />
       ) : (
-        <ClipboardIcon className="h-6 w-6 text-gray-700" />
+        <ClipboardIcon className="h-6 w-6" />
       )}
     </button>
   );
