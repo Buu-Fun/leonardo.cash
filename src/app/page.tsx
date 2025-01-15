@@ -40,6 +40,8 @@ const Box = ({
           backgroundColor: backgroundColor || undefined,
           ...style,
         }}
+        target="_blank"
+        rel="noreferrer"
       >
         {backgroundImage && (
           <Image
@@ -137,8 +139,8 @@ export default function Page() {
           <div className={styles.firstColumn}>
             <Box className={styles.imageTo3DBox}>
               <span>IMAGE-TO-3D</span>
-              <span> All freely tradable. </span>
-              <span> Zero slippage. </span>
+              <span> Memecomic </span>
+              <span> Portfolio Mgmt </span>
             </Box>
 
             <Box className={styles.contractAddressBox}>
@@ -190,11 +192,16 @@ export default function Page() {
           <div className={styles.secondColumn}>
             <Box className={styles.over300k}>
               <span className={styles.over300kFirst}>Over</span>
-              <span className={styles.over300kSecond}>$300K</span>
+              <span className={styles.over300kSecond}>$16k</span>
               <span className={styles.over300kThird}>PER DAY</span>
             </Box>
 
-            <Box className={styles.voteDao}>
+            <Box
+              className={styles.voteDao}
+              href="
+              https://dao.leonardo.cash
+            "
+            >
               <span className={styles.voteDaoFirst}>VOTE</span>
               <span className={styles.voteDaoSecond}>DAO</span>
             </Box>
