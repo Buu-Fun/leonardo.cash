@@ -122,9 +122,11 @@ export const RedeemModal = ({
                     className={styles.label}
                     style={{
                       color: 'var(--text-color-muted)',
-                      cursor: 'pointer',
+                      cursor: withdrawing ? 'unset' : 'pointer',
                     }}
-                    onClick={() => setPercentage(BigInt(100))}
+                    onClick={
+                      withdrawing ? undefined : () => setPercentage(BigInt(100))
+                    }
                   >{`Balance: ${format({
                     value: stakingBalance.toString(),
                     decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
@@ -132,9 +134,14 @@ export const RedeemModal = ({
                 </div>
                 <input
                   type="text"
+                  color={withdrawing ? 'disabled' : 'primary'}
                   value={amount}
                   onChange={(e) => handleSetAmount(e.target.value)}
                   className={styles.input}
+                  disabled={withdrawing}
+                  style={{
+                    color: withdrawing ? 'var(--text-color-muted)' : undefined,
+                  }}
                   height={48}
                 />
 
@@ -144,7 +151,7 @@ export const RedeemModal = ({
                       fullWidth
                       size="sm"
                       key={percentage}
-                      color="primary"
+                      color={withdrawing ? 'default' : 'primary'}
                       variant={
                         amount ===
                         ethers.formatUnits(
@@ -154,7 +161,17 @@ export const RedeemModal = ({
                           ? undefined
                           : 'light'
                       }
-                      onPress={() => setPercentage(BigInt(percentage))}
+                      disabled={withdrawing}
+                      onPress={
+                        withdrawing
+                          ? undefined
+                          : () => setPercentage(BigInt(percentage))
+                      }
+                      style={{
+                        color: withdrawing
+                          ? 'var(--text-color-muted)'
+                          : undefined,
+                      }}
                     >
                       {percentage}%
                     </Button>

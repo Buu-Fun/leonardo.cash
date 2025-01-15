@@ -178,9 +178,13 @@ export const DepositModal = ({
                       className={styles.label}
                       style={{
                         color: 'var(--text-color-muted)',
-                        cursor: 'pointer',
+                        cursor: depositing ? 'unset' : 'pointer',
                       }}
-                      onClick={() => setPercentage(BigInt(100))}
+                      onClick={
+                        depositing
+                          ? undefined
+                          : () => setPercentage(BigInt(100))
+                      }
                     >{`Balance: ${format({
                       value: assetBalance.toString(),
                       decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
@@ -188,10 +192,15 @@ export const DepositModal = ({
                   </div>
                   <input
                     type="text"
+                    color={depositing ? 'disabled' : 'primary'}
                     value={amount}
                     onChange={(e) => handleSetAmount(e.target.value)}
                     className={styles.input}
                     height={48}
+                    disabled={depositing}
+                    style={{
+                      color: depositing ? 'var(--text-color-muted)' : undefined,
+                    }}
                   />
 
                   <div className={styles.buttons}>
@@ -200,14 +209,24 @@ export const DepositModal = ({
                         fullWidth
                         size="sm"
                         key={percentage}
-                        color="primary"
+                        color={depositing ? 'default' : 'primary'}
                         variant={
                           amountBn ===
                           (assetBalance * BigInt(percentage)) / 100n
                             ? undefined
                             : 'light'
                         }
-                        onPress={() => setPercentage(BigInt(percentage))}
+                        disabled={depositing}
+                        onPress={
+                          depositing
+                            ? undefined
+                            : () => setPercentage(BigInt(percentage))
+                        }
+                        style={{
+                          color: depositing
+                            ? 'var(--text-color-muted)'
+                            : undefined,
+                        }}
                       >
                         {percentage}%
                       </Button>
