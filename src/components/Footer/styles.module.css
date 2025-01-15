@@ -7,15 +7,38 @@
 
 .container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 32px;
+  flex-direction: column;
+  padding: 32px;
   background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   color: #fff;
   width: 100%;
   justify-content: space-between;
   border-radius: 32px 32px 0 0;
+  gap: 20px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 12px;
+}
+
+.right {
+  display: flex;
+  gap: 20px;
+}
+
+.up {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.down {
+  font-size: 10px;
+  color: #a0a0a0;
 }
 
 .logo {
@@ -43,11 +66,6 @@
 .logoTextSecond {
   color: #803bf1;
   letter-spacing: -0.072px;
-}
-
-.left {
-  display: flex;
-  flex-direction: column;
 }
 
 .button {
