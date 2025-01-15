@@ -141,15 +141,16 @@ body {
   align-items: center;
   padding: 10px 20px;
   width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(7.300000190734863px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
   position: fixed;
   top: 0;
   z-index: 1000;
   transition: all 0.3s ease;
   max-width: 1300px;
-  border-radius: 32px;
-  margin-top: 12px;
+  border-radius: 0 0 32px 32px;
+  /* margin-top: 12px; */
+  margin: 0 12px;
 }
 
 main {
@@ -160,7 +161,7 @@ main {
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 120px 20px;
   z-index: 2;
 }
@@ -293,75 +294,15 @@ h3 {
   text-transform: uppercase;
 }
 
-.landing-boxes {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  white-space: nowrap;
-
-  .first-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .second-column {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    margin-left: -40px;
-  }
-
-  .responsive {
-    display: flex;
-    flex-direction: row;
-  }
-}
-
-.box {
-  transition: all 0.3s ease;
-  min-width: 250px;
-}
-
-.box:hover {
-  transform: scale(1.02);
-  filter: drop-shadow(0px 0px 80px rgb(128, 59, 241, 0.5));
-}
-
 @keyframes levitate {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0); /* Default position */
   }
   50% {
     transform: translateY(-10px); /* Slight upward movement */
   }
 }
-
-.parent {
-  display: inline-block;
-}
-
-.child {
-  display: inline-block;
-  transition: box-shadow 0.3s ease;
-}
-
-/* Apply the levitate effect to the child when the parent is hovered */
-.parent:hover .child {
-  animation: levitate 3s ease-in-out infinite;
-}
-
 
 .pageLogo {
   width: 80px;
@@ -372,44 +313,6 @@ h3 {
 .modal {
   background: transparent;
   width: 100%;
-}
-
-@media screen and (max-width: 1300px) {
-  .landing-boxes {
-    flex-direction: column;
-    width: 100%;
-
-    .first-column {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
-
-    .second-column {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .logo {
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-left: 0;
-    }
-
-    .responsive {
-      flex-direction: column;
-    }
-  }
-
-  .box {
-    width: 100%;
-  }
-
-  .pageLogo {
-    width: 40px;
-    height: 40px;
-  }
 }
 
 @media screen and (max-width: 768px) {
