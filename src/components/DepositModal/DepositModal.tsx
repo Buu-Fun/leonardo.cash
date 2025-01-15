@@ -33,6 +33,7 @@ export const DepositModal = ({
   approveFn,
   stakeFn,
 }: Props) => {
+  const [depositing, setDepositing] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
   const [amount, setAmount] = React.useState('');
   const amountBn =
@@ -80,13 +81,16 @@ export const DepositModal = ({
     setApproving(true);
     await approveFn(ethers.MaxUint256); // approve all
     setApproving(false);
-    // onClose();
   };
 
   const handleStake = useCallback(
     (onClose: () => void) => async () => {
-      stakeFn(ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)));
+      setDepositing(true);
+      await stakeFn(
+        ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+      );
       onClose();
+      setDepositing(false);
     },
     [amount],
   );
@@ -202,7 +206,14 @@ export const DepositModal = ({
                   fullWidth
                   disabled={!canStake}
                   color={canStake ? 'primary' : 'default'}
-                  onPress={canStake ? handleStake(onClose) : undefined}
+                  isLoading={depositing}
+                  onPress={
+                    canStake
+                      ? depositing
+                        ? undefined
+                        : handleStake(onClose)
+                      : undefined
+                  }
                   style={{
                     height: '48px',
                   }}

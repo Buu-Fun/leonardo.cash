@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 
@@ -175,7 +175,7 @@ export default function Page() {
         if (processingToast) {
           toast.dismiss(processingToast);
         }
-        fetchAll();
+        await fetchAll();
       }
     },
     [fetchAll],
@@ -411,6 +411,7 @@ export default function Page() {
   }, [address, signer]);
 
   const now = BigInt(Math.floor(Date.now() / 1000));
+  // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
 
   const walletIn =
     stakingBalance - BigInt(staker?.coolingDown || 0n) >= lastBalance;

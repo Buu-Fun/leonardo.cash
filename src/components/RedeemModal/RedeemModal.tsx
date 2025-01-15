@@ -28,6 +28,7 @@ export const RedeemModal = ({
   withdrawFn,
   withdrawAllFn,
 }: Props) => {
+  const [withdrawing, setWithdrawing] = React.useState(false);
   const [amount, setAmount] = React.useState('');
 
   const handleSetAmount = useCallback(
@@ -71,16 +72,18 @@ export const RedeemModal = ({
 
   const handleRedeem = useCallback(
     (onClose: () => void) => async () => {
+      setWithdrawing(true);
       const bnAmount = ethers.parseUnits(
         amount,
         parseInt(ASSET_METADATA_DECIMALS),
       );
       if (bnAmount === stakingBalance) {
-        withdrawAllFn();
+        await withdrawAllFn();
       } else {
-        withdrawFn(bnAmount);
+        await withdrawFn(bnAmount);
       }
       onClose();
+      setWithdrawing(false);
     },
     [amount],
   );
@@ -166,8 +169,15 @@ export const RedeemModal = ({
             <Button
               fullWidth
               disabled={!canUnstake}
+              isLoading={withdrawing}
               color={canUnstake ? 'primary' : 'default'}
-              onPress={canUnstake ? handleRedeem(onClose) : undefined}
+              onPress={
+                canUnstake
+                  ? withdrawing
+                    ? undefined
+                    : handleRedeem(onClose)
+                  : undefined
+              }
               style={{
                 height: '48px',
               }}

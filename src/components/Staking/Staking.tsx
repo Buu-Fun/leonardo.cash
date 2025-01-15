@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './styles.module.css';
 import { format, prettyAmount } from '../../utils/format';
 import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
@@ -21,7 +21,7 @@ interface Props {
   coolingDown: bigint;
   releaseTime: bigint;
   redeemFn: () => void;
-  claimFn: () => void;
+  claimFn: () => Promise<void>;
 }
 
 function Staking({
@@ -34,6 +34,7 @@ function Staking({
   redeemFn,
   claimFn,
 }: Props) {
+  const [claiming, setClaiming] = useState(false);
   const now = useMemo(() => Date.now(), [earnings, earningsPerDay]);
   const earningsAmount = useDynamicAmount({
     offset: parseFloat(
@@ -53,6 +54,12 @@ function Staking({
   });
 
   const lockedAmount = stakingBalance - coolingDown;
+
+  const handleClaim = async () => {
+    setClaiming(true);
+    await claimFn();
+    setClaiming(false);
+  };
 
   return (
     <div
@@ -155,7 +162,8 @@ function Staking({
             {earnings > 0n && (
               <Button
                 color="primary"
-                onPress={claimFn}
+                isLoading={claiming}
+                onPress={claiming ? undefined : handleClaim}
                 style={{
                   color: 'white',
                   width: '100%',

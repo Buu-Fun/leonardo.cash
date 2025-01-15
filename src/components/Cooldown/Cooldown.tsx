@@ -12,7 +12,7 @@ interface Props {
   coolingDown: bigint;
   releaseTime: bigint;
   coolingDownAssets: bigint;
-  withdrawAllFn: () => void;
+  withdrawAllFn: () => Promise<void>;
 }
 
 function Cooldown({
@@ -21,6 +21,7 @@ function Cooldown({
   releaseTime,
   withdrawAllFn,
 }: Props) {
+  const [withdrawing, setWithdrawing] = useState(false);
   const [now, setNow] = useState(BigInt(Math.floor(Date.now() / 1000)));
 
   useEffect(() => {
@@ -29,6 +30,12 @@ function Cooldown({
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleWithdrawAll = async () => {
+    setWithdrawing(true);
+    await withdrawAllFn();
+    setWithdrawing(false);
+  };
 
   const unlocked = releaseTime <= now;
 
@@ -74,7 +81,11 @@ function Cooldown({
       </div>
 
       {unlocked && (
-        <Button color="primary" onPress={withdrawAllFn}>
+        <Button
+          isLoading={withdrawing}
+          color="primary"
+          onPress={withdrawing ? undefined : handleWithdrawAll}
+        >
           Withdraw
         </Button>
       )}

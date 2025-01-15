@@ -80,7 +80,7 @@
   --toastify-toast-bd-radius: 16px;
   --toastify-toast-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   --toastify-font-family: var(--font-family);
-  --toastify-z-index: 9999;
+  --toastify-z-index: 99999;
   --toastify-text-color-light: #757575;
   --toastify-text-color-dark: #fff;
 
