@@ -1,5 +1,5 @@
 'use client';
-import { Button, Chip } from '@nextui-org/react';
+import { Button, Chip, useDisclosure } from '@nextui-org/react';
 import React from 'react';
 import Image from 'next/image';
 import { Footer } from '../components/Footer/Footer';
@@ -8,6 +8,7 @@ import { splitStringIntoChunks } from '../utils/format';
 import Copy from '../components/Copy/Copy';
 import clsx from 'clsx';
 import { PageLogo } from '../components/PageLogo/PageLogo';
+import { SwapModal } from '../components/SwapModal/SwapModal';
 
 const Box = ({
   children,
@@ -15,15 +16,18 @@ const Box = ({
   backgroundColor = '#222222',
   className,
   style,
+  onClick,
 }: {
   children: React.ReactNode;
   backgroundImage?: string;
   backgroundColor?: string;
   className?: string;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }) => (
   <div
     className={clsx('box', className)}
+    onClick={onClick}
     style={{
       display: 'flex',
       flexDirection: 'column',
@@ -33,6 +37,7 @@ const Box = ({
       backgroundColor,
       borderRadius: '32px',
       overflow: 'hidden',
+      cursor: onClick ? 'pointer' : 'default',
       ...style,
     }}
   >
@@ -54,8 +59,11 @@ const Box = ({
 
 export default function Page() {
   const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
+  const swapDisclosure = useDisclosure();
+
   return (
     <div className="layout">
+      <SwapModal {...swapDisclosure} />
       <div className="navbar">
         <PageLogo />
 
@@ -148,6 +156,7 @@ export default function Page() {
             </Box>
 
             <Box
+              onClick={() => swapDisclosure.onOpen()}
               style={{
                 flexDirection: 'row',
                 padding: '28.5px 20px',

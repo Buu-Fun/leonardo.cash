@@ -64,8 +64,6 @@
 
 .bottom {
   display: flex;
-
-  flex-direction: column;
   gap: 20px;
   width: 100%;
   padding: 10px;
@@ -104,11 +102,4 @@
   display: flex;
   width: 100%;
   padding: 10px;
-}
-
-.buttons {
-  display: flex;
-  width: 100%;
-  justify-content: space-evenly;
-  gap: 10px;
 }

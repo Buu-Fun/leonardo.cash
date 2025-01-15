@@ -31,7 +31,6 @@ function Staking({
   earningsPerDay,
   walletIn = false,
   coolingDown,
-  releaseTime,
   redeemFn,
   claimFn,
 }: Props) {
@@ -53,9 +52,7 @@ function Staking({
     endTime: now + 86400000,
   });
 
-  const nowForRelease = BigInt(Math.floor(Date.now() / 1000));
-  const lockedAmount =
-    releaseTime > nowForRelease ? stakingBalance : stakingBalance - coolingDown;
+  const lockedAmount = stakingBalance - coolingDown;
 
   return (
     <div
@@ -130,7 +127,7 @@ function Staking({
               </div>
               <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
             </div>
-            {stakingBalance > 0n && (
+            {lockedAmount > 0n && (
               <Button color="default" onPress={redeemFn}>
                 Unstake
               </Button>

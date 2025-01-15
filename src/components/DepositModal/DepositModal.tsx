@@ -20,7 +20,7 @@ interface Props {
   stakeFn: (amount: bigint) => Promise<void>;
 }
 
-// const percentages = [25, 50, 75, 100];
+const percentages = [25, 50, 75, 100];
 
 export const DepositModal = ({
   assetBalance,
@@ -35,13 +35,16 @@ export const DepositModal = ({
 }: Props) => {
   const [approving, setApproving] = React.useState(false);
   const [amount, setAmount] = React.useState('');
+  const amountBn =
+    amount !== ''
+      ? ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS))
+      : 0n;
 
   const handleSetAmount = useCallback(
     (value: string) => {
       try {
         const innerValue = value.replace(/,/g, '.'); // 3.1415
         if (innerValue === '') {
-          console.log('innerValue === ""');
           setAmount('');
           return;
         }
@@ -63,15 +66,15 @@ export const DepositModal = ({
     [assetBalance],
   );
 
-  // const setPercentage = useCallback(
-  //   (percentage: bigint) => {
-  //     const parsedValue = (assetBalance * percentage) / 100n;
-  //     setAmount(
-  //       ethers.formatUnits(parsedValue, parseInt(ASSET_METADATA_DECIMALS)),
-  //     );
-  //   },
-  //   [assetBalance],
-  // );
+  const setPercentage = useCallback(
+    (percentage: bigint) => {
+      const parsedValue = (assetBalance * percentage) / 100n;
+      setAmount(
+        ethers.formatUnits(parsedValue, parseInt(ASSET_METADATA_DECIMALS)),
+      );
+    },
+    [assetBalance],
+  );
 
   const handleApprove = () => async () => {
     setApproving(true);
@@ -95,26 +98,19 @@ export const DepositModal = ({
   }, [isOpen]);
 
   const isAllowed = stakingAllowance >= ethers.MaxUint256;
-  // const isInvalid = false;
   const canStake =
     isAllowed &&
     amount !== '' &&
-    ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)) > 0n &&
+    amountBn > 0n &&
     stakingAllowance >=
       ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS));
 
-  const youAreInTop100 =
-    canStake &&
-    stakingBalance +
-      ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)) >
-      lastBalance;
+  const youAreInTop100 = canStake && stakingBalance + amountBn > lastBalance;
 
   const amountLeft = canStake
     ? youAreInTop100
       ? 0n
-      : lastBalance -
-        (stakingBalance +
-          ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS)))
+      : lastBalance - (stakingBalance + amountBn)
     : 0n;
 
   return (
@@ -180,9 +176,30 @@ export const DepositModal = ({
                     className={styles.input}
                     height={48}
                   />
+
+                  <div className={styles.buttons}>
+                    {percentages.map((percentage) => (
+                      <Button
+                        fullWidth
+                        size="sm"
+                        key={percentage}
+                        color="primary"
+                        variant={
+                          amountBn ===
+                          (assetBalance * BigInt(percentage)) / 100n
+                            ? undefined
+                            : 'light'
+                        }
+                        onPress={() => setPercentage(BigInt(percentage))}
+                      >
+                        {percentage}%
+                      </Button>
+                    ))}
+                  </div>
                 </div>
 
                 <Button
+                  fullWidth
                   disabled={!canStake}
                   color={canStake ? 'primary' : 'default'}
                   onPress={canStake ? handleStake(onClose) : undefined}

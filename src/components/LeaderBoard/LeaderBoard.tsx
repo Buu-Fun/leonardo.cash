@@ -160,9 +160,6 @@ export const LeaderBoard = ({
     return () => clearInterval(interval);
   }, [memorizedTopStakers]);
 
-  console.log('coolingDownAssets', coolingDownAssets);
-  console.log('assets', assets);
-
   return (
     <div
       style={{
@@ -224,10 +221,8 @@ export const LeaderBoard = ({
                       {prettyAmount(
                         parseFloat(
                           ethers.formatUnits(
-                            BigInt(staker.releaseTime) < now
-                              ? assets[staker.staker] -
-                                  coolingDownAssets[staker.staker] || 0n
-                              : assets[staker.staker],
+                            assets[staker.staker] -
+                              coolingDownAssets[staker.staker],
                             parseInt(ASSET_METADATA_DECIMALS),
                           ),
                         ),

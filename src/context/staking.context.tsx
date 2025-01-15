@@ -216,9 +216,10 @@ export const StakingProvider = ({ children }: Props) => {
     const variables = {
       where: {
         chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        computing_gt: '0',
       },
       limit: nTopStakers,
-      orderBy: 'shares',
+      orderBy: 'computing',
       orderDirection: 'desc',
     };
     const { stakers } = await ponderRequest(GetStakers, variables);

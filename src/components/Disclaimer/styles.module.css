@@ -1,7 +1,7 @@
 .layout {
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: 16px;
   gap: 20px;
   border-radius: 20px;
   border: 1.5px solid rgb(255, 176, 22, 0.2);
@@ -70,7 +70,7 @@
 }
 
 .message {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
 }
 

@@ -33,12 +33,10 @@ import { useStaking } from '@/src/context/staking.context';
 import { serverRequest } from '@/src/gql/client';
 import { GetSignedStakingReward } from '@/src/gql/documents/server';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
-import {
-  calculateSharesSinceLastUpdate,
-  getBoosterValue,
-} from '@/src/utils/shares';
+import { getBoosterValue } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
+import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 
 const nTopStakers = 100;
 
@@ -71,11 +69,7 @@ const calculateEarningPerDayStakers = ({
     (acc: bigint, account: Staker, index: number) => {
       const boostedShares =
         getBoosterValue(index) *
-        calculateSharesSinceLastUpdate({
-          staker: account,
-          now,
-          timeSinceLastUpdate,
-        });
+        (BigInt(account.shares) - BigInt(account.coolingDown));
       return acc + boostedShares;
     },
     0n,
@@ -83,11 +77,7 @@ const calculateEarningPerDayStakers = ({
   return topStakers.map((staker, index) => {
     const boostedShares =
       getBoosterValue(index) *
-      calculateSharesSinceLastUpdate({
-        staker,
-        now,
-        timeSinceLastUpdate,
-      });
+      (BigInt(staker.shares) - BigInt(staker.coolingDown));
     const currentReward =
       (rewardsInLastPeriod * boostedShares) / totalBoostedShares;
     const earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
@@ -110,6 +100,7 @@ export default function Page() {
   const signer = useEthersSigner();
   const depositDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
+  const swapDisclosure = useDisclosure();
 
   const {
     topStakers,
@@ -389,13 +380,31 @@ export default function Page() {
 
     await handleTx({
       confirmingDescription: `Claiming ${prettyAmount(
-        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+        parseFloat(
+          ethers.formatUnits(
+            BigInt(getSignedStakingReward.amount) -
+              BigInt(stakingReward?.claimed || 0),
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
+        ),
       )} ${ASSET_METADATA_SYMBOL}`,
       processingDescription: `Claiming ${prettyAmount(
-        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+        parseFloat(
+          ethers.formatUnits(
+            BigInt(getSignedStakingReward.amount) -
+              BigInt(stakingReward?.claimed || 0),
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
+        ),
       )} ${ASSET_METADATA_SYMBOL}`,
       successDescription: `The claim of ${prettyAmount(
-        parseFloat(ethers.formatUnits(getSignedStakingReward.amount, 18)),
+        parseFloat(
+          ethers.formatUnits(
+            BigInt(getSignedStakingReward.amount) -
+              BigInt(stakingReward?.claimed || 0),
+            parseInt(ASSET_METADATA_DECIMALS),
+          ),
+        ),
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
@@ -403,7 +412,8 @@ export default function Page() {
 
   const now = BigInt(Math.floor(Date.now() / 1000));
 
-  const walletIn = stakingBalance >= lastBalance;
+  const walletIn =
+    stakingBalance - BigInt(staker?.coolingDown || 0n) >= lastBalance;
 
   let currentReward = 0n;
   let earningPerDay = 0n;
@@ -434,23 +444,15 @@ export default function Page() {
           return (
             acc +
             getBoosterValue(index) *
-              calculateSharesSinceLastUpdate({
-                staker: account,
-                now,
-                timeSinceLastUpdate,
-              })
+              (BigInt(account.shares) - BigInt(account.coolingDown))
           );
         },
         0n,
       ) as bigint;
       currentReward =
         (rewardsInLastPeriod *
-          calculateSharesSinceLastUpdate({
-            staker,
-            now,
-            timeSinceLastUpdate,
-          }) *
-          getBoosterValue(pos)) /
+          getBoosterValue(pos) *
+          (BigInt(staker.shares) - BigInt(staker.coolingDown))) /
         totalBoostedShares;
       earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
     }
@@ -477,6 +479,7 @@ export default function Page() {
         gap: '20px',
       }}
     >
+      <SwapModal {...swapDisclosure} />
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
@@ -501,6 +504,7 @@ export default function Page() {
       />
       <RedeemModal
         stakingBalance={stakingBalance}
+        coolingDown={BigInt(staker?.coolingDown || 0)}
         withdrawFn={requestWithdraw}
         withdrawAllFn={requestWithdrawAll}
         coolDownTime={BigInt(stakingRewardGlobal?.cooldownTime || 0)}

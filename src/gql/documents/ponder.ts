@@ -100,6 +100,7 @@ export const GetStakers = gql`
         coolingDown
         releaseTime
         lastUpdate
+        computing
       }
       pageInfo {
         startCursor

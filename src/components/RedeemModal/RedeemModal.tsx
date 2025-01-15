@@ -1,23 +1,17 @@
 'use client';
 import { ASSET_METADATA_DECIMALS } from '@/src/config';
-import {
-  Button,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from '@nextui-org/react';
+import { Button, Modal, ModalContent } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import React, { useCallback, useEffect } from 'react';
 import styles from './styles.module.css';
 import { extractHours } from '@/src/utils/format';
+import Disclaimer from '../Disclaimer/Disclaimer';
 
 interface Props {
   stakingBalance: bigint;
   isOpen: boolean;
   coolDownTime: bigint;
+  coolingDown: bigint;
   onOpenChange: (isOpen: boolean) => void;
   withdrawFn: (amount: bigint) => Promise<void>;
   withdrawAllFn: () => Promise<void>;
@@ -29,6 +23,7 @@ export const RedeemModal = ({
   stakingBalance,
   isOpen,
   coolDownTime,
+  coolingDown,
   onOpenChange,
   withdrawFn,
   withdrawAllFn,
@@ -95,8 +90,6 @@ export const RedeemModal = ({
       setAmount('');
     }
   }, [isOpen]);
-
-  const isInvalid = false;
 
   const canUnstake =
     amount !== '' &&
@@ -181,6 +174,15 @@ export const RedeemModal = ({
             >
               Unstake
             </Button>
+
+            {coolingDown > 0n && (
+              <div className={styles.disclaimer}>
+                <Disclaimer type="error">
+                  You have a pending amount on cooldown, requesting a new amount
+                  will reset the cooldown period.
+                </Disclaimer>
+              </div>
+            )}
           </div>
         )}
       </ModalContent>
