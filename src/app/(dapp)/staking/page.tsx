@@ -601,19 +601,17 @@ export default function Page() {
         withdrawAllFn={withdrawAll}
       />
 
-      <LeaderBoard
-        now={now}
-        n={nTopStakers}
-        topStakers={
-          stakingRewardGlobal
-            ? calculateEarningPerDayStakers({
-                topStakers,
-                stakingRewardGlobal,
-                price,
-              })
-            : []
-        }
-      />
+      {topStakers && topStakers.length > 0 && stakingRewardGlobal ? (
+        <LeaderBoard
+          now={now}
+          n={nTopStakers}
+          topStakers={calculateEarningPerDayStakers({
+            topStakers,
+            stakingRewardGlobal,
+            price,
+          })}
+        />
+      ) : null}
     </main>
   );
 }
