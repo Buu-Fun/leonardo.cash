@@ -19,7 +19,7 @@
   width: 100%;
   padding: 14px 20px;
   gap: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   justify-content: space-between;
 }
@@ -168,6 +168,10 @@
   .dividerOut {
     height: 90%;
     width: 1px;
+  }
+
+  .banner {
+    flex-direction: column;
   }
 }
 

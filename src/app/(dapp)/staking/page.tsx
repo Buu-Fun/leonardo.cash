@@ -413,16 +413,18 @@ export default function Page() {
   const now = BigInt(Math.floor(Date.now() / 1000));
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
 
-  const walletIn =
-    stakingBalance - BigInt(staker?.coolingDown || 0n) >= lastBalance;
+  const lockedAmount = stakingBalance - BigInt(staker?.coolingDown || 0n);
+  const walletIn = lockedAmount > 0n && lockedAmount >= lastBalance;
 
   let currentReward = 0n;
   let earningPerDay = 0n;
   let totalRewards = 0n;
   let totalRewardsPerDay = 0n;
+  let pos = -1;
+  let nextStakingBalance = 0n;
 
   if (stakingRewardGlobal) {
-    const pos = address
+    pos = address
       ? topStakers.map((staker) => staker.staker).indexOf(address)
       : -1;
 
@@ -456,6 +458,11 @@ export default function Page() {
           (BigInt(staker.shares) - BigInt(staker.coolingDown))) /
         totalBoostedShares;
       earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
+
+      const nextStaker = pos > 0 ? topStakers[pos - 1] : undefined;
+      nextStakingBalance = nextStaker
+        ? BigInt(nextStaker.shares) - BigInt(nextStaker.coolingDown)
+        : 0n;
     }
   }
 
@@ -530,7 +537,9 @@ export default function Page() {
       />
       {address && (
         <Staking
+          pos={pos}
           stakingBalance={stakingBalance}
+          nextStakingBalance={nextStakingBalance}
           coolingDown={BigInt(staker?.coolingDown || 0)}
           earningsUSD={earningsUSD || 0}
           earningsPerDayUSD={earningPerDayUSD || 0}
@@ -562,7 +571,7 @@ export default function Page() {
               width: '100%',
             }}
           >
-            Stake $LEONAI
+            Stake LEONAI
           </Button>
         ) : (
           <a
@@ -579,7 +588,7 @@ export default function Page() {
                 width: '100%',
               }}
             >
-              Buy $LEONAI
+              Buy LEONAI
             </Button>
           </a>
         )

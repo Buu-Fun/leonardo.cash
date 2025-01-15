@@ -13,6 +13,8 @@ import {
 import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 
 interface Props {
+  pos: number;
+  nextStakingBalance: bigint;
   stakingBalance: bigint;
   lastBalance: bigint;
   earningsUSD: number;
@@ -25,7 +27,9 @@ interface Props {
 }
 
 function Staking({
+  pos,
   lastBalance,
+  nextStakingBalance,
   stakingBalance,
   earningsUSD,
   earningsPerDayUSD,
@@ -50,6 +54,8 @@ function Staking({
     await claimFn();
     setClaiming(false);
   };
+
+  const toNextPos = nextStakingBalance - lockedAmount;
 
   return (
     <div
@@ -84,14 +90,19 @@ function Staking({
           <div className={clsx(styles.messageOut, styles.message)}>
             <ExclamationTriangleIcon className={styles.icon} />
             <div className={styles.text}>
-              {`Stake ${prettyAmount(
-                parseFloat(
-                  ethers.formatUnits(
-                    (walletIn ? lastBalance - stakingBalance : 0n).toString(),
-                    parseInt(ASSET_METADATA_DECIMALS),
-                  ),
-                ),
-              )} LEONAI to start earning.`}
+              {lastBalance > 0n
+                ? `Stake ${prettyAmount(
+                    parseFloat(
+                      ethers.formatUnits(
+                        (walletIn
+                          ? lastBalance - stakingBalance
+                          : 0n
+                        ).toString(),
+                        parseInt(ASSET_METADATA_DECIMALS),
+                      ),
+                    ),
+                  )} LEONAI to start earning.`
+                : 'Stake LEONAI to start earning.'}
             </div>
           </div>
         )}
@@ -99,7 +110,18 @@ function Staking({
         {walletIn && (
           <div className={clsx(styles.messageIn, styles.message)}>
             <CheckBadgeIcon className={styles.icon} />
-            <div className={styles.text}>{`You are a top staker!`}</div>
+            <div className={styles.text}>
+              {pos === 0
+                ? 'You are the whale!'
+                : `${prettyAmount(
+                    parseFloat(
+                      ethers.formatUnits(
+                        toNextPos.toString(),
+                        parseInt(ASSET_METADATA_DECIMALS),
+                      ),
+                    ),
+                  )} LEONAI to reach the next position.`}
+            </div>
           </div>
         )}
       </div>
