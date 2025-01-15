@@ -13,10 +13,14 @@ import { base, sepolia as Sepolia } from 'wagmi/chains';
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
+  BIRDEYE_API_KEY,
   CHAIN,
   POOL_ADDRESS,
   STAKING_ADDRESS,
   USDC_ADDRESS,
+  USDC_POOL_ADDRESS,
+  WETH_ADDRESS,
+  WETH_BASE_ADDRESS,
 } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
@@ -156,26 +160,49 @@ export const StakingProvider = ({ children }: Props) => {
       IERC20Metadata.abi,
       provider,
     );
+    const wethContract = new Contract(
+      WETH_ADDRESS,
+      IERC20Metadata.abi,
+      provider,
+    );
     const usdcContract = new Contract(
       USDC_ADDRESS,
       IERC20Metadata.abi,
       provider,
     );
-    const [assetBalanceOfPool, usdcBalanceOfPool, usdcDecimals] =
-      await Promise.all([
-        assetContract.balanceOf(POOL_ADDRESS),
-        usdcContract.balanceOf(POOL_ADDRESS),
-        usdcContract.decimals(),
-      ]);
+    const [
+      assetBalanceOfPool,
+      wethBalanceOfPool,
+      wethDecimals,
+      wethInUsdcPool,
+      usdcInUsdcPool,
+      usdcDecimals,
+    ] = await Promise.all([
+      assetContract.balanceOf(POOL_ADDRESS),
+      wethContract.balanceOf(POOL_ADDRESS),
+      wethContract.decimals(),
+      wethContract.balanceOf(USDC_POOL_ADDRESS),
+      usdcContract.balanceOf(USDC_POOL_ADDRESS),
+      usdcContract.decimals(),
+    ]);
 
-    const price = parseFloat(
-      ethers.formatUnits(
-        (usdcBalanceOfPool * 10n ** BigInt(ASSET_METADATA_DECIMALS)) /
-          assetBalanceOfPool,
-        usdcDecimals,
-      ),
+    const wethAmount = ethers.formatUnits(wethInUsdcPool, wethDecimals);
+    const usdcAmount = ethers.formatUnits(usdcInUsdcPool, usdcDecimals);
+
+    const wethPrice = parseFloat(usdcAmount) / parseFloat(wethAmount);
+
+    const wethAmountInPool = ethers.formatUnits(
+      wethBalanceOfPool,
+      wethDecimals,
+    );
+    const assetAmountInPool = ethers.formatUnits(
+      assetBalanceOfPool,
+      parseInt(ASSET_METADATA_DECIMALS),
     );
 
+    const price =
+      (parseFloat(wethAmountInPool) / parseFloat(assetAmountInPool)) *
+      wethPrice;
     setPrice(price);
   }, [provider]);
 
