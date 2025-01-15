@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { Contract, ethers } from 'ethers';
 
@@ -462,6 +462,16 @@ export default function Page() {
   const earnings = stakingReward
     ? BigInt(stakingReward.available) + currentReward
     : currentReward;
+
+  const earningsUSD =
+    parseFloat(
+      ethers.formatUnits(earnings, parseInt(ASSET_METADATA_DECIMALS)),
+    ) * price;
+  const earningPerDayUSD =
+    parseFloat(
+      ethers.formatUnits(earningPerDay, parseInt(ASSET_METADATA_DECIMALS)),
+    ) * price;
+
   const totalRewardsUSD =
     parseFloat(
       ethers.formatUnits(totalRewards, parseInt(ASSET_METADATA_DECIMALS)),
@@ -522,8 +532,8 @@ export default function Page() {
         <Staking
           stakingBalance={stakingBalance}
           coolingDown={BigInt(staker?.coolingDown || 0)}
-          earnings={earnings}
-          earningsPerDay={earningPerDay}
+          earningsUSD={earningsUSD || 0}
+          earningsPerDayUSD={earningPerDayUSD || 0}
           redeemFn={redeemDisclosure.onOpen}
           lastBalance={lastBalance}
           walletIn={walletIn}

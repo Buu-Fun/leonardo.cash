@@ -15,8 +15,8 @@ import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 interface Props {
   stakingBalance: bigint;
   lastBalance: bigint;
-  earnings: bigint;
-  earningsPerDay: bigint;
+  earningsUSD: number;
+  earningsPerDayUSD: number;
   walletIn: boolean;
   coolingDown: bigint;
   releaseTime: bigint;
@@ -27,28 +27,18 @@ interface Props {
 function Staking({
   lastBalance,
   stakingBalance,
-  earnings,
-  earningsPerDay,
+  earningsUSD,
+  earningsPerDayUSD,
   walletIn = false,
   coolingDown,
   redeemFn,
   claimFn,
 }: Props) {
   const [claiming, setClaiming] = useState(false);
-  const now = useMemo(() => Date.now(), [earnings, earningsPerDay]);
+  const now = useMemo(() => Date.now(), [earningsUSD, earningsPerDayUSD]);
   const earningsAmount = useDynamicAmount({
-    offset: parseFloat(
-      ethers.formatUnits(
-        earnings.toString(),
-        parseInt(ASSET_METADATA_DECIMALS),
-      ),
-    ),
-    toAdd: parseFloat(
-      ethers.formatUnits(
-        earningsPerDay.toString(),
-        parseInt(ASSET_METADATA_DECIMALS),
-      ),
-    ),
+    offset: earningsUSD,
+    toAdd: earningsPerDayUSD,
     startTime: now,
     endTime: now + 86400000,
   });
@@ -152,14 +142,14 @@ function Staking({
           <div className={styles.data}>
             <div className={styles.amount}>
               <div className={styles.value}>
-                {format({
+                {`$ ${format({
                   value: earningsAmount,
                   minDecimals: 4,
                   maxDecimals: 4,
-                })}
+                })}`}
               </div>
             </div>
-            {earnings > 0n && (
+            {earningsUSD > 0 && (
               <Button
                 color="primary"
                 isLoading={claiming}
@@ -174,14 +164,7 @@ function Staking({
             )}
           </div>
           <div className={styles.description}>
-            {`Earning ${prettyAmount(
-              parseFloat(
-                ethers.formatUnits(
-                  earningsPerDay.toString(),
-                  parseInt(ASSET_METADATA_DECIMALS),
-                ),
-              ),
-            )} / day`}
+            {`Earning $ ${prettyAmount(earningsPerDayUSD)} / day`}
           </div>
         </div>
       </div>
