@@ -39,11 +39,15 @@
   background: #222222;
   border-radius: 32px;
   overflow: hidden;
-  transition: all 0.3s ease;
   min-width: 250px;
 }
 
-.box:hover {
+.active {
+  transition: all 0.3s ease;
+}
+
+.active:hover {
+  cursor: pointer;
   transform: scale(1.02);
   filter: drop-shadow(0px 0px 80px rgb(128, 59, 241, 0.5));
 }
@@ -140,32 +144,31 @@
   transform: rotate(-25deg);
 }
 
-/* Apply the levitate effect to the child when the parent is hovered */
-.buyNowBox:hover .leonaiTokenImage {
+.leonaiTokenImage {
   animation: levitateLeonai 3s ease-in-out infinite;
 }
 
-.buyNowBox:hover .uniswapToken {
+.uniswapToken {
   animation: levitateUniswap 3s ease-in-out infinite;
 }
 
 @keyframes levitateLeonai {
   0%,
   100% {
-    transform: rotate(-15deg) translateY(0); /* Default position */
+    transform: rotate(-15deg) translateY(5px); /* Default position */
   }
   50% {
-    transform: rotate(-15deg) translateY(-10px); /* Slight upward movement */
+    transform: rotate(-15deg) translateY(-5px); /* Slight upward movement */
   }
 }
 
 @keyframes levitateUniswap {
   0%,
   100% {
-    transform: rotate(15deg) translateY(0); /* Default position */
+    transform: rotate(15deg) translateY(5px); /* Default position */
   }
   50% {
-    transform: rotate(15deg) translateY(-10px); /* Slight upward movement */
+    transform: rotate(15deg) translateY(-5px); /* Slight upward movement */
   }
 }
 
@@ -213,6 +216,7 @@
   gap: 30px;
   padding: 51.5px 20px;
   font-weight: 600;
+  background: #803bf1;
 }
 
 .xBox {

@@ -14,41 +14,75 @@ import styles from './page.module.css';
 
 const Box = ({
   children,
+  href,
+  onClick,
   backgroundImage,
   backgroundColor,
   className,
   style,
-  onClick,
 }: {
+  onClick?: () => void;
   children: React.ReactNode;
+  href?: string;
   backgroundImage?: string;
   backgroundColor?: string;
   className?: string;
   style?: React.CSSProperties;
-  onClick?: () => void;
-}) => (
-  <div
-    className={clsx(styles.box, className)}
-    style={{
-      backgroundColor: backgroundColor || undefined,
-      ...style,
-    }}
-  >
-    {backgroundImage && (
-      <Image
-        src={backgroundImage}
-        alt="Background Box"
-        fill
+}) => {
+  const active = href || onClick;
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className={clsx(styles.box, active && styles.active, className)}
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          backgroundColor: backgroundColor || undefined,
+          ...style,
         }}
-      />
-    )}
-    {children}
-  </div>
-);
+      >
+        {backgroundImage && (
+          <Image
+            src={backgroundImage}
+            alt="Background Box"
+            fill
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+          />
+        )}
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className={clsx(styles.box, active && styles.active, className)}
+      style={{
+        backgroundColor: backgroundColor || undefined,
+        ...style,
+      }}
+    >
+      {backgroundImage && (
+        <Image
+          src={backgroundImage}
+          alt="Background Box"
+          fill
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        />
+      )}
+      {children}
+    </div>
+  );
+};
 
 export default function Page() {
   const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
@@ -85,7 +119,7 @@ export default function Page() {
 
         <div className={styles.landingBoxes}>
           <div className={styles.firstColumn}>
-            <Box backgroundColor="#803BF1" className={styles.imageTo3DBox}>
+            <Box className={styles.imageTo3DBox}>
               <span>IMAGE-TO-3D</span>
               <span> All freely tradable. </span>
               <span> Zero slippage. </span>
@@ -110,6 +144,7 @@ export default function Page() {
             <Box
               className={styles.buyNowBox}
               onClick={() => swapDisclosure.onOpen()}
+              href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
             >
               <div className={styles.buyNowBoxText}>
                 <div className={styles.buyNowBuyNow}>BUY NOW</div>
@@ -148,7 +183,7 @@ export default function Page() {
               <span className={styles.voteDaoSecond}>DAO</span>
             </Box>
 
-            <Box className={styles.xBox}>
+            <Box className={styles.xBox} href="https://x.com/Leonardo__AI">
               <div className={styles.xBoxScreenContainer}>
                 <div className={styles.xBoxScreen}>
                   <Image src="/screen.png" alt="Screen" fill />
@@ -197,15 +232,13 @@ export default function Page() {
               </div>
             </Box>
 
-            <Box className={styles.stakeBox}>
+            <Box className={styles.stakeBox} href="/staking">
               <span className={styles.stakeBoxFirst}>REWARDING ONLY THE</span>
               <div className={styles.stakeBoxSecond}>
                 <div className={styles.stakeBoxSecondInnerFirst}>TOP 100</div>
                 <div className={styles.stakeBoxSecondInnerSecond}>STAKERS</div>
               </div>
-              <a href="/staking">
-                <Button color="primary">STAKE NOW</Button>
-              </a>
+              <Button color="primary">STAKE NOW</Button>
             </Box>
           </div>
         </div>
