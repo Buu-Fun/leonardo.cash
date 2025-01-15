@@ -251,36 +251,48 @@ td:first-child {
 
 h1 {
   color: #fff;
-  text-align: center;
   font-family: var(--font-family);
-  font-size: 111.971px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 600;
-  line-height: 116.334px; /* 103.896% */
-  letter-spacing: -0.194px;
-  text-transform: uppercase;
+  margin: 20px 0;
 }
 
 h2 {
   color: #803bf1;
   font-family: var(--font-family);
-  font-size: 52.4px;
+  font-size: 30px;
   font-style: normal;
-  font-weight: 500;
-  line-height: 80.358px; /* 153.355% */
-  letter-spacing: -0.134px;
-  text-transform: uppercase;
+  font-weight: 400;
+  margin: 20px 0;
+  margin-top: 60px;
 }
 
 h3 {
   color: #fff;
   font-family: var(--font-family);
-  font-size: 23.1px;
+  font-size: 24px;
   font-style: normal;
-  font-weight: 600;
-  line-height: 32px; /* 138.528% */
-  letter-spacing: -0.16px;
-  text-transform: uppercase;
+  font-weight: 400;
+  margin: 20px 0;
+}
+
+p {
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 20px 0;
+}
+
+ol {
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 20px 0;
 }
 
 @keyframes levitate {
