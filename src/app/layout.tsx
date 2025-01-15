@@ -19,18 +19,30 @@ export default function RootLayout({
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Leonardo AI Agent - A Game-Changing Experiment</title>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:title" content="Leonardo AI Agent - A Game-Changing Experiment"/>
-        <meta name="twitter:description" content="Meet Leonardo, the AI agent combining game theory and advanced models to deliver AI-generated content through smarter interactions in the agentic gaming era. 🚀"/>
-        <meta name="twitter:image" content="https://i.imgur.com/VHCMRSy.jpeg"/>
-        <meta name="twitter:creator" content="@Leonardo__AI"/>
-        <meta name="twitter:site" content="@Leonardo__AI"/>
-        <meta property="og:url" content="https://leonardo.cash"/>
-        <meta property="og:title" content="Leonardo AI Agent - A Game-Changing Experiment"/>
-        <meta property="og:description" content="Meet Leonardo, the AI agent combining game theory and advanced models to deliver AI-generated content through smarter interactions in the agentic gaming era. 🚀"/>
-        <meta property="og:image" content="https://i.imgur.com/VHCMRSy.jpeg"/>
-        <meta property="og:url" content="https://leonardo.cash"/>
-        <meta property="og:type" content="website"/>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Leonardo AI Agent - A Game-Changing Experiment"
+        />
+        <meta
+          name="twitter:description"
+          content="Meet Leonardo, the AI agent combining game theory and advanced models to deliver AI-generated content through smarter interactions in the agentic gaming era. 🚀"
+        />
+        <meta name="twitter:image" content="https://i.imgur.com/VHCMRSy.jpeg" />
+        <meta name="twitter:creator" content="@Leonardo__AI" />
+        <meta name="twitter:site" content="@Leonardo__AI" />
+        <meta property="og:url" content="https://leonardo.cash" />
+        <meta
+          property="og:title"
+          content="Leonardo AI Agent - A Game-Changing Experiment"
+        />
+        <meta
+          property="og:description"
+          content="Meet Leonardo, the AI agent combining game theory and advanced models to deliver AI-generated content through smarter interactions in the agentic gaming era. 🚀"
+        />
+        <meta property="og:image" content="https://i.imgur.com/VHCMRSy.jpeg" />
+        <meta property="og:url" content="https://leonardo.cash" />
+        <meta property="og:type" content="website" />
         <link
           href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
           rel="stylesheet"

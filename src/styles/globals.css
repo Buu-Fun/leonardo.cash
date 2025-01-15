@@ -151,8 +151,8 @@ body {
   align-items: center;
   padding: 10px 32px;
   width: 100%;
-  margin-top: 10px;
-  background: rgba(0, 0, 0, 0.35);
+  /* margin-top: 10px; */
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(14px);
   transition: all 0.3s ease;
   border-radius: 0 0 32px 32px;
@@ -254,12 +254,11 @@ h1 {
   color: #fff;
   text-align: center;
   font-family: var(--font-family);
-  font-size: 111.971px;
   font-style: normal;
   font-weight: 600;
-  line-height: 116.334px; /* 103.896% */
   letter-spacing: -0.194px;
   text-transform: uppercase;
+  font-size: 140px;
 }
 
 h2 {
