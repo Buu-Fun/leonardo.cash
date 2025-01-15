@@ -80,15 +80,14 @@ function Cooldown({
         </div>
       </div>
 
-      {unlocked && (
-        <Button
-          isLoading={withdrawing}
-          color="primary"
-          onPress={withdrawing ? undefined : handleWithdrawAll}
-        >
-          Withdraw
-        </Button>
-      )}
+      <Button
+        fullWidth
+        isLoading={unlocked ? withdrawing : true}
+        color={unlocked ? 'primary' : 'default'}
+        onPress={withdrawing ? undefined : handleWithdrawAll}
+      >
+        {unlocked ? 'Withdraw' : 'Cooling down'}
+      </Button>
     </div>
   );
 }
