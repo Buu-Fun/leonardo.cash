@@ -7,6 +7,7 @@ import { Button } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import clsx from 'clsx';
 import {
+  ArrowTrendingUpIcon,
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
@@ -22,6 +23,8 @@ interface Props {
   walletIn: boolean;
   coolingDownAssets: bigint;
   releaseTime: bigint;
+  setDepositAmount: (amount: string) => void;
+  openDepositModal: () => void;
   redeemFn: () => void;
   claimFn: () => Promise<void>;
 }
@@ -37,6 +40,8 @@ function Staking({
   coolingDownAssets,
   redeemFn,
   claimFn,
+  setDepositAmount,
+  openDepositModal,
 }: Props) {
   const [claiming, setClaiming] = useState(false);
   const now = useMemo(() => Date.now(), [earningsUSD, earningsPerDayUSD]);
@@ -71,21 +76,6 @@ function Staking({
           walletIn ? styles.bannerIn : styles.bannerOut,
         )}
       >
-        <div
-          className={clsx(
-            styles.display,
-            walletIn ? styles.displayIn : styles.displayOut,
-          )}
-        >
-          <div
-            className={clsx(
-              styles.circle,
-              walletIn ? styles.circleIn : styles.circleOut,
-            )}
-          />
-          <div className={styles.text}>{walletIn ? 'IN' : 'OUT'}</div>
-        </div>
-
         {!walletIn && (
           <div className={clsx(styles.messageOut, styles.message)}>
             <ExclamationTriangleIcon className={styles.icon} />
@@ -113,15 +103,48 @@ function Staking({
             <div className={styles.text}>
               {pos === 0
                 ? 'You are the whale!'
-                : `${prettyAmount(
-                    parseFloat(
-                      ethers.formatUnits(
-                        toNextPos.toString(),
-                        parseInt(ASSET_METADATA_DECIMALS),
-                      ),
-                    ),
-                  )} LEONAI to reach the next position.`}
+                : `You are the #${pos + 1} staker`}
             </div>
+          </div>
+        )}
+
+        {!walletIn && (
+          <div
+            className={clsx(
+              styles.display,
+              walletIn ? styles.displayIn : styles.displayOut,
+            )}
+          >
+            <div
+              className={clsx(
+                styles.circle,
+                walletIn ? styles.circleIn : styles.circleOut,
+              )}
+            />
+            <div className={styles.text}>{walletIn ? 'IN' : 'OUT'}</div>
+          </div>
+        )}
+
+        {walletIn && pos !== 0 && (
+          <div className={styles.next}>
+            <Button
+              onPress={() => {
+                setDepositAmount(toNextPos.toString());
+                openDepositModal();
+              }}
+              color="default"
+            >
+              <ArrowTrendingUpIcon className={styles.icon} />
+              Next: +
+              {prettyAmount(
+                parseFloat(
+                  ethers.formatUnits(
+                    toNextPos.toString(),
+                    parseInt(ASSET_METADATA_DECIMALS),
+                  ),
+                ),
+              )}
+            </Button>
           </div>
         )}
       </div>

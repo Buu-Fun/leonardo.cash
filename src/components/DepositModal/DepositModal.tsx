@@ -9,6 +9,8 @@ import { CheckIcon } from '@heroicons/react/24/outline';
 import Disclaimer from '../Disclaimer/Disclaimer';
 
 interface Props {
+  amount: string;
+  setAmount: (amount: string) => void;
   assetBalance: bigint;
   stakingAllowance: bigint;
   lastBalance: bigint;
@@ -23,6 +25,8 @@ interface Props {
 const percentages = [25, 50, 75, 100];
 
 export const DepositModal = ({
+  amount,
+  setAmount,
   assetBalance,
   stakingAllowance,
   isOpen,
@@ -35,7 +39,6 @@ export const DepositModal = ({
 }: Props) => {
   const [depositing, setDepositing] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
-  const [amount, setAmount] = React.useState('');
   const amountBn =
     amount !== ''
       ? ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS))

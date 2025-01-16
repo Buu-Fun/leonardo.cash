@@ -105,6 +105,8 @@ export default function Page() {
   const redeemDisclosure = useDisclosure();
   const swapDisclosure = useDisclosure();
 
+  const [depositAmount, setDepositAmount] = React.useState('');
+
   const {
     topStakers,
     assetBalance,
@@ -515,6 +517,8 @@ export default function Page() {
         theme="dark"
       />
       <DepositModal
+        amount={depositAmount}
+        setAmount={setDepositAmount}
         assetBalance={assetBalance}
         stakingAllowance={stakingAllowance}
         lastBalance={lastBalance}
@@ -553,6 +557,8 @@ export default function Page() {
           walletIn={walletIn}
           releaseTime={BigInt(staker?.releaseTime || 0)}
           claimFn={claim}
+          setDepositAmount={setDepositAmount}
+          openDepositModal={depositDisclosure.onOpen}
         />
       )}
       {!address && (

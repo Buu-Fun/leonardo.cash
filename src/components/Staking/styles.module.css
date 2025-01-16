@@ -33,12 +33,12 @@
 
 .bannerOut {
   background: rgba(159, 26, 47, 0.25);
-  color: var(--danger-color, rgb(159, 26, 47));
+  /* color: var(--danger-color, rgb(159, 26, 47)); */
 }
 
 .bannerIn {
   background: rgba(26, 159, 47, 0.25);
-  color: var(--success-color, rgb(26, 159, 47));
+  /* color: var(--success-color, rgb(26, 159, 47)); */
 }
 
 .infoOut {
@@ -120,6 +120,7 @@
 
 .displayOut {
   animation: displayAnimationOut 1s alternate infinite;
+  color: var(--danger-color, rgb(159, 26, 47));
 }
 
 .circle {
@@ -154,6 +155,12 @@
 .messageOut {
   color: var(--danger-color, rgb(159, 26, 47));
 }
+
+.next {
+  display: flex;
+  justify-content: flex-start;
+}
+
 @media (max-width: 768px) {
   .info {
     flex-direction: column;
