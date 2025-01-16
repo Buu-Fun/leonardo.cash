@@ -81,11 +81,19 @@ export const Rewards = ({
           <Image src="/leonai.png" alt="$LEONAI" fill />
         </div>
         <div className={styles.logoButtons}>
-          <Button onPressStart={handleCopy}>
+          <Button onPressStart={handleCopy} onClick={handleCopy}>
+            <div>{truncateAddress(ASSET_ADDRESS)}</div>
+
             {isCopied ? (
-              <span>Copied</span>
+              <CheckIcon
+                width={16}
+                height={16}
+                style={{
+                  stroke: 'var(--success-color)',
+                }}
+              />
             ) : (
-              <div>{truncateAddress(ASSET_ADDRESS)}</div>
+              <ClipboardIcon width={16} height={16} />
             )}
           </Button>
 
