@@ -13,7 +13,7 @@ export default function RootLayout({
   return (
     <Providers>
       <div className="layout">
-        <Navbar isDApp={false} />
+        <Navbar isDApp />
         {children}
         <Footer />
       </div>

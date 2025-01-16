@@ -146,6 +146,16 @@
   font-weight: 500;
 }
 
+.socials {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+  top: 0;
+  right: 0;
+  padding: 20px;
+  z-index: 4;
+}
+
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;

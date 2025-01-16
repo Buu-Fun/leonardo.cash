@@ -2,7 +2,7 @@
 import React from 'react';
 
 import { Footer } from '@/src/components/Footer/Footer';
-import { PageLogo } from '@/src/components/PageLogo/PageLogo';
+import { Navbar } from '@/src/components/Navbar/Navbar';
 
 export default function RootLayout({
   children,
@@ -11,13 +11,7 @@ export default function RootLayout({
 }) {
   return (
     <div className="layout">
-      <div className="navbarContainer">
-        <div className="navbar">
-          <a href="/">
-            <PageLogo />
-          </a>
-        </div>
-      </div>
+      <Navbar isDApp={false} />
       {children}
       <Footer />
     </div>

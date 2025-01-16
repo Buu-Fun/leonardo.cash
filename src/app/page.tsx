@@ -7,15 +7,14 @@ import { ASSET_ADDRESS } from '../config';
 import { splitStringIntoChunks } from '../utils/format';
 import Copy from '../components/Copy/Copy';
 import clsx from 'clsx';
-import { PageLogo } from '../components/PageLogo/PageLogo';
 import { SwapModal } from '../components/SwapModal/SwapModal';
 
 import styles from './page.module.css';
 import { Navbar } from '../components/Navbar/Navbar';
+import { useRouter } from 'next/navigation';
 
 const Box = ({
   children,
-  href,
   onClick,
   backgroundImage,
   backgroundColor,
@@ -24,43 +23,12 @@ const Box = ({
 }: {
   onClick?: () => void;
   children: React.ReactNode;
-  href?: string;
   backgroundImage?: string;
   backgroundColor?: string;
   className?: string;
   style?: React.CSSProperties;
 }) => {
-  const active = href || onClick;
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        className={clsx(styles.box, active && styles.active, className)}
-        style={{
-          backgroundColor: backgroundColor || undefined,
-          ...style,
-        }}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {backgroundImage && (
-          <Image
-            src={backgroundImage}
-            alt="Background Box"
-            fill
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-            }}
-          />
-        )}
-        {children}
-      </a>
-    );
-  }
-
+  const active = onClick !== undefined;
   return (
     <div
       onClick={onClick}
@@ -90,6 +58,7 @@ const Box = ({
 export default function Page() {
   const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
   const swapDisclosure = useDisclosure();
+  const router = useRouter();
 
   return (
     <div className="layout">
@@ -162,8 +131,11 @@ export default function Page() {
 
             <Box
               className={styles.buyNowBox}
-              onClick={() => swapDisclosure.onOpen()}
-              href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
+              onClick={() =>
+                window.open(
+                  'https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base',
+                )
+              }
             >
               <div className={styles.buyNowBoxText}>
                 <div className={styles.buyNowBuyNow}>BUY NOW</div>
@@ -199,15 +171,16 @@ export default function Page() {
 
             <Box
               className={styles.voteDao}
-              href="
-              https://dao.leonardo.cash
-            "
+              onClick={() => window.open('https://dao.leonardo.cash')}
             >
               <span className={styles.voteDaoFirst}>VOTE</span>
               <span className={styles.voteDaoSecond}>DAO</span>
             </Box>
 
-            <Box className={styles.xBox} href="https://x.com/Leonardo__AI">
+            <Box
+              className={styles.xBox}
+              onClick={() => window.open('https://x.com/Leonardo__AI')}
+            >
               <div className={styles.xBoxScreenContainer}>
                 <div className={styles.xBoxScreen}>
                   <Image src="/screen.png" alt="Screen" fill />
@@ -256,13 +229,18 @@ export default function Page() {
               </div>
             </Box>
 
-            <Box className={styles.stakeBox} href="/staking">
+            <Box
+              className={styles.stakeBox}
+              onClick={() => router.push('/staking')}
+            >
               <span className={styles.stakeBoxFirst}>REWARDING ONLY THE</span>
               <div className={styles.stakeBoxSecond}>
                 <div className={styles.stakeBoxSecondInnerFirst}>TOP 100</div>
                 <div className={styles.stakeBoxSecondInnerSecond}>STAKERS</div>
               </div>
-              <Button color="primary">STAKE NOW</Button>
+              <Button color="primary" onPress={() => router.push('/staking')}>
+                STAKE NOW
+              </Button>
             </Box>
           </div>
         </div>

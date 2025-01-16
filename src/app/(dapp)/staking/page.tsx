@@ -597,23 +597,17 @@ export default function Page() {
             Stake LEONAI
           </Button>
         ) : (
-          <a
-            href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              width: '100%',
-            }}
+          <Button
+            onPressStart={() =>
+              window.open(
+                'https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base',
+              )
+            }
+            color="primary"
+            fullWidth
           >
-            <Button
-              color="primary"
-              style={{
-                width: '100%',
-              }}
-            >
-              Buy LEONAI
-            </Button>
-          </a>
+            Buy LEONAI
+          </Button>
         )
       ) : null}
 
