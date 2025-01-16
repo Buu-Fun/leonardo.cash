@@ -2,9 +2,8 @@
 import React from 'react';
 import Providers from './providers';
 
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Footer } from '@/src/components/Footer/Footer';
-import { PageLogo } from '@/src/components/PageLogo/PageLogo';
+import { Navbar } from '@/src/components/Navbar/Navbar';
 
 export default function RootLayout({
   children,
@@ -14,15 +13,7 @@ export default function RootLayout({
   return (
     <Providers>
       <div className="layout">
-        <div className="navbarContainer">
-          <div className="navbar">
-            <a href="/">
-              <PageLogo />
-            </a>
-
-            <ConnectButton />
-          </div>
-        </div>
+        <Navbar isDApp={false} />
         {children}
         <Footer />
       </div>

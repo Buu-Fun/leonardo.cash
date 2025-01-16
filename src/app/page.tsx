@@ -11,6 +11,7 @@ import { PageLogo } from '../components/PageLogo/PageLogo';
 import { SwapModal } from '../components/SwapModal/SwapModal';
 
 import styles from './page.module.css';
+import { Navbar } from '../components/Navbar/Navbar';
 
 const Box = ({
   children,
@@ -94,17 +95,16 @@ export default function Page() {
     <div className="layout">
       <SwapModal {...swapDisclosure} />
 
-      <div className="navbarContainer">
-        <div className="navbar">
-          <PageLogo />
+      <Navbar isDApp={false} />
 
-          <a href="/staking">
-            <Button color="primary">Launch App</Button>
-          </a>
-        </div>
-      </div>
-
-      <main style={{ display: 'flex', flexDirection: 'column' }}>
+      <main
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          marginTop: '80px',
+          marginBottom: '80px',
+        }}
+      >
         <h1
           style={{
             marginTop: '60px',
@@ -118,7 +118,8 @@ export default function Page() {
           style={{
             fontSize: '50px',
             textTransform: 'uppercase',
-            marginTop: '10px',
+            marginTop: '-10px',
+            fontWeight: 'bold',
           }}
         >
           {'I’m Leonardo AI'}

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { X } from '../icons/X';
-import styles from './styles.module.css';
+import styles from './Footer.module.css';
 
 const TelegramIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
