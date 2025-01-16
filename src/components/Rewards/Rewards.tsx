@@ -80,71 +80,71 @@ export const Rewards = ({
         <div className={styles.logo}>
           <Image src="/leonai.png" alt="$LEONAI" fill />
         </div>
-        {/* dropdown */}
-        <Dropdown
-          classNames={{
-            content: styles.dropdownContent,
-          }}
-        >
-          <DropdownTrigger>
-            <Button color="primary">
-              <span>{truncateAddress(ASSET_ADDRESS)}</span>
-              <ChevronDownIcon width={24} height={24} />
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            aria-label="Static Actions"
-            className={styles.dropdown}
-            style={{
-              margin: 0,
-              padding: 0,
+        <div className={styles.logoButtons}>
+          <Button onPressStart={handleCopy}>
+            {isCopied ? (
+              <span>Copied</span>
+            ) : (
+              <div>{truncateAddress(ASSET_ADDRESS)}</div>
+            )}
+          </Button>
+
+          {/* dropdown */}
+          <Dropdown
+            classNames={{
+              content: styles.dropdownContent,
             }}
           >
-            <DropdownItem key="bubblemaps">
-              <a
-                href="https://app.bubblemaps.io/base/token/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
-                target="_blank"
-                rel="noreferrer"
-                className={styles.dropdownItem}
-              >
-                <MapIcon width={24} height={24} />
-                <span>Bubblemaps</span>
-              </a>
-            </DropdownItem>
-            <DropdownItem key="skynet">
-              <a
-                href="https://skynet.certik.com/tools/token-scan/base/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
-                target="_blank"
-                rel="noreferrer"
-                className={styles.dropdownItem}
-              >
-                <ShieldCheckIcon width={24} height={24} />
-                <span>Skynet audit</span>
-              </a>
-            </DropdownItem>
-            <DropdownItem key="copy" onPress={handleCopy}>
-              <div className={styles.dropdownItem}>
-                {isCopied ? (
-                  <CheckIcon width={24} height={24} />
-                ) : (
-                  <ClipboardIcon width={24} height={24} />
-                )}
-                <div>Copy address</div>
-              </div>
-            </DropdownItem>
-            <DropdownItem key="explorer">
-              <a
-                href="https://basescan.org/token/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f#balances"
-                target="_blank"
-                rel="noreferrer"
-                className={styles.dropdownItem}
-              >
-                <MagnifyingGlassIcon width={24} height={24} />
-                <span>View on Explorer</span>
-              </a>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+            <DropdownTrigger>
+              <Button color="primary">
+                <span>More</span>
+                <ChevronDownIcon width={14} height={14} />
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              aria-label="Static Actions"
+              className={styles.dropdown}
+              style={{
+                margin: 0,
+                padding: 0,
+              }}
+            >
+              <DropdownItem key="bubblemaps">
+                <a
+                  href="https://app.bubblemaps.io/base/token/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.dropdownItem}
+                >
+                  <MapIcon width={24} height={24} />
+                  <span>Bubblemaps</span>
+                </a>
+              </DropdownItem>
+              <DropdownItem key="skynet">
+                <a
+                  href="https://skynet.certik.com/tools/token-scan/base/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.dropdownItem}
+                >
+                  <ShieldCheckIcon width={24} height={24} />
+                  <span>Skynet audit</span>
+                </a>
+              </DropdownItem>
+              <DropdownItem key="explorer">
+                <a
+                  href="https://basescan.org/token/0xb933d4ff5a0e7bfe6ab7da72b5dce2259030252f#balances"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={styles.dropdownItem}
+                >
+                  <MagnifyingGlassIcon width={24} height={24} />
+                  <span>View on Explorer</span>
+                </a>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
       </div>
 
       {/* values */}

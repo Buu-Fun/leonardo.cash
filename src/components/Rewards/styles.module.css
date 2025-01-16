@@ -26,6 +26,12 @@
   gap: 20px;
 }
 
+.logoButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .dropdown {
   background: #000000;
   border-radius: 16px;
@@ -57,6 +63,12 @@
 
 .dropdownItem:last-child {
   border-radius: 0 0 16px 16px;
+}
+
+.copied {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .values {
@@ -150,5 +162,9 @@
 
   .moreValuesCircle {
     display: none;
+  }
+
+  .tvl {
+    align-items: center;
   }
 }
