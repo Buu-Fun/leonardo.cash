@@ -165,15 +165,25 @@ export default function Page() {
             description={successDescription}
           />,
         );
-      } catch (error) {
-        console.error(error);
-        toast.error(
-          <Toast
-            type="error"
-            title="An error occurred"
-            description={'An error occurred while processing the transaction'}
-          />,
-        );
+      } catch (error: any) {
+        if (error?.code === 'ACTION_REJECTED') {
+          toast.error(
+            <Toast
+              type="error"
+              title="Transaction rejected"
+              description={'The transaction was rejected by the user'}
+            />,
+          );
+        } else {
+          console.error(error);
+          toast.error(
+            <Toast
+              type="error"
+              title="An error occurred"
+              description={'An error occurred while processing the transaction'}
+            />,
+          );
+        }
       } finally {
         if (confirmingToast) {
           toast.dismiss(confirmingToast);
@@ -402,7 +412,7 @@ export default function Page() {
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
-  }, [address, signer]);
+  }, [address, signer, stakingReward]);
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
