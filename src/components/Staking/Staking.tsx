@@ -164,11 +164,11 @@ function Staking({
         <div className={walletIn ? styles.dividerIn : styles.dividerOut} />
 
         <div className={styles.right}>
-          <div className={styles.title}>Your Earnings</div>
+          <div className={styles.title}>Your Earnings ($)</div>
           <div className={styles.data}>
             <div className={styles.amount}>
               <div className={styles.value}>
-                {`$ ${format({
+                {`${format({
                   value: earningsAmount,
                   minDecimals: 4,
                   maxDecimals: 4,
