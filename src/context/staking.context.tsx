@@ -164,7 +164,10 @@ export const StakingProvider = ({ children }: Props) => {
       );
       setStaker({
         ...stakers.items[0],
-        assets: convertSharesToAssets(stakers.items[0].shares),
+        assets: convertSharesToAssets(BigInt(stakers.items[0].shares)),
+        coolingDownAssets: convertSharesToAssets(
+          BigInt(stakers.items[0].coolingDown),
+        ),
       });
       setStakingBalance(innerStakingBalance);
       setCoolingDownAssets(innerCoolingDownAssets);
