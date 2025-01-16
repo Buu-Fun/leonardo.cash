@@ -5,6 +5,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import styles from './Navbar.module.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Balance } from '../Balance/Balance';
 
 interface Props {
   isDApp: boolean;
@@ -20,7 +21,10 @@ export function Navbar({ isDApp }: Props) {
         <PageLogo />
 
         {isDApp ? (
-          <ConnectButton />
+          <div className={styles.right}>
+            <Balance />
+            <ConnectButton />
+          </div>
         ) : (
           <Button
             isLoading={loading}
