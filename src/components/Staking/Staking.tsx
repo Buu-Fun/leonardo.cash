@@ -4,7 +4,7 @@ import styles from './styles.module.css';
 import { format, prettyAmount } from '../../utils/format';
 import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
 import { Button } from '@nextui-org/react';
-import { ethers } from 'ethers';
+import { ethers, parseUnits } from 'ethers';
 import clsx from 'clsx';
 import {
   ArrowTrendingUpIcon,
@@ -129,7 +129,14 @@ function Staking({
           <div className={styles.next}>
             <Button
               onPress={() => {
-                setDepositAmount(toNextPos.toString());
+                setDepositAmount(
+                  ethers
+                    .formatUnits(
+                      toNextPos.toString(),
+                      parseInt(ASSET_METADATA_DECIMALS),
+                    )
+                    .toString(),
+                );
                 openDepositModal();
               }}
               color="default"
