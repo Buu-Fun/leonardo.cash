@@ -1,10 +1,10 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import styles from './styles.module.css';
+import styles from './Staking.module.css';
 import { format, prettyAmount } from '../../utils/format';
 import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
 import { Button } from '@nextui-org/react';
-import { ethers, parseUnits } from 'ethers';
+import { ethers } from 'ethers';
 import clsx from 'clsx';
 import {
   ArrowTrendingUpIcon,
