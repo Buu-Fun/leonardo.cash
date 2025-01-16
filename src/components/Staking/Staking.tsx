@@ -181,7 +181,7 @@ function Staking({
                   width: '100%',
                 }}
               >
-                Claim and Stake
+                Claim + Restake
               </Button>
             )}
           </div>
