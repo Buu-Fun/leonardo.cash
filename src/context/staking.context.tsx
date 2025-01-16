@@ -179,6 +179,7 @@ export const StakingProvider = ({ children }: Props) => {
     // Fetch top stakers
     const variables = {
       where: {
+        address: STAKING_ADDRESS,
         chainId: CHAIN === 'base' ? base.id : Sepolia.id,
         computing_gt: '0',
       },

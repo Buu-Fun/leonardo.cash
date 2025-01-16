@@ -1,5 +1,8 @@
 'use client';
-import React, { useCallback } from 'react';
+import React, {
+  useCallback,
+  // useMemo
+} from 'react';
 import { useAccount } from 'wagmi';
 import { Contract, ethers, MaxUint256 } from 'ethers';
 

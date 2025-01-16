@@ -1,5 +1,3 @@
-import { Staker } from '../gql/types/graphql';
-
 export enum Tiers {
   Top1 = 'Top1',
   Top2 = 'Top2',
