@@ -17,6 +17,7 @@ import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
 import { Button, useDisclosure } from '@nextui-org/react';
 import Staking from '@/src/components/Staking/Staking';
+import Buy from '@/src/components/Buy/Buy';
 import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
@@ -574,23 +575,7 @@ export default function Page() {
             Stake LEONAI
           </Button>
         ) : (
-          <a
-            href="https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base"
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              width: '100%',
-            }}
-          >
-            <Button
-              color="primary"
-              style={{
-                width: '100%',
-              }}
-            >
-              Buy LEONAI
-            </Button>
-          </a>
+          <Buy />
         )
       ) : null}
 
