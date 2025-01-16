@@ -414,7 +414,8 @@ export default function Page() {
   const now = BigInt(Math.floor(Date.now() / 1000));
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
 
-  const lockedAmount = stakingBalance - BigInt(staker?.coolingDown || 0n);
+  const lockedAmount = stakingBalance - (staker?.coolingDownAssets || 0n);
+
   const walletIn = lockedAmount > 0n && lockedAmount >= lastBalance;
 
   let currentReward = 0n;
@@ -541,7 +542,7 @@ export default function Page() {
           pos={pos}
           stakingBalance={stakingBalance}
           nextStakingBalance={nextStakingBalance}
-          coolingDown={BigInt(staker?.coolingDown || 0)}
+          coolingDownAssets={staker?.coolingDownAssets || 0n}
           earningsUSD={earningsUSD || 0}
           earningsPerDayUSD={earningPerDayUSD || 0}
           redeemFn={redeemDisclosure.onOpen}
@@ -588,7 +589,6 @@ export default function Page() {
 
       {topStakers && topStakers.length > 0 && stakingRewardGlobal ? (
         <LeaderBoard
-          now={now}
           n={nTopStakers}
           topStakers={calculateEarningPerDayStakers({
             topStakers,

@@ -1,10 +1,10 @@
 'use client';
-import { ASSET_METADATA_DECIMALS, STAKING_ADDRESS } from '@/src/config';
-import React, { useCallback, useEffect } from 'react';
+import { ASSET_METADATA_DECIMALS } from '@/src/config';
+import React from 'react';
 import { useAccount } from 'wagmi';
 
 import { prettyAmount, truncateAddress } from '@/src/utils/format';
-import { Contract, ethers, uuidV4 } from 'ethers';
+import { ethers } from 'ethers';
 import { SecondCrown } from '../icons/SecondCrown';
 import { ThirdCrown } from '../icons/ThirdCrown';
 import { DefaultCrown } from '../icons/DefaultCrown';
@@ -12,34 +12,14 @@ import { Chip } from '@nextui-org/react';
 import { FirstCrown } from '../icons/FirstCrown';
 import clsx from 'clsx';
 import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
-import { useEthersProvider } from '@/src/utils/ethersAdapter';
-import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
-
-const chunks = (arr: any[], size: number) => {
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-    arr.slice(i * size, i * size + size),
-  );
-};
-
-const chunkSize = 10;
 
 export const LeaderBoard = ({
-  now,
   topStakers,
   n,
 }: {
-  now: bigint;
   topStakers: StakerWithAssetsAndEarnings[];
   n: number;
 }) => {
-  const memorizedTopStakers = React.useMemo(() => topStakers, [topStakers]);
-  const provider = useEthersProvider();
-  const [coolingDownAssets, setCoolingDownAssets] = React.useState<{
-    [key: string]: bigint;
-  }>({});
-  const [assets, setAssets] = React.useState<{
-    [key: string]: bigint;
-  }>({});
   const { address } = useAccount();
   const renderRankingIcon = (index: number) => {
     switch (index) {
@@ -97,69 +77,6 @@ export const LeaderBoard = ({
     );
   };
 
-  const convertSharesToAssets = useCallback(
-    async (shares: bigint[]) => {
-      const stakingContract = new Contract(
-        STAKING_ADDRESS,
-        StakingUpgradeable.abi,
-        provider,
-      );
-      const promises = shares.map((share) => {
-        return stakingContract.convertToAssets(share);
-      });
-      return Promise.all(promises);
-    },
-    [provider],
-  );
-
-  const fetchCoolingDownAssets = useCallback(async () => {
-    const chunkedStakers = chunks(memorizedTopStakers, chunkSize);
-    for (let i = 0; i < chunkedStakers.length; i++) {
-      const chunk = chunkedStakers[i];
-      const values = await convertSharesToAssets(
-        chunk.map((staker) => BigInt(staker.coolingDown)),
-      );
-      chunk.forEach((staker, index) => {
-        setCoolingDownAssets((prev) => {
-          return {
-            ...prev,
-            [staker.staker]: values[index],
-          };
-        });
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }, [memorizedTopStakers]);
-
-  const fetchAssets = useCallback(async () => {
-    const chunkedStakers = chunks(memorizedTopStakers, chunkSize);
-    for (let i = 0; i < chunkedStakers.length; i++) {
-      const chunk = chunkedStakers[i];
-      const values = await convertSharesToAssets(
-        chunk.map((staker) => BigInt(staker.shares)),
-      );
-      chunk.forEach((staker, index) => {
-        setAssets((prev) => {
-          return {
-            ...prev,
-            [staker.staker]: values[index],
-          };
-        });
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }, [memorizedTopStakers]);
-
-  useEffect(() => {
-    fetchAssets();
-    fetchCoolingDownAssets();
-    const interval = setInterval(() => {
-      fetchAssets();
-      fetchCoolingDownAssets();
-    }, 10000);
-    return () => clearInterval(interval);
-  }, [memorizedTopStakers]);
-
   return (
     <div
       style={{
@@ -184,8 +101,7 @@ export const LeaderBoard = ({
             (staker: StakerWithAssetsAndEarnings, index: number) => (
               <tr
                 className={clsx(staker.staker === address ? 'you' : '')}
-                // key={staker.staker}
-                key={uuidV4(ethers.randomBytes(16))}
+                key={staker.staker}
               >
                 <td>
                   {renderRanking(
@@ -204,43 +120,27 @@ export const LeaderBoard = ({
                     justifyContent: 'center',
                   }}
                 >
-                  {/* <div>$350.233 / day</div> */}
                   <div>{`$ ${prettyAmount(
-                    staker.earningPerDayUSD,
-                  )} / day`}</div>
-                  {assets[staker.staker] ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        color: 'rgba(255, 255, 255, 0.45)',
-                        fontSize: '14px',
-                        gap: '4px',
-                      }}
-                    >
-                      <span>Total staked:</span>
-                      {prettyAmount(
-                        parseFloat(
-                          ethers.formatUnits(
-                            assets[staker.staker] -
-                              coolingDownAssets[staker.staker],
-                            parseInt(ASSET_METADATA_DECIMALS),
-                          ),
+                    staker.earningPerDayUSD * 30,
+                  )} / month`}</div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      color: 'rgba(255, 255, 255, 0.45)',
+                      fontSize: '14px',
+                      gap: '4px',
+                    }}
+                  >
+                    <span>Total staked:</span>
+                    {prettyAmount(
+                      parseFloat(
+                        ethers.formatUnits(
+                          (staker.assets - staker.coolingDownAssets).toString(),
+                          parseInt(ASSET_METADATA_DECIMALS),
                         ),
-                      )}
-                    </div>
-                  ) : (
-                    // Loading
-                    <div
-                      style={{
-                        display: 'flex',
-                        color: 'rgba(255, 255, 255, 0.45)',
-                        fontSize: '14px',
-                        gap: '4px',
-                      }}
-                    >
-                      <span>Loading</span>
-                    </div>
-                  )}
+                      ),
+                    )}
+                  </div>
                 </td>
               </tr>
             ),

@@ -7,21 +7,10 @@ import React, {
   useMemo,
 } from 'react';
 import { useAccount } from 'wagmi';
-import { Contract, ethers } from 'ethers';
+import { Contract } from 'ethers';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
 
-import {
-  ASSET_ADDRESS,
-  ASSET_METADATA_DECIMALS,
-  BIRDEYE_API_KEY,
-  CHAIN,
-  POOL_ADDRESS,
-  STAKING_ADDRESS,
-  USDC_ADDRESS,
-  USDC_POOL_ADDRESS,
-  WETH_ADDRESS,
-  WETH_BASE_ADDRESS,
-} from '@/src/config';
+import { CHAIN, ASSET_ADDRESS, STAKING_ADDRESS } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
@@ -36,8 +25,12 @@ import {
   StakingReward,
   StakingRewardGlobal,
 } from '@/src/gql/types/graphql';
+import { usePrice } from './price.context';
 
-export type StakerWithAssets = Staker & { assets: bigint };
+export type StakerWithAssets = Staker & {
+  assets: bigint;
+  coolingDownAssets: bigint;
+};
 
 interface Props {
   children: React.ReactNode;
@@ -57,22 +50,22 @@ interface StakingState {
   stakingRewardGlobal?: StakingRewardGlobal;
   coolingDownAssets: bigint;
   fetchAll: () => Promise<void>;
-  convertSharesToAssets: (shares: bigint) => Promise<bigint>;
+  convertSharesToAssets: (shares: bigint) => bigint;
 }
 
 const nTopStakers = 100;
 
-const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
-  const mockedStaker = {
-    ...staker,
-    balance: 123n * 10n ** 18n,
-    staker: ethers.ZeroAddress,
-  } as StakerWithAssets;
-  const mock = [mockedStaker]
-    .concat(staker)
-    .concat(Array(n - 2).fill(mockedStaker));
-  return mock;
-};
+// const mockLeaderBoard = (staker: StakerWithAssets, n: number) => {
+//   const mockedStaker = {
+//     ...staker,
+//     balance: 123n * 10n ** 18n,
+//     staker: ethers.ZeroAddress,
+//   } as StakerWithAssets;
+//   const mock = [mockedStaker]
+//     .concat(staker)
+//     .concat(Array(n - 2).fill(mockedStaker));
+//   return mock;
+// };
 
 const StakingContext = createContext<StakingState>({
   assetBalance: 0n,
@@ -87,20 +80,19 @@ const StakingContext = createContext<StakingState>({
   stakingRewardGlobal: undefined,
   coolingDownAssets: 0n,
   fetchAll: async () => {},
-  convertSharesToAssets: async () => 0n,
+  convertSharesToAssets: (shares: bigint) => shares,
 });
 
 export const StakingProvider = ({ children }: Props) => {
   const { address } = useAccount();
   const provider = useEthersProvider();
+  const { price } = usePrice();
 
   // State
   const [topStakers, setTopStakers] = React.useState<StakerWithAssets[]>([]);
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
-  const [price, setPrice] = React.useState(0);
-  // const [lastBalance, setLastBalance] = React.useState(0n);
   const [sharesBalance, setSharesBalance] = React.useState(0n);
   const [staker, setStaker] = React.useState<StakerWithAssets>();
   const [stakingReward, setStakingReward] = React.useState<StakingReward>();
@@ -109,17 +101,16 @@ export const StakingProvider = ({ children }: Props) => {
   const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
   const [lastBalance, setLastBalance] = React.useState(0n);
 
-  const convertSharesToAssets = useCallback(
-    async (shares: bigint) => {
-      const stakingContract = new Contract(
-        STAKING_ADDRESS,
-        StakingUpgradeable.abi,
-        provider,
-      );
-      return stakingContract.convertToAssets(shares);
-    },
-    [provider],
-  );
+  const convertSharesToAssets = useCallback((shares: bigint) => {
+    if (!stakingRewardGlobal) {
+      return shares;
+    }
+
+    return (
+      (shares * BigInt(stakingRewardGlobal.totalAssets)) /
+      BigInt(stakingRewardGlobal.totalShares)
+    );
+  }, []);
 
   const fetchData = useCallback(async () => {
     if (!address) {
@@ -150,62 +141,6 @@ export const StakingProvider = ({ children }: Props) => {
     setSharesBalance(innerSharesBalance);
   }, [address, provider]);
 
-  const fetchPrice = useCallback(async () => {
-    if (!provider) {
-      setPrice(0);
-      return;
-    }
-    const assetContract = new Contract(
-      ASSET_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const wethContract = new Contract(
-      WETH_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const usdcContract = new Contract(
-      USDC_ADDRESS,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const [
-      assetBalanceOfPool,
-      wethBalanceOfPool,
-      wethDecimals,
-      wethInUsdcPool,
-      usdcInUsdcPool,
-      usdcDecimals,
-    ] = await Promise.all([
-      assetContract.balanceOf(POOL_ADDRESS),
-      wethContract.balanceOf(POOL_ADDRESS),
-      wethContract.decimals(),
-      wethContract.balanceOf(USDC_POOL_ADDRESS),
-      usdcContract.balanceOf(USDC_POOL_ADDRESS),
-      usdcContract.decimals(),
-    ]);
-
-    const wethAmount = ethers.formatUnits(wethInUsdcPool, wethDecimals);
-    const usdcAmount = ethers.formatUnits(usdcInUsdcPool, usdcDecimals);
-
-    const wethPrice = parseFloat(usdcAmount) / parseFloat(wethAmount);
-
-    const wethAmountInPool = ethers.formatUnits(
-      wethBalanceOfPool,
-      wethDecimals,
-    );
-    const assetAmountInPool = ethers.formatUnits(
-      assetBalanceOfPool,
-      parseInt(ASSET_METADATA_DECIMALS),
-    );
-
-    const price =
-      (parseFloat(wethAmountInPool) / parseFloat(assetAmountInPool)) *
-      wethPrice;
-    setPrice(price);
-  }, [provider]);
-
   const fetchStaker = useCallback(async () => {
     if (!address) {
       setStaker(undefined);
@@ -221,13 +156,15 @@ export const StakingProvider = ({ children }: Props) => {
     };
     const { stakers } = await ponderRequest(GetStakers, variables);
     if (stakers.items.length > 0) {
-      const [innerStakingBalance, innerCoolingDownAssets] = await Promise.all([
-        convertSharesToAssets(stakers.items[0].shares),
-        convertSharesToAssets(stakers.items[0].coolingDown),
-      ]);
+      const innerStakingBalance = convertSharesToAssets(
+        BigInt(stakers.items[0].shares),
+      );
+      const innerCoolingDownAssets = convertSharesToAssets(
+        BigInt(stakers.items[0].coolingDown),
+      );
       setStaker({
         ...stakers.items[0],
-        assets: innerStakingBalance,
+        assets: convertSharesToAssets(stakers.items[0].shares),
       });
       setStakingBalance(innerStakingBalance);
       setCoolingDownAssets(innerCoolingDownAssets);
@@ -253,7 +190,13 @@ export const StakingProvider = ({ children }: Props) => {
     const { items } = stakers;
     if (items.length > 0) {
       // setTopStakers(mockLeaderBoard(items[0], nTopStakers));
-      setTopStakers(items);
+      setTopStakers(
+        items.map((staker: Staker) => ({
+          ...staker,
+          assets: convertSharesToAssets(BigInt(staker.shares)),
+          coolingDownAssets: convertSharesToAssets(BigInt(staker.coolingDown)),
+        })),
+      );
     }
   }, [convertSharesToAssets]);
 
@@ -300,20 +243,15 @@ export const StakingProvider = ({ children }: Props) => {
   }, []);
 
   const fetchAll = useCallback(async () => {
-    // if (blockNumber.data && processedBlockNumber < blockNumber.data) {
     await Promise.all([
       fetchData(),
-      fetchPrice(),
       fetchTopStakers(),
       fetchStaker(),
       fetchStakingReward(),
       fetchStakingRewardGlobal(),
     ]);
-    // setProcessedBlockNumber(BigInt(blockNumber.data));
-    // }
   }, [
     fetchData,
-    fetchPrice,
     fetchTopStakers,
     fetchStaker,
     fetchStakingReward,
@@ -374,6 +312,8 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     ],
   );
+
+  console.log('staking context', value);
 
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>
