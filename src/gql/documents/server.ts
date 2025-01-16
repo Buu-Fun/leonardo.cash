@@ -6,7 +6,6 @@ export const GetSignedStakingReward = gql`
       ... on SignedStakingReward {
         address
         amount
-        available
         chainId
         claimed
         lastUpdate

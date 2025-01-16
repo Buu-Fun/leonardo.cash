@@ -468,7 +468,9 @@ export default function Page() {
   }
 
   const earnings = stakingReward
-    ? BigInt(stakingReward.available) + currentReward
+    ? BigInt(stakingReward.amount) -
+      BigInt(stakingReward.claimed) +
+      currentReward
     : currentReward;
 
   const earningsUSD =

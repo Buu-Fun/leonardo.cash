@@ -313,8 +313,6 @@ export const StakingProvider = ({ children }: Props) => {
     ],
   );
 
-  console.log('staking context', value);
-
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>
   );
