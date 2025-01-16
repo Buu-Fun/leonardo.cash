@@ -115,6 +115,7 @@ export default function Page() {
     stakingRewardGlobal,
     coolingDownAssets,
     fetchAll,
+    convertSharesToAssets,
   } = useStaking();
 
   const handleTx = useCallback(
@@ -417,6 +418,15 @@ export default function Page() {
 
   const walletIn = lockedAmount > 0n && lockedAmount >= lastBalance;
 
+  const totalStakedAssets = stakingRewardGlobal
+    ? convertSharesToAssets(stakingRewardGlobal.totalShares)
+    : 0n;
+
+  const totalValueLocked =
+    parseFloat(
+      ethers.formatUnits(totalStakedAssets, parseInt(ASSET_METADATA_DECIMALS)),
+    ) * price;
+
   let currentReward = 0n;
   let earningPerDay = 0n;
   let totalRewards = 0n;
@@ -534,6 +544,7 @@ export default function Page() {
       <Rewards
         totalRewards={totalRewardsUSD}
         totalRewardsPerDay={totalRewardsPerDayUSD}
+        totalValueLocked={totalValueLocked}
         mininumRequiredStake={
           topStakers.length === nTopStakers ? lastBalance : 0n
         }

@@ -26,12 +26,14 @@ import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 interface Props {
   totalRewards: number;
   totalRewardsPerDay: number;
+  totalValueLocked: number;
   mininumRequiredStake: bigint;
 }
 
 export const Rewards = ({
   totalRewards,
   totalRewardsPerDay,
+  totalValueLocked,
   mininumRequiredStake,
 }: Props) => {
   const now = useMemo(() => Date.now(), [totalRewards, totalRewardsPerDay]);
@@ -148,10 +150,10 @@ export const Rewards = ({
       {/* values */}
       <div className={styles.values}>
         {/* subtitle */}
-        <div className={styles.subtitle}>Total rewards distributed</div>
+        <div className={styles.subtitle}>Total rewards distributed ($)</div>
 
         {/* value */}
-        <div className={styles.amount}>{`$ ${format({
+        <div className={styles.amount}>{`${format({
           value: totalRewardsAmount,
           minDecimals: 4,
           maxDecimals: 4,
@@ -164,9 +166,9 @@ export const Rewards = ({
               value: totalRewardsPerDay,
               minDecimals: 2,
               maxDecimals: 2,
-            })} PER DAY`}
+            })} per day`}
           </div>
-          <div className={styles.moreValuesAmount}>TO THE TOP 100</div>
+          <div className={styles.moreValuesAmount}>to the top 100</div>
 
           <div className={styles.moreValuesCircle} />
 
@@ -178,9 +180,21 @@ export const Rewards = ({
                   parseInt(ASSET_METADATA_DECIMALS),
                 ),
               ),
-            )} MINIMUM STAKE`}
+            )} minimum stake`}
           </div>
-          <div className={styles.moreValuesAmount}> TO EARN</div>
+          <div className={styles.moreValuesAmount}>to earn</div>
+        </div>
+
+        <div className={styles.divider} />
+
+        {/* tvl */}
+        <div className={styles.tvl}>
+          <div className={styles.tvlTitle}>Total Value Locked ($)</div>
+          <div className={styles.tvlAmount}>{`${format({
+            value: totalValueLocked,
+            minDecimals: 2,
+            maxDecimals: 2,
+          })}`}</div>
         </div>
       </div>
     </div>
