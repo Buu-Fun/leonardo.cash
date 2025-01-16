@@ -84,7 +84,8 @@ function Cooldown({
         fullWidth
         isLoading={unlocked ? withdrawing : true}
         color={unlocked ? 'primary' : 'default'}
-        onPress={withdrawing ? undefined : handleWithdrawAll}
+        onPressStart={withdrawing ? undefined : handleWithdrawAll}
+        onClick={withdrawing ? undefined : handleWithdrawAll}
       >
         {unlocked ? 'Withdraw' : 'Cooling down'}
       </Button>

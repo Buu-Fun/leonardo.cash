@@ -146,7 +146,8 @@ export const DepositModal = ({
                   {!isAllowed && (
                     <Button
                       color="primary"
-                      onPress={handleApprove()}
+                      onPressStart={handleApprove()}
+                      onClick={handleApprove()}
                       isLoading={approving}
                     >
                       Approve
@@ -217,7 +218,12 @@ export const DepositModal = ({
                             : 'light'
                         }
                         disabled={depositing}
-                        onPress={
+                        onPressStart={
+                          depositing
+                            ? undefined
+                            : () => setPercentage(BigInt(percentage))
+                        }
+                        onClick={
                           depositing
                             ? undefined
                             : () => setPercentage(BigInt(percentage))
@@ -239,7 +245,14 @@ export const DepositModal = ({
                   disabled={!canStake}
                   color={canStake ? 'primary' : 'default'}
                   isLoading={depositing}
-                  onPress={
+                  onPressStart={
+                    canStake
+                      ? depositing
+                        ? undefined
+                        : handleStake(onClose)
+                      : undefined
+                  }
+                  onClick={
                     canStake
                       ? depositing
                         ? undefined

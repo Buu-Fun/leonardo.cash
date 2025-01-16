@@ -162,7 +162,12 @@ export const RedeemModal = ({
                           : 'light'
                       }
                       disabled={withdrawing}
-                      onPress={
+                      onPressStart={
+                        withdrawing
+                          ? undefined
+                          : () => setPercentage(BigInt(percentage))
+                      }
+                      onClick={
                         withdrawing
                           ? undefined
                           : () => setPercentage(BigInt(percentage))
@@ -201,7 +206,14 @@ export const RedeemModal = ({
               disabled={!canUnstake}
               isLoading={withdrawing}
               color={canUnstake ? 'primary' : 'default'}
-              onPress={
+              onPressStart={
+                canUnstake
+                  ? withdrawing
+                    ? undefined
+                    : handleRedeem(onClose)
+                  : undefined
+              }
+              onClick={
                 canUnstake
                   ? withdrawing
                     ? undefined

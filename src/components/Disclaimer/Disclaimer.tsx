@@ -44,7 +44,7 @@ const Disclaimer = ({ children, onClick, cta, type = 'warning' }: Props) => {
       {cta && (
         <div className={styles.right}>
           {isCTAString && onClick ? (
-            <Button color="primary" onPress={onClick}>
+            <Button color="primary" onPressStart={onClick} onClick={onClick}>
               {cta}
             </Button>
           ) : (

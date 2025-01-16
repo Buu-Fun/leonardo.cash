@@ -556,7 +556,8 @@ export default function Page() {
       {!address && (
         <Button
           color="primary"
-          onPress={openConnectModal}
+          onPressStart={openConnectModal}
+          onClick={openConnectModal}
           style={{
             width: '100%',
           }}
@@ -569,7 +570,8 @@ export default function Page() {
         assetBalance > 0n ? (
           <Button
             color="primary"
-            onPress={depositDisclosure.onOpen}
+            onPressStart={depositDisclosure.onOpen}
+            onClick={depositDisclosure.onOpen}
             style={{
               width: '100%',
             }}

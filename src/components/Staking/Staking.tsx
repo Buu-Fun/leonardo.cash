@@ -147,7 +147,11 @@ function Staking({
               <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
             </div>
             {lockedAmount > 0n && (
-              <Button color="default" onPress={redeemFn}>
+              <Button
+                color="default"
+                onPressStart={redeemFn}
+                onClick={redeemFn}
+              >
                 Unstake
               </Button>
             )}
