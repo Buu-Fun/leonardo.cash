@@ -186,7 +186,7 @@ function Staking({
             )}
           </div>
           <div className={styles.description}>
-            {`Earning $ ${prettyAmount(earningsPerDayUSD)} / day`}
+            {`Earning $ ${prettyAmount(earningsPerDayUSD * 30)} / month`}
           </div>
         </div>
       </div>

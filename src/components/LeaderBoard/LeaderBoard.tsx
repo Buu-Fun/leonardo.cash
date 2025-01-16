@@ -121,8 +121,8 @@ export const LeaderBoard = ({
                   }}
                 >
                   <div>{`$ ${prettyAmount(
-                    staker.earningPerDayUSD,
-                  )} / day`}</div>
+                    staker.earningPerDayUSD * 30,
+                  )} / month`}</div>
                   <div
                     style={{
                       display: 'flex',
