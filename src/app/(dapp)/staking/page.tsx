@@ -353,7 +353,7 @@ export default function Page() {
         },
       },
     )) as { getSignedStakingReward: SignedStakingReward | undefined };
-    if (!getSignedStakingReward?.amount) {
+    if (!getSignedStakingReward || !getSignedStakingReward?.amount) {
       toast.error(
         <Toast
           title="Error"
@@ -378,32 +378,24 @@ export default function Page() {
       getSignedStakingReward.signature,
     );
 
+    const available =
+      BigInt(getSignedStakingReward.amount) -
+      BigInt(stakingReward?.claimed || 0);
+
     await handleTx({
-      confirmingDescription: `Claiming ${prettyAmount(
+      confirmingDescription: `Claiming & Restaking ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(
-            BigInt(getSignedStakingReward.amount) -
-              BigInt(stakingReward?.claimed || 0),
-            parseInt(ASSET_METADATA_DECIMALS),
-          ),
+          ethers.formatUnits(available, parseInt(ASSET_METADATA_DECIMALS)),
         ),
       )} ${ASSET_METADATA_SYMBOL}`,
-      processingDescription: `Claiming ${prettyAmount(
+      processingDescription: `Claiming & Restaking ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(
-            BigInt(getSignedStakingReward.amount) -
-              BigInt(stakingReward?.claimed || 0),
-            parseInt(ASSET_METADATA_DECIMALS),
-          ),
+          ethers.formatUnits(available, parseInt(ASSET_METADATA_DECIMALS)),
         ),
       )} ${ASSET_METADATA_SYMBOL}`,
-      successDescription: `The claim of ${prettyAmount(
+      successDescription: `The restaking of ${prettyAmount(
         parseFloat(
-          ethers.formatUnits(
-            BigInt(getSignedStakingReward.amount) -
-              BigInt(stakingReward?.claimed || 0),
-            parseInt(ASSET_METADATA_DECIMALS),
-          ),
+          ethers.formatUnits(available, parseInt(ASSET_METADATA_DECIMALS)),
         ),
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
