@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { Contract, ethers } from 'ethers';
+import { Contract, ethers, MaxUint256 } from 'ethers';
 
 import {
   ASSET_ADDRESS,
@@ -191,22 +191,18 @@ export default function Page() {
         signer,
       );
       const tx = assetContract.approve(STAKING_ADDRESS, amount);
+      const prettifiedAmount =
+        amount === MaxUint256
+          ? 'all'
+          : prettyAmount(
+              parseFloat(
+                ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+              ),
+            );
       await handleTx({
-        confirmingDescription: `Approving ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL} to be staked`,
-        processingDescription: `Approving ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL} to be staked`,
-        successDescription: `The approval of ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL} was successful`,
+        confirmingDescription: `Approving ${prettifiedAmount} ${ASSET_METADATA_SYMBOL} on the staking contract`,
+        processingDescription: `Approving ${prettifiedAmount} ${ASSET_METADATA_SYMBOL} on the staking contract`,
+        successDescription: `The approval of ${prettifiedAmount} ${ASSET_METADATA_SYMBOL} was successful`,
         tx,
       });
     },
