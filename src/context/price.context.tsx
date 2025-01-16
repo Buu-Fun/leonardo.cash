@@ -113,8 +113,6 @@ export const PriceProvider = ({ children }: Props) => {
     [price, fetchPrice],
   );
 
-  console.log({ value });
-
   return (
     <PriceContext.Provider value={value}>{children}</PriceContext.Provider>
   );

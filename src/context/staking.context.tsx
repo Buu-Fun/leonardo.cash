@@ -27,7 +27,10 @@ import {
 } from '@/src/gql/types/graphql';
 import { usePrice } from './price.context';
 
-export type StakerWithAssets = Staker & { assets: bigint };
+export type StakerWithAssets = Staker & {
+  assets: bigint;
+  coolingDownAssets: bigint;
+};
 
 interface Props {
   children: React.ReactNode;
@@ -47,7 +50,7 @@ interface StakingState {
   stakingRewardGlobal?: StakingRewardGlobal;
   coolingDownAssets: bigint;
   fetchAll: () => Promise<void>;
-  convertSharesToAssets: (shares: bigint) => Promise<bigint>;
+  convertSharesToAssets: (shares: bigint) => bigint;
 }
 
 const nTopStakers = 100;
@@ -77,7 +80,7 @@ const StakingContext = createContext<StakingState>({
   stakingRewardGlobal: undefined,
   coolingDownAssets: 0n,
   fetchAll: async () => {},
-  convertSharesToAssets: async () => 0n,
+  convertSharesToAssets: (shares: bigint) => shares,
 });
 
 export const StakingProvider = ({ children }: Props) => {
@@ -90,7 +93,6 @@ export const StakingProvider = ({ children }: Props) => {
   const [assetBalance, setAssetBalance] = React.useState(0n);
   const [stakingBalance, setStakingBalance] = React.useState(0n);
   const [stakingAllowance, setStakingAllowance] = React.useState(0n);
-  // const [lastBalance, setLastBalance] = React.useState(0n);
   const [sharesBalance, setSharesBalance] = React.useState(0n);
   const [staker, setStaker] = React.useState<StakerWithAssets>();
   const [stakingReward, setStakingReward] = React.useState<StakingReward>();
@@ -99,17 +101,16 @@ export const StakingProvider = ({ children }: Props) => {
   const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
   const [lastBalance, setLastBalance] = React.useState(0n);
 
-  const convertSharesToAssets = useCallback(
-    async (shares: bigint) => {
-      const stakingContract = new Contract(
-        STAKING_ADDRESS,
-        StakingUpgradeable.abi,
-        provider,
-      );
-      return stakingContract.convertToAssets(shares);
-    },
-    [provider],
-  );
+  const convertSharesToAssets = useCallback((shares: bigint) => {
+    if (!stakingRewardGlobal) {
+      return shares;
+    }
+
+    return (
+      (shares * BigInt(stakingRewardGlobal.totalAssets)) /
+      BigInt(stakingRewardGlobal.totalShares)
+    );
+  }, []);
 
   const fetchData = useCallback(async () => {
     if (!address) {
@@ -155,13 +156,15 @@ export const StakingProvider = ({ children }: Props) => {
     };
     const { stakers } = await ponderRequest(GetStakers, variables);
     if (stakers.items.length > 0) {
-      const [innerStakingBalance, innerCoolingDownAssets] = await Promise.all([
-        convertSharesToAssets(stakers.items[0].shares),
-        convertSharesToAssets(stakers.items[0].coolingDown),
-      ]);
+      const innerStakingBalance = convertSharesToAssets(
+        BigInt(stakers.items[0].shares),
+      );
+      const innerCoolingDownAssets = convertSharesToAssets(
+        BigInt(stakers.items[0].coolingDown),
+      );
       setStaker({
         ...stakers.items[0],
-        assets: innerStakingBalance,
+        assets: convertSharesToAssets(stakers.items[0].shares),
       });
       setStakingBalance(innerStakingBalance);
       setCoolingDownAssets(innerCoolingDownAssets);
@@ -187,7 +190,13 @@ export const StakingProvider = ({ children }: Props) => {
     const { items } = stakers;
     if (items.length > 0) {
       // setTopStakers(mockLeaderBoard(items[0], nTopStakers));
-      setTopStakers(items);
+      setTopStakers(
+        items.map((staker: Staker) => ({
+          ...staker,
+          assets: convertSharesToAssets(BigInt(staker.shares)),
+          coolingDownAssets: convertSharesToAssets(BigInt(staker.coolingDown)),
+        })),
+      );
     }
   }, [convertSharesToAssets]);
 
@@ -234,7 +243,6 @@ export const StakingProvider = ({ children }: Props) => {
   }, []);
 
   const fetchAll = useCallback(async () => {
-    // if (blockNumber.data && processedBlockNumber < blockNumber.data) {
     await Promise.all([
       fetchData(),
       fetchTopStakers(),
@@ -242,8 +250,6 @@ export const StakingProvider = ({ children }: Props) => {
       fetchStakingReward(),
       fetchStakingRewardGlobal(),
     ]);
-    // setProcessedBlockNumber(BigInt(blockNumber.data));
-    // }
   }, [
     fetchData,
     fetchTopStakers,
@@ -306,6 +312,8 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     ],
   );
+
+  console.log('staking context', value);
 
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>

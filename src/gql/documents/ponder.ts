@@ -60,6 +60,7 @@ export const GetStakingRewardGlobals = gql`
         endTime
         totalRewards
         totalShares
+        totalAssets
         cooldownTime
         lastUpdate
       }

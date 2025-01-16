@@ -20,7 +20,7 @@ interface Props {
   earningsUSD: number;
   earningsPerDayUSD: number;
   walletIn: boolean;
-  coolingDown: bigint;
+  coolingDownAssets: bigint;
   releaseTime: bigint;
   redeemFn: () => void;
   claimFn: () => Promise<void>;
@@ -34,7 +34,7 @@ function Staking({
   earningsUSD,
   earningsPerDayUSD,
   walletIn = false,
-  coolingDown,
+  coolingDownAssets,
   redeemFn,
   claimFn,
 }: Props) {
@@ -47,7 +47,7 @@ function Staking({
     endTime: now + 86400000,
   });
 
-  const lockedAmount = stakingBalance - coolingDown;
+  const lockedAmount = stakingBalance - coolingDownAssets;
 
   const handleClaim = async () => {
     setClaiming(true);
