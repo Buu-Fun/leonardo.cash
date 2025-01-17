@@ -24,7 +24,7 @@ import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
-import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
+// import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
 import {
@@ -40,6 +40,7 @@ import { getBoosterValue } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
+import DynamicLeaderBoard from '@/src/components/Table/DynamicLeaderBoard';
 
 const nTopStakers = 100;
 
@@ -267,22 +268,24 @@ export default function Page() {
         signer,
       );
       const tx = stakingContract.requestWithdraw(amount);
+      const formattedAmount = prettyAmount(
+        parseFloat(
+          ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
+        ),
+      );
       await handleTx({
-        confirmingDescription: `Requesting to withdraw ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL}`,
-        processingDescription: `Requesting to withdraw ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL}`,
-        successDescription: `The request to withdraw ${prettyAmount(
-          parseFloat(
-            ethers.formatUnits(amount, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )} ${ASSET_METADATA_SYMBOL} was successful`,
+        confirmingDescription:
+          amount === 0n
+            ? 'Confirming to cancel unstake request'
+            : `Requesting to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL}`,
+        processingDescription:
+          amount === 0n
+            ? 'Processing cancellation of unstake'
+            : `Requesting to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL}`,
+        successDescription:
+          amount === 0n
+            ? 'The cancellation of the unstake request was successful'
+            : `The request to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL} was successful`,
         tx,
       });
     },
@@ -298,22 +301,16 @@ export default function Page() {
       signer,
     );
     const tx = stakingContract.requestRedeem(sharesBalance);
+
+    const formattedAmount = prettyAmount(
+      parseFloat(
+        ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
+      ),
+    );
     await handleTx({
-      confirmingDescription: `Requesting to withdraw ${prettyAmount(
-        parseFloat(
-          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
-        ),
-      )} ${ASSET_METADATA_SYMBOL}`,
-      processingDescription: `Requesting to withdraw ${prettyAmount(
-        parseFloat(
-          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
-        ),
-      )} ${ASSET_METADATA_SYMBOL}`,
-      successDescription: `The request to withdraw ${prettyAmount(
-        parseFloat(
-          ethers.formatUnits(stakingBalance, parseInt(ASSET_METADATA_DECIMALS)),
-        ),
-      )} ${ASSET_METADATA_SYMBOL} was successful`,
+      confirmingDescription: `Requesting to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL}`,
+      processingDescription: `Requesting to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL}`,
+      successDescription: `The request to withdraw ${formattedAmount} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
   }, [address, signer, sharesBalance]);
@@ -326,6 +323,7 @@ export default function Page() {
       StakingUpgradeable.abi,
       signer,
     );
+
     const tx = stakingContract.redeem(staker.coolingDown, address, address);
     await handleTx({
       confirmingDescription: `Withdrawing ${prettyAmount(
@@ -354,7 +352,7 @@ export default function Page() {
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
-  }, [address, signer, sharesBalance]);
+  }, [address, signer, sharesBalance, staker]);
 
   const claim = React.useCallback(async () => {
     if (!address || !signer) return;
@@ -421,7 +419,6 @@ export default function Page() {
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
 
   const lockedAmount = stakingBalance - (staker?.coolingDownAssets || 0n);
-
   const walletIn = lockedAmount > 0n && lockedAmount >= lastBalance;
 
   const totalStakedAssets = stakingRewardGlobal
@@ -634,11 +631,12 @@ export default function Page() {
         coolingDown={BigInt(staker?.coolingDown || 0)}
         releaseTime={BigInt(staker?.releaseTime || 0)}
         coolingDownAssets={coolingDownAssets}
+        requestWithdrawFn={requestWithdraw}
         withdrawAllFn={withdrawAll}
       />
 
       {topStakers && topStakers.length > 0 && stakingRewardGlobal ? (
-        <LeaderBoard
+        <DynamicLeaderBoard
           n={nTopStakers}
           topStakers={calculateEarningPerDayStakers({
             topStakers,

@@ -12,6 +12,7 @@ interface Props {
   coolingDown: bigint;
   releaseTime: bigint;
   coolingDownAssets: bigint;
+  requestWithdrawFn: (amount: bigint) => Promise<void>;
   withdrawAllFn: () => Promise<void>;
 }
 
@@ -19,6 +20,7 @@ function Cooldown({
   coolingDown,
   coolingDownAssets,
   releaseTime,
+  requestWithdrawFn,
   withdrawAllFn,
 }: Props) {
   const [withdrawing, setWithdrawing] = useState(false);
@@ -63,6 +65,19 @@ function Cooldown({
           {unlocked
             ? 'Cooldown: Unlocked'
             : `Cooldown: ${timeDifference(parseInt(releaseTime.toString()))} to unlock`}
+
+          {!unlocked && (
+            <div
+              className={styles.cancel}
+              onClick={async () => {
+                setWithdrawing(true);
+                await requestWithdrawFn(0n);
+                setWithdrawing(false);
+              }}
+            >
+              Cancel
+            </div>
+          )}
         </div>
 
         <div className={styles.amount}>

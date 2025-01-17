@@ -229,7 +229,8 @@ export const StakingProvider = ({ children }: Props) => {
         })),
       );
       const lastBalance = convertSharesToAssets(
-        BigInt(items[items.length - 1].shares),
+        BigInt(items[items.length - 1].shares) -
+          BigInt(items[items.length - 1].coolingDown),
       );
       setLastBalance(lastBalance);
     }
