@@ -87,10 +87,20 @@
   gap: 10px;
 }
 
-.label {
+.label,
+.balance {
   font-size: 10px;
   font-weight: 400;
   margin-left: 4px;
+}
+
+.balance {
+  color: var(--text-color-muted);
+  transition: all 0.3s;
+}
+
+.balance:hover {
+  color: var(--primary-color);
 }
 
 .input {

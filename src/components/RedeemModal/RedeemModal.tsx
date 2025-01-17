@@ -119,9 +119,8 @@ export const RedeemModal = ({
                 <div className={styles.labels}>
                   <div className={styles.label}>Amount to Unstake</div>
                   <div
-                    className={styles.label}
+                    className={styles.balance}
                     style={{
-                      color: 'var(--text-color-muted)',
                       cursor: withdrawing ? 'unset' : 'pointer',
                     }}
                     onClick={
@@ -178,7 +177,7 @@ export const RedeemModal = ({
                           : undefined,
                       }}
                     >
-                      {percentage}%
+                      {percentage === 100 ? 'MAX' : `${percentage}%`}
                     </Button>
                   ))}
                 </div>

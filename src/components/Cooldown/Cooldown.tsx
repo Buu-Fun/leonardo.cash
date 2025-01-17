@@ -63,8 +63,8 @@ function Cooldown({
           )}
 
           {unlocked
-            ? 'Cooldown: Unlocked'
-            : `Cooldown: ${timeDifference(parseInt(releaseTime.toString()))} to unlock`}
+            ? 'Cooldown: Unlocked.'
+            : `Cooldown: ${timeDifference(parseInt(releaseTime.toString()))} to unlock.`}
 
           {!unlocked && (
             <div
