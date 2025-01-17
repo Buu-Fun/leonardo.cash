@@ -178,9 +178,9 @@
     width: 1px;
   }
 
-  .banner {
+  /* .banner {
     flex-direction: column;
-  }
+  } */
 }
 
 @keyframes displayAnimationIn {

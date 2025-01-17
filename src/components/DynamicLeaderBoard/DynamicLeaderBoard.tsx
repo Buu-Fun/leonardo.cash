@@ -113,7 +113,9 @@ const Row = ({
           {renderRanking(index, staker.staker, staker.staker === address)}
         </div>
         {staker.staker === address && (
-          <div className={styles.tableCellStaker}>
+          <div
+            className={clsx(styles.tableCellStaker, styles.tableCellStakerYou)}
+          >
             <Button
               onPress={() => {
                 setDepositAmount(

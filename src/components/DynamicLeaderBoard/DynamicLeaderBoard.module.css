@@ -105,3 +105,9 @@
   width: 24px;
   height: 24px;
 }
+
+@media (max-width: 768px) {
+  .tableCellStakerYou {
+    display: none;
+  }
+}

@@ -131,7 +131,6 @@ export const DepositModal = ({
     const stakerBalance = BigInt(staker.shares) - BigInt(staker.coolingDown);
     return stakerBalance < stakingBalance - coolingDownAssets + amountBn;
   });
-  console.log('estimatePos', estimatePos);
 
   return (
     <Modal

@@ -474,7 +474,6 @@ export default function Page() {
       earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
 
       const nextLevel = getNextLevelPos(pos);
-      console.log('nextLevel', nextLevel);
       const nextLevelStaker = topStakers[nextLevel];
       nextLevelBalance = nextLevelStaker
         ? BigInt(nextLevelStaker.shares) - BigInt(nextLevelStaker.coolingDown)
