@@ -7,7 +7,7 @@ import { Button } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import clsx from 'clsx';
 import {
-  ArrowTrendingUpIcon,
+  ArrowUpCircleIcon,
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
@@ -15,7 +15,7 @@ import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 
 interface Props {
   pos: number;
-  nextStakingBalance: bigint;
+  nextLevelBalance: bigint;
   stakingBalance: bigint;
   lastBalance: bigint;
   earningsUSD: number;
@@ -32,7 +32,7 @@ interface Props {
 function Staking({
   pos,
   lastBalance,
-  nextStakingBalance,
+  nextLevelBalance,
   stakingBalance,
   earningsUSD,
   earningsPerDayUSD,
@@ -60,7 +60,7 @@ function Staking({
     setClaiming(false);
   };
 
-  const toNextPos = nextStakingBalance - lockedAmount;
+  const toNextLevel = nextLevelBalance - lockedAmount + 1n;
 
   return (
     <div
@@ -80,14 +80,11 @@ function Staking({
           <div className={clsx(styles.messageOut, styles.message)}>
             <ExclamationTriangleIcon className={styles.icon} />
             <div className={styles.text}>
-              {lastBalance > 0n
+              {lockedAmount > 0n
                 ? `Stake ${prettyAmount(
                     parseFloat(
                       ethers.formatUnits(
-                        (walletIn
-                          ? lastBalance - stakingBalance
-                          : 0n
-                        ).toString(),
+                        (walletIn ? lastBalance - lockedAmount : 0n).toString(),
                         parseInt(ASSET_METADATA_DECIMALS),
                       ),
                     ),
@@ -132,7 +129,7 @@ function Staking({
                 setDepositAmount(
                   ethers
                     .formatUnits(
-                      toNextPos.toString(),
+                      toNextLevel.toString(),
                       parseInt(ASSET_METADATA_DECIMALS),
                     )
                     .toString(),
@@ -141,16 +138,8 @@ function Staking({
               }}
               color="default"
             >
-              <ArrowTrendingUpIcon className={styles.icon} />
-              Next: +
-              {prettyAmount(
-                parseFloat(
-                  ethers.formatUnits(
-                    toNextPos.toString(),
-                    parseInt(ASSET_METADATA_DECIMALS),
-                  ),
-                ),
-              )}
+              <ArrowUpCircleIcon className={styles.icon} />
+              Next level
             </Button>
           </div>
         )}

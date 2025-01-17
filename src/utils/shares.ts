@@ -42,3 +42,22 @@ export const getBoosterValue = (index: number) => {
   }
   return BoosterValues[Tiers.Top1];
 };
+
+export const getNextLevelPos = (index: number) => {
+  if (index > 99) {
+    return 99;
+  } else if (index > 49) {
+    return 49;
+  } else if (index > 24) {
+    return 24;
+  } else if (index > 9) {
+    return 9;
+  } else if (index > 4) {
+    return 4;
+  } else if (index > 2) {
+    return 2;
+  } else if (index > 0) {
+    return 1;
+  }
+  return 0;
+};

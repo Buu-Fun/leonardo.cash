@@ -35,7 +35,7 @@ import { useStaking } from '@/src/context/staking.context';
 import { serverRequest } from '@/src/gql/client';
 import { GetSignedStakingReward } from '@/src/gql/documents/server';
 import { base, sepolia as Sepolia } from 'wagmi/chains';
-import { getBoosterValue } from '@/src/utils/shares';
+import { getBoosterValue, getNextLevelPos } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
@@ -434,7 +434,7 @@ export default function Page() {
   let totalRewards = 0n;
   let totalRewardsPerDay = 0n;
   let pos = -1;
-  let nextStakingBalance = 0n;
+  let nextLevelBalance = 0n;
 
   if (stakingRewardGlobal) {
     pos = address
@@ -472,9 +472,11 @@ export default function Page() {
         totalBoostedShares;
       earningPerDay = (currentReward * 86400n) / timeSinceLastUpdate;
 
-      const nextStaker = pos > 0 ? topStakers[pos - 1] : undefined;
-      nextStakingBalance = nextStaker
-        ? BigInt(nextStaker.shares) - BigInt(nextStaker.coolingDown)
+      const nextLevel = getNextLevelPos(pos);
+      console.log('nextLevel', nextLevel);
+      const nextLevelStaker = topStakers[nextLevel];
+      nextLevelBalance = nextLevelStaker
+        ? BigInt(nextLevelStaker.shares) - BigInt(nextLevelStaker.coolingDown)
         : 0n;
     }
   }
@@ -502,6 +504,8 @@ export default function Page() {
     parseFloat(
       ethers.formatUnits(totalRewardsPerDay, parseInt(ASSET_METADATA_DECIMALS)),
     ) * price;
+
+  const toNextLevel = nextLevelBalance - lockedAmount + 1n;
 
   return (
     <main
@@ -557,7 +561,7 @@ export default function Page() {
         <Staking
           pos={pos}
           stakingBalance={stakingBalance}
-          nextStakingBalance={nextStakingBalance}
+          nextLevelBalance={nextLevelBalance}
           coolingDownAssets={staker?.coolingDownAssets || 0n}
           earningsUSD={earningsUSD || 0}
           earningsPerDayUSD={earningPerDayUSD || 0}
@@ -642,6 +646,9 @@ export default function Page() {
             stakingRewardGlobal,
             price,
           })}
+          setDepositAmount={setDepositAmount}
+          openDepositModal={depositDisclosure.onOpen}
+          toNextLevel={toNextLevel}
         />
       ) : null}
     </main>
