@@ -15,12 +15,18 @@ import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
 
 interface Props {
   n: number;
-  topStakers: StakerWithAssetsAndEarnings[];
+  topStakersWithAssetsAndEarnings: StakerWithAssetsAndEarnings[];
   rowHeight?: number;
 }
 
-const DynamicLeaderBoard = ({ n, topStakers, rowHeight = 120 }: Props) => {
-  const totalHeight = topStakers.length * rowHeight + 40; // + Padding
+const DynamicLeaderBoard = ({
+  n,
+  topStakersWithAssetsAndEarnings,
+  rowHeight = 120,
+}: Props) => {
+  const totalHeight = topStakersWithAssetsAndEarnings.length * rowHeight + 40; // + Padding
+
+  const topStakers = topStakersWithAssetsAndEarnings;
 
   const { address } = useAccount();
   const renderRankingIcon = (index: number) => {

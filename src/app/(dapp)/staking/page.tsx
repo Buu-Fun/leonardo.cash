@@ -24,7 +24,6 @@ import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
-// import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
 import {
@@ -40,7 +39,7 @@ import { getBoosterValue } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
-import DynamicLeaderBoard from '@/src/components/Table/DynamicLeaderBoard';
+import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
 
 const nTopStakers = 100;
 
@@ -638,7 +637,7 @@ export default function Page() {
       {topStakers && topStakers.length > 0 && stakingRewardGlobal ? (
         <DynamicLeaderBoard
           n={nTopStakers}
-          topStakers={calculateEarningPerDayStakers({
+          topStakersWithAssetsAndEarnings={calculateEarningPerDayStakers({
             topStakers,
             stakingRewardGlobal,
             price,

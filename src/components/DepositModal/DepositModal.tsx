@@ -156,8 +156,8 @@ export const DepositModal = ({
                       onClick={handleApprove()}
                       isLoading={approving}
                       style={{
-                        paddingLeft: '4px',
-                        paddingRight: '4px',
+                        paddingLeft: '20px',
+                        paddingRight: '20px',
                       }}
                     >
                       Approve
