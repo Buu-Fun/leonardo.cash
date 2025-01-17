@@ -25,7 +25,7 @@ import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
 import { ToastContainer, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { LeaderBoard } from '@/src/components/LeaderBoard/LeaderBoard';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
 import {
   SignedStakingReward,
@@ -99,6 +99,7 @@ const calculateEarningPerDayStakers = ({
 export default function Page() {
   // Hooks
   const { openConnectModal } = useConnectModal();
+  const { openChainModal } = useChainModal();
   const { address } = useAccount();
   const signer = useEthersSigner();
   const depositDisclosure = useDisclosure();
@@ -108,6 +109,7 @@ export default function Page() {
   const [depositAmount, setDepositAmount] = React.useState('');
 
   const {
+    chain,
     topStakers,
     assetBalance,
     stakingAllowance,
@@ -165,6 +167,7 @@ export default function Page() {
             description={successDescription}
           />,
         );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error?.code === 'ACTION_REJECTED') {
           toast.error(
@@ -554,7 +557,7 @@ export default function Page() {
           topStakers.length === nTopStakers ? lastBalance : 0n
         }
       />
-      {address && (
+      {chain && address && (
         <Staking
           pos={pos}
           stakingBalance={stakingBalance}
@@ -571,7 +574,7 @@ export default function Page() {
           openDepositModal={depositDisclosure.onOpen}
         />
       )}
-      {!address && (
+      {chain && !address && (
         <Button
           color="primary"
           onPressStart={openConnectModal}
@@ -584,7 +587,23 @@ export default function Page() {
         </Button>
       )}
 
-      {address ? (
+      {!chain && address && (
+        <Button
+          color="danger"
+          onPressStart={openChainModal}
+          onClick={openChainModal}
+          style={{
+            width: '100%',
+            background: 'var(--danger-color)',
+            fontWeight: 'bold',
+            fontSize: '16px',
+          }}
+        >
+          Wrong network
+        </Button>
+      )}
+
+      {chain && address ? (
         assetBalance > 0n ? (
           <Button
             color="primary"

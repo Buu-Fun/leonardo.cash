@@ -26,6 +26,7 @@ import {
   StakingRewardGlobal,
 } from '@/src/gql/types/graphql';
 import { usePrice } from './price.context';
+import { Chain } from '@rainbow-me/rainbowkit';
 
 export type StakerWithAssets = Staker & {
   assets: bigint;
@@ -38,6 +39,7 @@ interface Props {
 
 // Define the types for the context state
 interface StakingState {
+  chain?: Chain;
   assetBalance: bigint;
   stakingAllowance: bigint;
   sharesBalance: bigint;
@@ -68,6 +70,7 @@ const nTopStakers = 100;
 // };
 
 const StakingContext = createContext<StakingState>({
+  chain: undefined,
   assetBalance: 0n,
   stakingAllowance: 0n,
   sharesBalance: 0n,
@@ -84,7 +87,7 @@ const StakingContext = createContext<StakingState>({
 });
 
 export const StakingProvider = ({ children }: Props) => {
-  const { address } = useAccount();
+  const { chain, address } = useAccount();
   const provider = useEthersProvider();
   const { price } = usePrice();
 
@@ -113,7 +116,7 @@ export const StakingProvider = ({ children }: Props) => {
   }, []);
 
   const fetchData = useCallback(async () => {
-    if (!address) {
+    if (!chain || !address) {
       setAssetBalance(0n);
       setStakingAllowance(0n);
       return;
@@ -139,10 +142,10 @@ export const StakingProvider = ({ children }: Props) => {
     setAssetBalance(innerAssetBalance);
     setStakingAllowance(innerStakingAllowance);
     setSharesBalance(innerSharesBalance);
-  }, [address, provider]);
+  }, [chain, address, provider]);
 
   const fetchStaker = useCallback(async () => {
-    if (!address) {
+    if (!chain || !address) {
       setStaker(undefined);
       setStakingBalance(0n);
       return;
@@ -176,7 +179,31 @@ export const StakingProvider = ({ children }: Props) => {
       setStakingBalance(0n);
       setCoolingDownAssets(0n);
     }
-  }, [address, convertSharesToAssets]);
+  }, [chain, address, convertSharesToAssets]);
+
+  const fetchStakingReward = useCallback(async () => {
+    if (!chain || !address) {
+      setStakingReward(undefined);
+      return;
+    }
+    const variables = {
+      where: {
+        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        address: STAKING_ADDRESS,
+        staker: address,
+      },
+      limit: 1,
+    };
+
+    const { stakingRewards } = await ponderRequest(
+      GetStakingRewards,
+      variables,
+    );
+
+    if (stakingRewards.items.length > 0) {
+      setStakingReward(stakingRewards.items[0]);
+    }
+  }, [chain, address]);
 
   const fetchTopStakers = useCallback(async () => {
     // Fetch top stakers
@@ -201,32 +228,12 @@ export const StakingProvider = ({ children }: Props) => {
           coolingDownAssets: convertSharesToAssets(BigInt(staker.coolingDown)),
         })),
       );
+      const lastBalance = convertSharesToAssets(
+        BigInt(items[items.length - 1].shares),
+      );
+      setLastBalance(lastBalance);
     }
   }, [convertSharesToAssets]);
-
-  const fetchStakingReward = useCallback(async () => {
-    if (!address) {
-      setStakingReward(undefined);
-      return;
-    }
-    const variables = {
-      where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
-        address: STAKING_ADDRESS,
-        staker: address,
-      },
-      limit: 1,
-    };
-
-    const { stakingRewards } = await ponderRequest(
-      GetStakingRewards,
-      variables,
-    );
-
-    if (stakingRewards.items.length > 0) {
-      setStakingReward(stakingRewards.items[0]);
-    }
-  }, [address]);
 
   const fetchStakingRewardGlobal = useCallback(async () => {
     const variables = {
@@ -262,15 +269,6 @@ export const StakingProvider = ({ children }: Props) => {
     fetchStakingRewardGlobal,
   ]);
 
-  const fetchLastBalance = useCallback(async () => {
-    if (topStakers.length >= nTopStakers) {
-      const lastBalance = await convertSharesToAssets(
-        BigInt(topStakers[topStakers.length - 1].shares),
-      );
-      setLastBalance(lastBalance);
-    }
-  }, [topStakers]);
-
   useEffect(() => {
     fetchAll();
     const interval = setInterval(() => {
@@ -279,13 +277,10 @@ export const StakingProvider = ({ children }: Props) => {
     return () => clearInterval(interval);
   }, [fetchAll]);
 
-  useEffect(() => {
-    fetchLastBalance();
-  }, [fetchLastBalance]);
-
   // Memoize the context value
   const value = useMemo<StakingState>(
     () => ({
+      chain,
       assetBalance,
       stakingAllowance,
       sharesBalance,
@@ -301,6 +296,7 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     }),
     [
+      chain,
       assetBalance,
       stakingAllowance,
       sharesBalance,
@@ -316,8 +312,6 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     ],
   );
-
-  console.log('StakingContext', value);
 
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>
