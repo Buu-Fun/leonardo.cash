@@ -435,6 +435,7 @@ export default function Page() {
   let totalRewardsPerDay = 0n;
   let pos = -1;
   let nextLevelBalance = 0n;
+  let topStakersWithAssetsAndEarnings: StakerWithAssetsAndEarnings[] = [];
 
   if (stakingRewardGlobal) {
     pos = address
@@ -479,6 +480,11 @@ export default function Page() {
         ? BigInt(nextLevelStaker.shares) - BigInt(nextLevelStaker.coolingDown)
         : 0n;
     }
+    topStakersWithAssetsAndEarnings = calculateEarningPerDayStakers({
+      topStakers,
+      stakingRewardGlobal,
+      price,
+    });
   }
 
   const earnings = stakingReward
@@ -529,18 +535,22 @@ export default function Page() {
         pauseOnHover
         theme="dark"
       />
-      <DepositModal
-        amount={depositAmount}
-        setAmount={setDepositAmount}
-        assetBalance={assetBalance}
-        stakingAllowance={stakingAllowance}
-        lastBalance={lastBalance}
-        stakingBalance={stakingBalance}
-        cooldownTime={BigInt(stakingRewardGlobal?.cooldownTime || 0)}
-        approveFn={approve}
-        stakeFn={deposit}
-        {...depositDisclosure}
-      />
+      {stakingRewardGlobal && (
+        <DepositModal
+          topStakers={topStakersWithAssetsAndEarnings}
+          amount={depositAmount}
+          setAmount={setDepositAmount}
+          assetBalance={assetBalance}
+          stakingAllowance={stakingAllowance}
+          lastBalance={lastBalance}
+          stakingBalance={stakingBalance}
+          coolingDownAssets={coolingDownAssets}
+          cooldownTime={BigInt(stakingRewardGlobal?.cooldownTime || 0)}
+          approveFn={approve}
+          stakeFn={deposit}
+          {...depositDisclosure}
+        />
+      )}
       <RedeemModal
         stakingBalance={stakingBalance}
         coolingDown={BigInt(staker?.coolingDown || 0)}
@@ -641,11 +651,7 @@ export default function Page() {
       {topStakers && topStakers.length > 0 && stakingRewardGlobal ? (
         <DynamicLeaderBoard
           n={nTopStakers}
-          topStakersWithAssetsAndEarnings={calculateEarningPerDayStakers({
-            topStakers,
-            stakingRewardGlobal,
-            price,
-          })}
+          topStakersWithAssetsAndEarnings={topStakersWithAssetsAndEarnings}
           setDepositAmount={setDepositAmount}
           openDepositModal={depositDisclosure.onOpen}
           toNextLevel={toNextLevel}

@@ -7,14 +7,17 @@ import styles from './styles.module.css';
 import { extractHours, format } from '@/src/utils/format';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import Disclaimer from '../Disclaimer/Disclaimer';
+import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
 
 interface Props {
+  topStakers: StakerWithAssetsAndEarnings[];
   amount: string;
   setAmount: (amount: string) => void;
   assetBalance: bigint;
   stakingAllowance: bigint;
   lastBalance: bigint;
   stakingBalance: bigint;
+  coolingDownAssets: bigint;
   isOpen: boolean;
   cooldownTime: bigint;
   onOpenChange: (isOpen: boolean) => void;
@@ -25,6 +28,7 @@ interface Props {
 const percentages = [25, 50, 75, 100];
 
 export const DepositModal = ({
+  topStakers,
   amount,
   setAmount,
   assetBalance,
@@ -33,6 +37,7 @@ export const DepositModal = ({
   cooldownTime,
   lastBalance,
   stakingBalance,
+  coolingDownAssets,
   onOpenChange,
   approveFn,
   stakeFn,
@@ -115,13 +120,18 @@ export const DepositModal = ({
     stakingAllowance >=
       ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS));
 
-  const youAreTop100 = stakingBalance >= lastBalance;
+  const youAreTop100 = stakingBalance - coolingDownAssets >= lastBalance;
   const youWillBeTop100 =
-    !youAreTop100 && stakingBalance + amountBn > lastBalance;
+    stakingBalance - coolingDownAssets + amountBn > lastBalance;
 
-  const amountLeft = youWillBeTop100
-    ? 0n
-    : lastBalance - (stakingBalance + amountBn);
+  const amountLeft =
+    lastBalance - (stakingBalance - coolingDownAssets) - amountBn;
+
+  const estimatePos = topStakers.findIndex((staker) => {
+    const stakerBalance = BigInt(staker.shares) - BigInt(staker.coolingDown);
+    return stakerBalance < stakingBalance - coolingDownAssets + amountBn;
+  });
+  console.log('estimatePos', estimatePos);
 
   return (
     <Modal
@@ -282,14 +292,19 @@ export const DepositModal = ({
               <Disclaimer
                 type={youAreTop100 || youWillBeTop100 ? 'success' : 'error'}
               >
-                {youAreTop100
-                  ? 'You are already in top 100'
-                  : youWillBeTop100
-                    ? 'You will be in top 100 and start earning rewards!'
+                {amountBn > 0n
+                  ? youWillBeTop100
+                    ? `You will be the #${estimatePos + 1} staker!`
                     : `You need to stake ${format({
                         value: amountLeft.toString(),
                         decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
-                      })} more to be in top 100!`}
+                      })} more to be in the top 100!`
+                  : youAreTop100
+                    ? `You are the #${estimatePos + 1} staker!`
+                    : `You need to stake ${format({
+                        value: amountLeft.toString(),
+                        decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
+                      })} more to be in the top 100! `}
               </Disclaimer>
             </div>
           </div>
