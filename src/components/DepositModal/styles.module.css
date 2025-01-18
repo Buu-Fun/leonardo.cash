@@ -38,6 +38,7 @@
   align-items: center;
   width: 100%;
   gap: 10px;
+  min-height: 60px;
 }
 
 .stepIcon {
@@ -64,7 +65,6 @@
 
 .bottom {
   display: flex;
-
   flex-direction: column;
   gap: 20px;
   width: 100%;
@@ -87,10 +87,20 @@
   gap: 10px;
 }
 
-.label {
+.label,
+.balance {
   font-size: 10px;
   font-weight: 400;
   margin-left: 4px;
+}
+
+.balance {
+  color: var(--text-color-muted);
+  transition: all 0.3s;
+}
+
+.balance:hover {
+  color: var(--primary-color);
 }
 
 .input {

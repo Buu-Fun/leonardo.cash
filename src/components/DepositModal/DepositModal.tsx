@@ -7,12 +7,17 @@ import styles from './styles.module.css';
 import { extractHours, format } from '@/src/utils/format';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import Disclaimer from '../Disclaimer/Disclaimer';
+import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
 
 interface Props {
+  topStakers: StakerWithAssetsAndEarnings[];
+  amount: string;
+  setAmount: (amount: string) => void;
   assetBalance: bigint;
   stakingAllowance: bigint;
   lastBalance: bigint;
   stakingBalance: bigint;
+  coolingDownAssets: bigint;
   isOpen: boolean;
   cooldownTime: bigint;
   onOpenChange: (isOpen: boolean) => void;
@@ -23,19 +28,22 @@ interface Props {
 const percentages = [25, 50, 75, 100];
 
 export const DepositModal = ({
+  topStakers,
+  amount,
+  setAmount,
   assetBalance,
   stakingAllowance,
   isOpen,
   cooldownTime,
   lastBalance,
   stakingBalance,
+  coolingDownAssets,
   onOpenChange,
   approveFn,
   stakeFn,
 }: Props) => {
   const [depositing, setDepositing] = React.useState(false);
   const [approving, setApproving] = React.useState(false);
-  const [amount, setAmount] = React.useState('');
   const amountBn =
     amount !== ''
       ? ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS))
@@ -77,11 +85,14 @@ export const DepositModal = ({
     [assetBalance],
   );
 
-  const handleApprove = () => async () => {
-    setApproving(true);
-    await approveFn(ethers.MaxUint256); // approve all
-    setApproving(false);
-  };
+  const handleApprove = useCallback(
+    () => async () => {
+      setApproving(true);
+      await approveFn(amountBn);
+      setApproving(false);
+    },
+    [amountBn],
+  );
 
   const handleStake = useCallback(
     (onClose: () => void) => async () => {
@@ -101,7 +112,7 @@ export const DepositModal = ({
     }
   }, [isOpen]);
 
-  const isAllowed = stakingAllowance >= ethers.MaxUint256;
+  const isAllowed = stakingAllowance >= amountBn;
   const canStake =
     isAllowed &&
     amount !== '' &&
@@ -109,13 +120,17 @@ export const DepositModal = ({
     stakingAllowance >=
       ethers.parseUnits(amount, parseInt(ASSET_METADATA_DECIMALS));
 
-  const youAreInTop100 = canStake && stakingBalance + amountBn > lastBalance;
+  const youAreTop100 = stakingBalance - coolingDownAssets >= lastBalance;
+  const youWillBeTop100 =
+    stakingBalance - coolingDownAssets + amountBn > lastBalance;
 
-  const amountLeft = canStake
-    ? youAreInTop100
-      ? 0n
-      : lastBalance - (stakingBalance + amountBn)
-    : 0n;
+  const amountLeft =
+    lastBalance - (stakingBalance - coolingDownAssets) - amountBn;
+
+  const estimatePos = topStakers.findIndex((staker) => {
+    const stakerBalance = BigInt(staker.shares) - BigInt(staker.coolingDown);
+    return stakerBalance < stakingBalance - coolingDownAssets + amountBn;
+  });
 
   return (
     <Modal
@@ -143,20 +158,25 @@ export const DepositModal = ({
                 <div className={styles.stepIcon}>1</div>
                 <div className={styles.stepDescription}>
                   <span>Approving LEONAI usage by the Staking contract</span>
-                  {!isAllowed && (
+                  {amountBn > 0n && !isAllowed && (
                     <Button
                       color="primary"
-                      onPress={handleApprove()}
+                      onPressStart={handleApprove()}
+                      onClick={handleApprove()}
                       isLoading={approving}
+                      style={{
+                        paddingLeft: '20px',
+                        paddingRight: '20px',
+                      }}
                     >
                       Approve
                     </Button>
                   )}
-                  {isAllowed && (
+                  {amountBn > 0n && isAllowed && (
                     <CheckIcon
                       color="var(--success-color)"
-                      width={24}
-                      height={24}
+                      width={26}
+                      height={26}
                     />
                   )}
                 </div>
@@ -164,109 +184,128 @@ export const DepositModal = ({
               <div className={styles.step}>
                 <div className={styles.stepIcon}>2</div>
                 <div className={styles.stepDescription}>
-                  Staking your LEONAI
+                  <span>Staking your LEONAI</span>
+                  {canStake && (
+                    <Button
+                      disabled={!canStake}
+                      color={canStake ? 'primary' : 'default'}
+                      isLoading={depositing}
+                      onPressStart={
+                        canStake
+                          ? depositing
+                            ? undefined
+                            : handleStake(onClose)
+                          : undefined
+                      }
+                      onClick={
+                        canStake
+                          ? depositing
+                            ? undefined
+                            : handleStake(onClose)
+                          : undefined
+                      }
+                      style={{
+                        color: canStake ? undefined : 'var(--text-color-muted)',
+                      }}
+                    >
+                      Stake
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
 
-            {isAllowed && (
-              <div className={styles.bottom}>
-                <div className={styles.amount}>
-                  <div className={styles.labels}>
-                    <div className={styles.label}>Amount to Stake</div>
-                    <div
-                      className={styles.label}
-                      style={{
-                        color: 'var(--text-color-muted)',
-                        cursor: depositing ? 'unset' : 'pointer',
-                      }}
-                      onClick={
-                        depositing
-                          ? undefined
-                          : () => setPercentage(BigInt(100))
-                      }
-                    >{`Balance: ${format({
-                      value: assetBalance.toString(),
-                      decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
-                    })}`}</div>
-                  </div>
-                  <input
-                    type="text"
-                    color={depositing ? 'disabled' : 'primary'}
-                    value={amount}
-                    onChange={(e) => handleSetAmount(e.target.value)}
-                    className={styles.input}
-                    height={48}
-                    disabled={depositing}
+            <div className={styles.bottom}>
+              <div className={styles.amount}>
+                <div className={styles.labels}>
+                  <div className={styles.label}>Amount to Stake</div>
+                  <div
+                    className={styles.balance}
                     style={{
-                      color: depositing ? 'var(--text-color-muted)' : undefined,
+                      cursor: depositing || approving ? 'unset' : 'pointer',
                     }}
-                  />
+                    onClick={
+                      depositing || approving
+                        ? undefined
+                        : () => setPercentage(BigInt(100))
+                    }
+                  >{`Balance: ${format({
+                    value: assetBalance.toString(),
+                    decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
+                  })}`}</div>
+                </div>
+                <input
+                  type="text"
+                  color={depositing || approving ? 'disabled' : 'primary'}
+                  value={amount}
+                  onChange={(e) => handleSetAmount(e.target.value)}
+                  className={styles.input}
+                  height={48}
+                  disabled={depositing || approving}
+                  style={{
+                    color:
+                      depositing || approving
+                        ? 'var(--text-color-muted)'
+                        : undefined,
+                  }}
+                />
 
-                  <div className={styles.buttons}>
-                    {percentages.map((percentage) => (
-                      <Button
-                        fullWidth
-                        size="sm"
-                        key={percentage}
-                        color={depositing ? 'default' : 'primary'}
-                        variant={
-                          amountBn ===
-                          (assetBalance * BigInt(percentage)) / 100n
-                            ? undefined
-                            : 'light'
-                        }
-                        disabled={depositing}
-                        onPress={
-                          depositing
-                            ? undefined
-                            : () => setPercentage(BigInt(percentage))
-                        }
-                        style={{
-                          color: depositing
+                <div className={styles.buttons}>
+                  {percentages.map((percentage) => (
+                    <Button
+                      fullWidth
+                      size="sm"
+                      key={percentage}
+                      color={depositing || approving ? 'default' : 'primary'}
+                      variant={
+                        amountBn === (assetBalance * BigInt(percentage)) / 100n
+                          ? undefined
+                          : 'light'
+                      }
+                      disabled={depositing || approving}
+                      onPressStart={
+                        depositing || approving
+                          ? undefined
+                          : () => setPercentage(BigInt(percentage))
+                      }
+                      onClick={
+                        depositing || approving
+                          ? undefined
+                          : () => setPercentage(BigInt(percentage))
+                      }
+                      style={{
+                        color:
+                          depositing || approving
                             ? 'var(--text-color-muted)'
                             : undefined,
-                        }}
-                      >
-                        {percentage}%
-                      </Button>
-                    ))}
-                  </div>
+                      }}
+                    >
+                      {percentage === 100 ? 'MAX' : `${percentage}%`}
+                    </Button>
+                  ))}
                 </div>
-
-                <Button
-                  fullWidth
-                  disabled={!canStake}
-                  color={canStake ? 'primary' : 'default'}
-                  isLoading={depositing}
-                  onPress={
-                    canStake
-                      ? depositing
-                        ? undefined
-                        : handleStake(onClose)
-                      : undefined
-                  }
-                  style={{
-                    height: '48px',
-                  }}
-                >
-                  Stake
-                </Button>
               </div>
-            )}
+            </div>
 
-            {canStake && (
-              <div className={styles.disclaimer}>
-                <Disclaimer type={youAreInTop100 ? 'success' : 'error'}>
-                  {youAreInTop100
-                    ? 'You are in top 100 and will start earning rewards!'
+            <div className={styles.disclaimer}>
+              <Disclaimer
+                type={youAreTop100 || youWillBeTop100 ? 'success' : 'error'}
+              >
+                {amountBn > 0n
+                  ? youWillBeTop100
+                    ? `You will be the #${estimatePos + 1} staker!`
                     : `You need to stake ${format({
                         value: amountLeft.toString(),
                         decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
-                      })} more to be in top 100!`}
-                </Disclaimer>
-              </div>
-            )}
+                      })} more to be in the top 100!`
+                  : youAreTop100
+                    ? `You are the #${estimatePos + 1} staker!`
+                    : `You need to stake ${format({
+                        value: amountLeft.toString(),
+                        decimalsOffset: parseInt(ASSET_METADATA_DECIMALS),
+                      })} more to be in the top 100! `}
+              </Disclaimer>
+            </div>
           </div>
         )}
       </ModalContent>

@@ -7,7 +7,8 @@
     "test": "npx mocha",
     "depcheck": "node_modules/.bin/depcheck",
     "build": "next build",
-    "dev": "next dev",
+    "dev": "cp .env.development .env.local && next dev",
+    "dev:prod": "cp .env.production .env.local && next dev",
     "start": "next start",
     "seed": "node -r dotenv/config ./scripts/seed.js",
     "codegen": "graphql-codegen",
@@ -20,11 +21,12 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@nextui-org/react": "2.6.10",
-    "@rainbow-me/rainbowkit": "^2.2.1",
-    "@tanstack/react-query": "^5.63.0",
+    "@rainbow-me/rainbowkit": "^2.2.2",
+    "@tanstack/react-query": "^5.64.1",
     "clsx": "2.1.1",
     "date-fns": "3.6.0",
     "ethers": "^6.13.1",
+    "framer-motion": "^11.18.1",
     "graphql-request": "^7.1.2",
     "lodash": "4.17.21",
     "next": "^14.2.22",
@@ -32,8 +34,8 @@
     "react-dom": "18.2.0",
     "react-toastify": "^11.0.2",
     "recharts": "2.13.0",
-    "viem": "^2.22.7",
-    "wagmi": "^2.14.7"
+    "viem": "^2.22.9",
+    "wagmi": "^2.14.8"
   },
   "devDependencies": {
     "@eslint/compat": "1.1.1",

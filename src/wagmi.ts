@@ -6,7 +6,7 @@ let sepolia = Sepolia;
 let base = Base;
 
 if (ALCHEMY_API_KEY) {
-  const sepoliaAlchemyRpcUrl = `https://https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
+  const sepoliaAlchemyRpcUrl = `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
   const baseAlchemyRpcUrl = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
   sepolia = {
     ...Sepolia,

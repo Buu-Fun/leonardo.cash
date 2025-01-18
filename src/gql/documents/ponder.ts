@@ -23,7 +23,6 @@ export const GetStakingRewards = gql`
         staker
         amount
         claimed
-        available
         lastUpdate
       }
       pageInfo {

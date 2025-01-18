@@ -1,0 +1,30 @@
+.navbarContainer {
+  display: flex;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  max-width: 1300px;
+  padding: 0 25px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 32px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  /* border-radius: 0 0 32px 32px; */
+  border-radius: 32px;
+  margin-top: 20px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}

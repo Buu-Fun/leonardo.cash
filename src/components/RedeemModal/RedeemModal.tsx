@@ -119,9 +119,8 @@ export const RedeemModal = ({
                 <div className={styles.labels}>
                   <div className={styles.label}>Amount to Unstake</div>
                   <div
-                    className={styles.label}
+                    className={styles.balance}
                     style={{
-                      color: 'var(--text-color-muted)',
                       cursor: withdrawing ? 'unset' : 'pointer',
                     }}
                     onClick={
@@ -162,7 +161,12 @@ export const RedeemModal = ({
                           : 'light'
                       }
                       disabled={withdrawing}
-                      onPress={
+                      onPressStart={
+                        withdrawing
+                          ? undefined
+                          : () => setPercentage(BigInt(percentage))
+                      }
+                      onClick={
                         withdrawing
                           ? undefined
                           : () => setPercentage(BigInt(percentage))
@@ -173,7 +177,7 @@ export const RedeemModal = ({
                           : undefined,
                       }}
                     >
-                      {percentage}%
+                      {percentage === 100 ? 'MAX' : `${percentage}%`}
                     </Button>
                   ))}
                 </div>
@@ -201,7 +205,14 @@ export const RedeemModal = ({
               disabled={!canUnstake}
               isLoading={withdrawing}
               color={canUnstake ? 'primary' : 'default'}
-              onPress={
+              onPressStart={
+                canUnstake
+                  ? withdrawing
+                    ? undefined
+                    : handleRedeem(onClose)
+                  : undefined
+              }
+              onClick={
                 canUnstake
                   ? withdrawing
                     ? undefined

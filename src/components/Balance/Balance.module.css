@@ -1,0 +1,39 @@
+.balance {
+  display: flex;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  justify-content: flex-end;
+}
+
+.amount {
+  display: flex;
+  transition: all 0.3s ease;
+  color: var(--primary-color);
+}
+
+.balanceButton {
+  transform: translateY(200%);
+  position: absolute;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.balance:hover .balanceButton {
+  transform: translateY(0);
+}
+
+.balance:hover .amount {
+  transform: translateY(-200%);
+}
+
+.plusIcon {
+  width: 16px;
+  height: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .balance {
+    display: none;
+  }
+}

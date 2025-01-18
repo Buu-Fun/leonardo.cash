@@ -1,12 +1,13 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import styles from './styles.module.css';
+import styles from './Staking.module.css';
 import { format, prettyAmount } from '../../utils/format';
 import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
 import { Button } from '@nextui-org/react';
 import { ethers } from 'ethers';
 import clsx from 'clsx';
 import {
+  ArrowUpCircleIcon,
   CheckBadgeIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
@@ -14,7 +15,7 @@ import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 
 interface Props {
   pos: number;
-  nextStakingBalance: bigint;
+  nextLevelBalance: bigint;
   stakingBalance: bigint;
   lastBalance: bigint;
   earningsUSD: number;
@@ -22,6 +23,8 @@ interface Props {
   walletIn: boolean;
   coolingDownAssets: bigint;
   releaseTime: bigint;
+  setDepositAmount: (amount: string) => void;
+  openDepositModal: () => void;
   redeemFn: () => void;
   claimFn: () => Promise<void>;
 }
@@ -29,7 +32,7 @@ interface Props {
 function Staking({
   pos,
   lastBalance,
-  nextStakingBalance,
+  nextLevelBalance,
   stakingBalance,
   earningsUSD,
   earningsPerDayUSD,
@@ -37,6 +40,8 @@ function Staking({
   coolingDownAssets,
   redeemFn,
   claimFn,
+  setDepositAmount,
+  openDepositModal,
 }: Props) {
   const [claiming, setClaiming] = useState(false);
   const now = useMemo(() => Date.now(), [earningsUSD, earningsPerDayUSD]);
@@ -55,7 +60,7 @@ function Staking({
     setClaiming(false);
   };
 
-  const toNextPos = nextStakingBalance - lockedAmount;
+  const toNextLevel = nextLevelBalance - lockedAmount + 1n;
 
   return (
     <div
@@ -71,33 +76,15 @@ function Staking({
           walletIn ? styles.bannerIn : styles.bannerOut,
         )}
       >
-        <div
-          className={clsx(
-            styles.display,
-            walletIn ? styles.displayIn : styles.displayOut,
-          )}
-        >
-          <div
-            className={clsx(
-              styles.circle,
-              walletIn ? styles.circleIn : styles.circleOut,
-            )}
-          />
-          <div className={styles.text}>{walletIn ? 'IN' : 'OUT'}</div>
-        </div>
-
         {!walletIn && (
           <div className={clsx(styles.messageOut, styles.message)}>
             <ExclamationTriangleIcon className={styles.icon} />
             <div className={styles.text}>
-              {lastBalance > 0n
+              {lockedAmount > 0n
                 ? `Stake ${prettyAmount(
                     parseFloat(
                       ethers.formatUnits(
-                        (walletIn
-                          ? lastBalance - stakingBalance
-                          : 0n
-                        ).toString(),
+                        (walletIn ? lastBalance - lockedAmount : 0n).toString(),
                         parseInt(ASSET_METADATA_DECIMALS),
                       ),
                     ),
@@ -113,15 +100,47 @@ function Staking({
             <div className={styles.text}>
               {pos === 0
                 ? 'You are the whale!'
-                : `${prettyAmount(
-                    parseFloat(
-                      ethers.formatUnits(
-                        toNextPos.toString(),
-                        parseInt(ASSET_METADATA_DECIMALS),
-                      ),
-                    ),
-                  )} LEONAI to reach the next position.`}
+                : `You are the #${pos + 1} staker`}
             </div>
+          </div>
+        )}
+
+        {!walletIn && (
+          <div
+            className={clsx(
+              styles.display,
+              walletIn ? styles.displayIn : styles.displayOut,
+            )}
+          >
+            <div
+              className={clsx(
+                styles.circle,
+                walletIn ? styles.circleIn : styles.circleOut,
+              )}
+            />
+            <div className={styles.text}>{walletIn ? 'IN' : 'OUT'}</div>
+          </div>
+        )}
+
+        {walletIn && pos !== 0 && (
+          <div className={styles.next}>
+            <Button
+              onPress={() => {
+                setDepositAmount(
+                  ethers
+                    .formatUnits(
+                      toNextLevel.toString(),
+                      parseInt(ASSET_METADATA_DECIMALS),
+                    )
+                    .toString(),
+                );
+                openDepositModal();
+              }}
+              color="default"
+            >
+              <ArrowUpCircleIcon className={styles.icon} />
+              Next level
+            </Button>
           </div>
         )}
       </div>
@@ -147,7 +166,11 @@ function Staking({
               <div className={styles.symbol}>{ASSET_METADATA_SYMBOL}</div>
             </div>
             {lockedAmount > 0n && (
-              <Button color="default" onPress={redeemFn}>
+              <Button
+                color="default"
+                onPressStart={redeemFn}
+                onClick={redeemFn}
+              >
                 Unstake
               </Button>
             )}
@@ -160,11 +183,11 @@ function Staking({
         <div className={walletIn ? styles.dividerIn : styles.dividerOut} />
 
         <div className={styles.right}>
-          <div className={styles.title}>Your Earnings</div>
+          <div className={styles.title}>Your Earnings ($)</div>
           <div className={styles.data}>
             <div className={styles.amount}>
               <div className={styles.value}>
-                {`$ ${format({
+                {`${format({
                   value: earningsAmount,
                   minDecimals: 4,
                   maxDecimals: 4,
@@ -181,7 +204,7 @@ function Staking({
                   width: '100%',
                 }}
               >
-                Claim and Stake
+                Claim & Restake
               </Button>
             )}
           </div>
