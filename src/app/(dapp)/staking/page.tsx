@@ -40,6 +40,8 @@ import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
+import { NetworkNames } from '@/src/addresses';
+import { local } from '@/src/wagmi';
 
 const nTopStakers = 100;
 
@@ -360,7 +362,12 @@ export default function Page() {
       GetSignedStakingReward,
       {
         input: {
-          chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+          chainId:
+            CHAIN === NetworkNames.Local
+              ? local.id
+              : CHAIN === NetworkNames.Base
+                ? base.id
+                : Sepolia.id,
           stakerAddress: address,
         },
       },
