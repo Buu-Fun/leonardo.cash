@@ -5,7 +5,11 @@
     border: 1px solid #302450;
     background: #000;
     box-sizing: border-box;
-    padding: 1.5rem
+    padding: 1.5rem;
+
+    &.invalid {
+        background: red;
+    }
 }
 
 .title {

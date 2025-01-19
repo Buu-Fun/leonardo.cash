@@ -40,6 +40,7 @@ import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
+import Buy from '@/src/components/Buy/Buy';
 
 const nTopStakers = 100;
 
@@ -624,20 +625,9 @@ export default function Page() {
           >
             Stake LEONAI
           </Button>
-        ) : (
-          <Button
-            onPressStart={() =>
-              window.open(
-                'https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base',
-              )
-            }
-            color="primary"
-            fullWidth
-          >
-            Buy LEONAI
-          </Button>
-        )
+        ) : null
       ) : null}
+      <Buy />
 
       <Cooldown
         coolingDown={BigInt(staker?.coolingDown || 0)}
