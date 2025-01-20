@@ -30,6 +30,14 @@ function value(amount?: bigint, usd: number = 0, decimals = 18) {
   });
 }
 
+function tokenValue(amount: bigint, decimals: number, symbol: string) {
+  const value = parseFloat(formatUnits(amount ?? 0n, decimals));
+  if (!value) return '';
+  if (value < 0.0001) return `< 0.0001 ${symbol}`;
+
+  return `${value.toFixed(3)} ${symbol}`;
+}
+
 export function TokenInput({
   isValid,
   label,
@@ -59,7 +67,7 @@ export function TokenInput({
       <output className="flex justify-between">
         <span>{value(amount, token.usd)}</span>
         <span>
-          {formatUnits(token.balance ?? 0n, token.decimals)} {token.symbol}
+          {tokenValue(token.balance ?? 0n, token.decimals, token.symbol)}
         </span>
       </output>
     </fieldset>

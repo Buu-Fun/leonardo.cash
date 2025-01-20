@@ -6,10 +6,7 @@
     background: #000;
     box-sizing: border-box;
     padding: 1.5rem;
-
-    &.invalid {
-        background: red;
-    }
+    margin-bottom: 1rem;
 }
 
 .title {
