@@ -18,6 +18,9 @@ const documents = {
     "\n  query GetStakingRewardGlobals(\n    $where: StakingRewardGlobalFilter\n    $orderBy: String\n    $orderDirection: String\n    $limit: Int\n    $after: String\n    $before: String\n  ) {\n    stakingRewardGlobals(\n      where: $where\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      limit: $limit\n      after: $after\n      before: $before\n    ) {\n      items {\n        chainId\n        address\n        startTime\n        endTime\n        totalRewards\n        totalShares\n        totalAssets\n        cooldownTime\n        lastUpdate\n      }\n      pageInfo {\n        startCursor\n        endCursor\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": types.GetStakingRewardGlobalsDocument,
     "\n  query GetStakers(\n    $where: StakerFilter\n    $orderBy: String\n    $orderDirection: String\n    $limit: Int\n    $after: String\n    $before: String\n  ) {\n    stakers(\n      where: $where\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      limit: $limit\n      after: $after\n      before: $before\n    ) {\n      items {\n        chainId\n        address\n        staker\n        shares\n        coolingDown\n        releaseTime\n        lastUpdate\n        computing\n      }\n      pageInfo {\n        startCursor\n        endCursor\n        hasNextPage\n        hasPreviousPage\n      }\n    }\n  }\n": types.GetStakersDocument,
     "\n  query GetSignedStakingReward($input: GetSignedStakingRewardInput!) {\n    getSignedStakingReward(input: $input) {\n      ... on SignedStakingReward {\n        address\n        amount\n        chainId\n        claimed\n        lastUpdate\n        staker\n        asset\n        vault\n        signer\n        signature\n      }\n    }\n  }\n": types.GetSignedStakingRewardDocument,
+    "\n  mutation LoginChallenge($account: String!) {\n    loginChallenge(account: $account) {\n      domain {\n        name\n        version\n      }\n      types {\n        Login {\n          name\n          type\n        }\n      }\n      value {\n        account\n        nonce\n      }\n    }\n  }\n": types.LoginChallengeDocument,
+    "\n  mutation LoginAuth($input: LoginAuthInput!) {\n    loginAuth(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n": types.LoginAuthDocument,
+    "\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n": types.LoginRefreshDocument,
 };
 
 /**
@@ -50,6 +53,18 @@ export function graphql(source: "\n  query GetStakers(\n    $where: StakerFilter
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query GetSignedStakingReward($input: GetSignedStakingRewardInput!) {\n    getSignedStakingReward(input: $input) {\n      ... on SignedStakingReward {\n        address\n        amount\n        chainId\n        claimed\n        lastUpdate\n        staker\n        asset\n        vault\n        signer\n        signature\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetSignedStakingReward($input: GetSignedStakingRewardInput!) {\n    getSignedStakingReward(input: $input) {\n      ... on SignedStakingReward {\n        address\n        amount\n        chainId\n        claimed\n        lastUpdate\n        staker\n        asset\n        vault\n        signer\n        signature\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation LoginChallenge($account: String!) {\n    loginChallenge(account: $account) {\n      domain {\n        name\n        version\n      }\n      types {\n        Login {\n          name\n          type\n        }\n      }\n      value {\n        account\n        nonce\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation LoginChallenge($account: String!) {\n    loginChallenge(account: $account) {\n      domain {\n        name\n        version\n      }\n      types {\n        Login {\n          name\n          type\n        }\n      }\n      value {\n        account\n        nonce\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation LoginAuth($input: LoginAuthInput!) {\n    loginAuth(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n"): (typeof documents)["\n  mutation LoginAuth($input: LoginAuthInput!) {\n    loginAuth(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n"): (typeof documents)["\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      refreshToken\n      token\n      tokenExpiry\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

@@ -42,6 +42,7 @@ import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
 import { NetworkNames } from '@/src/addresses';
 import { local } from '@/src/wagmi';
+import { useWallet } from '@/src/context/wallet.context';
 
 const nTopStakers = 100;
 
@@ -126,6 +127,8 @@ export default function Page() {
     fetchAll,
     convertSharesToAssets,
   } = useStaking();
+
+  const { accessTokens } = useWallet();
 
   const handleTx = useCallback(
     async ({
@@ -371,6 +374,17 @@ export default function Page() {
   const claim = React.useCallback(async () => {
     if (!address || !signer) return;
 
+    const accessToken = accessTokens[address];
+    if (!accessToken) {
+      toast.error(
+        <Toast
+          title="Error"
+          description={'An error occurred while processing the transaction'}
+        />,
+      );
+      return;
+    }
+
     const { getSignedStakingReward } = (await serverRequest(
       GetSignedStakingReward,
       {
@@ -383,6 +397,9 @@ export default function Page() {
                 : Sepolia.id,
           stakerAddress: address,
         },
+      },
+      {
+        authorization: `Bearer ${accessToken}`,
       },
     )) as { getSignedStakingReward: SignedStakingReward | undefined };
     if (!getSignedStakingReward || !getSignedStakingReward?.amount) {
@@ -432,7 +449,7 @@ export default function Page() {
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
-  }, [address, signer, stakingReward]);
+  }, [accessTokens, address, signer, stakingReward]);
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);

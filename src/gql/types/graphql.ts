@@ -15,30 +15,95 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   BigInt: { input: any; output: any; }
-  Date: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
+  DateTimeISO: { input: any; output: any; }
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any; }
-  _Any: { input: any; output: any; }
-  federation__FieldSet: { input: any; output: any; }
-  link__Import: { input: any; output: any; }
+};
+
+export type Eip712Domain = {
+  __typename?: 'EIP712Domain';
+  name: Scalars['String']['output'];
+  version: Scalars['String']['output'];
+};
+
+export type Eip712Type = {
+  __typename?: 'EIP712Type';
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type Eip712Types = {
+  __typename?: 'EIP712Types';
+  Login: Array<Eip712Type>;
+};
+
+export type Eip712Value = {
+  __typename?: 'EIP712Value';
+  account: Scalars['String']['output'];
+  nonce: Scalars['String']['output'];
 };
 
 export type Error = {
   __typename?: 'Error';
-  code?: Maybe<Scalars['String']['output']>;
-  message?: Maybe<Scalars['String']['output']>;
+  code: Scalars['String']['output'];
+  message: Scalars['String']['output'];
 };
 
 export type GetSignedStakingRewardInput = {
-  chainId?: InputMaybe<Scalars['Int']['input']>;
-  stakerAddress?: InputMaybe<Scalars['String']['input']>;
+  chainId: Scalars['Float']['input'];
+  stakerAddress: Scalars['String']['input'];
 };
 
-export type GetSignedStakingRewardResult = Error | SignedStakingReward;
+export type LoginAuth = {
+  __typename?: 'LoginAuth';
+  refreshToken: Scalars['String']['output'];
+  token: Scalars['String']['output'];
+  tokenExpiry: Scalars['DateTimeISO']['output'];
+};
+
+export type LoginAuthInput = {
+  account: Scalars['String']['input'];
+  signature: Scalars['String']['input'];
+};
+
+export type LoginChallenge = {
+  __typename?: 'LoginChallenge';
+  domain: Eip712Domain;
+  types: Eip712Types;
+  value: Eip712Value;
+};
+
+export type LoginRefreshInput = {
+  account: Scalars['String']['input'];
+  refreshToken: Scalars['String']['input'];
+};
 
 export type Meta = {
   __typename?: 'Meta';
   status?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  loginAuth: LoginAuth;
+  loginChallenge: LoginChallenge;
+  loginRefresh: LoginAuth;
+};
+
+
+export type MutationLoginAuthArgs = {
+  input: LoginAuthInput;
+};
+
+
+export type MutationLoginChallengeArgs = {
+  account: Scalars['String']['input'];
+};
+
+
+export type MutationLoginRefreshArgs = {
+  input: LoginRefreshInput;
 };
 
 export type PageInfo = {
@@ -52,8 +117,8 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   _meta?: Maybe<Meta>;
-  _service: _Service;
-  getSignedStakingReward?: Maybe<GetSignedStakingRewardResult>;
+  checkAuth: Scalars['Boolean']['output'];
+  getSignedStakingReward: SearchResult;
   role?: Maybe<Role>;
   roles: RolePage;
   staker?: Maybe<Staker>;
@@ -66,7 +131,7 @@ export type Query = {
 
 
 export type QueryGetSignedStakingRewardArgs = {
-  input?: InputMaybe<GetSignedStakingRewardInput>;
+  input: GetSignedStakingRewardInput;
 };
 
 
@@ -204,18 +269,20 @@ export type RolePage = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type SearchResult = Error | SignedStakingReward;
+
 export type SignedStakingReward = {
   __typename?: 'SignedStakingReward';
-  address?: Maybe<Scalars['String']['output']>;
-  amount?: Maybe<Scalars['String']['output']>;
-  asset?: Maybe<Scalars['String']['output']>;
-  chainId?: Maybe<Scalars['Int']['output']>;
-  claimed?: Maybe<Scalars['String']['output']>;
-  lastUpdate?: Maybe<Scalars['String']['output']>;
-  signature?: Maybe<Scalars['String']['output']>;
-  signer?: Maybe<Scalars['String']['output']>;
-  staker?: Maybe<Scalars['String']['output']>;
-  vault?: Maybe<Scalars['String']['output']>;
+  address: Scalars['String']['output'];
+  amount: Scalars['String']['output'];
+  asset: Scalars['String']['output'];
+  chainId: Scalars['Float']['output'];
+  claimed: Scalars['String']['output'];
+  lastUpdate: Scalars['String']['output'];
+  signature: Scalars['String']['output'];
+  signer: Scalars['String']['output'];
+  staker: Scalars['String']['output'];
+  vault: Scalars['String']['output'];
 };
 
 export type Staker = {
@@ -492,18 +559,6 @@ export type StakingRewardPage = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type _Service = {
-  __typename?: '_Service';
-  sdl?: Maybe<Scalars['String']['output']>;
-};
-
-export enum Link__Purpose {
-  /** `EXECUTION` features provide metadata necessary for operation execution. */
-  Execution = 'EXECUTION',
-  /** `SECURITY` features provide metadata necessary to securely resolve fields. */
-  Security = 'SECURITY'
-}
-
 export type GetStakingRewardsQueryVariables = Exact<{
   where?: InputMaybe<StakingRewardFilter>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
@@ -545,10 +600,34 @@ export type GetSignedStakingRewardQueryVariables = Exact<{
 }>;
 
 
-export type GetSignedStakingRewardQuery = { __typename?: 'Query', getSignedStakingReward?: { __typename?: 'Error' } | { __typename?: 'SignedStakingReward', address?: string | null, amount?: string | null, chainId?: number | null, claimed?: string | null, lastUpdate?: string | null, staker?: string | null, asset?: string | null, vault?: string | null, signer?: string | null, signature?: string | null } | null };
+export type GetSignedStakingRewardQuery = { __typename?: 'Query', getSignedStakingReward: { __typename?: 'Error' } | { __typename?: 'SignedStakingReward', address: string, amount: string, chainId: number, claimed: string, lastUpdate: string, staker: string, asset: string, vault: string, signer: string, signature: string } };
+
+export type LoginChallengeMutationVariables = Exact<{
+  account: Scalars['String']['input'];
+}>;
+
+
+export type LoginChallengeMutation = { __typename?: 'Mutation', loginChallenge: { __typename?: 'LoginChallenge', domain: { __typename?: 'EIP712Domain', name: string, version: string }, types: { __typename?: 'EIP712Types', Login: Array<{ __typename?: 'EIP712Type', name: string, type: string }> }, value: { __typename?: 'EIP712Value', account: string, nonce: string } } };
+
+export type LoginAuthMutationVariables = Exact<{
+  input: LoginAuthInput;
+}>;
+
+
+export type LoginAuthMutation = { __typename?: 'Mutation', loginAuth: { __typename?: 'LoginAuth', refreshToken: string, token: string, tokenExpiry: any } };
+
+export type LoginRefreshMutationVariables = Exact<{
+  input: LoginRefreshInput;
+}>;
+
+
+export type LoginRefreshMutation = { __typename?: 'Mutation', loginRefresh: { __typename?: 'LoginAuth', refreshToken: string, token: string, tokenExpiry: any } };
 
 
 export const GetStakingRewardsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakingRewards"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakingRewardFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakingRewards"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"staker"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"claimed"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakingRewardsQuery, GetStakingRewardsQueryVariables>;
 export const GetStakingRewardGlobalsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakingRewardGlobals"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakingRewardGlobalFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakingRewardGlobals"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"totalRewards"}},{"kind":"Field","name":{"kind":"Name","value":"totalShares"}},{"kind":"Field","name":{"kind":"Name","value":"totalAssets"}},{"kind":"Field","name":{"kind":"Name","value":"cooldownTime"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakingRewardGlobalsQuery, GetStakingRewardGlobalsQueryVariables>;
 export const GetStakersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetStakers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"StakerFilter"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"before"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stakers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderBy"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderBy"}}},{"kind":"Argument","name":{"kind":"Name","value":"orderDirection"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderDirection"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"before"},"value":{"kind":"Variable","name":{"kind":"Name","value":"before"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"staker"}},{"kind":"Field","name":{"kind":"Name","value":"shares"}},{"kind":"Field","name":{"kind":"Name","value":"coolingDown"}},{"kind":"Field","name":{"kind":"Name","value":"releaseTime"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"computing"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startCursor"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}}]}}]}}]} as unknown as DocumentNode<GetStakersQuery, GetStakersQueryVariables>;
 export const GetSignedStakingRewardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetSignedStakingReward"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetSignedStakingRewardInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getSignedStakingReward"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SignedStakingReward"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"chainId"}},{"kind":"Field","name":{"kind":"Name","value":"claimed"}},{"kind":"Field","name":{"kind":"Name","value":"lastUpdate"}},{"kind":"Field","name":{"kind":"Name","value":"staker"}},{"kind":"Field","name":{"kind":"Name","value":"asset"}},{"kind":"Field","name":{"kind":"Name","value":"vault"}},{"kind":"Field","name":{"kind":"Name","value":"signer"}},{"kind":"Field","name":{"kind":"Name","value":"signature"}}]}}]}}]}}]} as unknown as DocumentNode<GetSignedStakingRewardQuery, GetSignedStakingRewardQueryVariables>;
+export const LoginChallengeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginChallenge"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"account"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginChallenge"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"account"},"value":{"kind":"Variable","name":{"kind":"Name","value":"account"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"version"}}]}},{"kind":"Field","name":{"kind":"Name","value":"types"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Login"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"}},{"kind":"Field","name":{"kind":"Name","value":"nonce"}}]}}]}}]}}]} as unknown as DocumentNode<LoginChallengeMutation, LoginChallengeMutationVariables>;
+export const LoginAuthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginAuth"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginAuthInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginAuth"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"tokenExpiry"}}]}}]}}]} as unknown as DocumentNode<LoginAuthMutation, LoginAuthMutationVariables>;
+export const LoginRefreshDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"LoginRefresh"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginRefreshInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginRefresh"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"tokenExpiry"}}]}}]}}]} as unknown as DocumentNode<LoginRefreshMutation, LoginRefreshMutationVariables>;

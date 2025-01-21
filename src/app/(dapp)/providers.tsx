@@ -7,6 +7,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import config from '../../wagmi';
 import { PriceProvider } from '@/src/context/price.context';
 import { StakingProvider } from '@/src/context/staking.context';
+import { WalletProvider } from '@/src/context/wallet.context';
 
 const queryClient = new QueryClient();
 
@@ -18,14 +19,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           theme={darkTheme({
             accentColor: '#803bf1',
             accentColorForeground: 'white',
-            // borderRadius: 'none',
             fontStack: 'system',
             overlayBlur: 'small',
           })}
         >
-          <PriceProvider>
-            <StakingProvider>{children}</StakingProvider>
-          </PriceProvider>
+          <WalletProvider>
+            <PriceProvider>
+              <StakingProvider>{children}</StakingProvider>
+            </PriceProvider>
+          </WalletProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

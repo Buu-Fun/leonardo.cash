@@ -24,10 +24,11 @@ export const ponderRequest = async <T = any>(
 export const serverRequest = async <T = any>(
   query: RequestDocument,
   variables?: { [key: string]: any },
+  headers?: { [key: string]: string },
   forceResultIfFail?: any,
 ): Promise<T> => {
   try {
-    return await serverClient.request<T>(query, variables);
+    return await serverClient.request<T>(query, variables, headers);
   } catch (error) {
     console.error('Error realizando la solicitud GraphQL:', error);
     if (forceResultIfFail) {
