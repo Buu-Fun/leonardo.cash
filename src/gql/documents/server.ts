@@ -54,7 +54,6 @@ export const LoginAuthMutation = gql`
   mutation LoginAuth($input: LoginAuthInput!) {
     loginAuth(input: $input) {
       ... on LoginAuth {
-        refreshToken
         token
         tokenExpiry
       }
@@ -70,7 +69,6 @@ export const LoginRefreshMutation = gql`
   mutation LoginRefresh($input: LoginRefreshInput!) {
     loginRefresh(input: $input) {
       ... on LoginAuth {
-        refreshToken
         token
         tokenExpiry
       }

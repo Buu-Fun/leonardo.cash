@@ -2,8 +2,6 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useAccountEffect, useDisconnect } from 'wagmi';
 import { serverRequest } from '../gql/client';
-import Cookies from 'js-cookie';
-import { REFRESH_TOKEN_COOKIE_KEY } from '../config';
 import {
   LoginAuthMutation,
   LoginChallengeMutation,
@@ -35,27 +33,18 @@ export const WalletProvider = ({ children }: Props) => {
   const authenticate = async (signer: ethers.Signer) => {
     try {
       const address = await signer.getAddress();
-      const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE_KEY);
-      if (refreshToken) {
-        const { loginRefresh } = (await serverRequest(LoginRefreshMutation, {
-          input: {
-            account: address,
-            refreshToken,
-          },
-        })) as { loginRefresh: LoginAuth | null };
+      const { loginRefresh } = (await serverRequest(LoginRefreshMutation, {
+        input: {
+          account: address,
+        },
+      })) as { loginRefresh: LoginAuth | null };
 
-        if (loginRefresh && loginRefresh.token && loginRefresh.refreshToken) {
-          setAccessTokens((prev) => ({
-            ...prev,
-            [address]: loginRefresh.token,
-          }));
-          Cookies.set(REFRESH_TOKEN_COOKIE_KEY, loginRefresh.refreshToken, {
-            expires: 7,
-            path: '/',
-            secure: true,
-          });
-          return;
-        }
+      if (loginRefresh && loginRefresh.token) {
+        setAccessTokens((prev) => ({
+          ...prev,
+          [address]: loginRefresh.token,
+        }));
+        return;
       }
 
       const { loginChallenge } = await serverRequest(LoginChallengeMutation, {
@@ -77,17 +66,11 @@ export const WalletProvider = ({ children }: Props) => {
             },
           })) as { loginAuth: LoginAuth | null };
 
-          if (loginAuth && loginAuth.token && loginAuth.refreshToken) {
+          if (loginAuth && loginAuth.token) {
             setAccessTokens((prev) => ({
               ...prev,
               [address]: loginAuth.token,
             }));
-
-            Cookies.set(REFRESH_TOKEN_COOKIE_KEY, loginAuth.refreshToken, {
-              expires: 7,
-              path: '/',
-              secure: true,
-            });
           } else {
             disconnect();
           }
@@ -98,14 +81,12 @@ export const WalletProvider = ({ children }: Props) => {
     } catch (error: unknown) {
       console.error('Authentication error:', error);
       disconnect();
-      Cookies.remove(REFRESH_TOKEN_COOKIE_KEY);
     }
   };
 
   useAccountEffect({
     onDisconnect() {
       setAccessTokens({});
-      Cookies.remove(REFRESH_TOKEN_COOKIE_KEY);
     },
   });
 

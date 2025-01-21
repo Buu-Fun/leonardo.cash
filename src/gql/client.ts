@@ -3,7 +3,12 @@ import { GraphQLClient, type RequestDocument } from 'graphql-request';
 import { PONDER_URL, SERVER_URL } from '../config';
 
 const ponderClient = new GraphQLClient(PONDER_URL);
-const serverClient = new GraphQLClient(SERVER_URL);
+const serverClient = new GraphQLClient(SERVER_URL, {
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export const ponderRequest = async <T = any>(
   query: RequestDocument,
