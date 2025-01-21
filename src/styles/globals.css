@@ -111,6 +111,11 @@
 
   --text-color: #fff;
   --text-color-muted: #808080;
+
+  --background-color-0: #0a0a0a;
+  --background-color-1: #121212;
+  --background-color-2: #1a1a1a;
+  --background-color-3: #212121;
 }
 
 html,

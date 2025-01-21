@@ -1,11 +1,11 @@
 import { Button } from '@nextui-org/react';
 import { PageLogo } from '../PageLogo/PageLogo';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 import styles from './Navbar.module.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Balance } from '../Balance/Balance';
+import { AccountButton } from '../AccountButton/AccountButton';
 
 interface Props {
   isDApp: boolean;
@@ -23,7 +23,7 @@ export function Navbar({ isDApp }: Props) {
         {isDApp ? (
           <div className={styles.right}>
             <Balance />
-            <ConnectButton />
+            <AccountButton />
           </div>
         ) : (
           <Button
