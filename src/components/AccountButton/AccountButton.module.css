@@ -7,6 +7,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 48px;
 }
 
 .account:hover {
@@ -15,8 +16,8 @@
 
 .accountIdenticon {
   overflow: hidden;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
   position: relative;
 }
