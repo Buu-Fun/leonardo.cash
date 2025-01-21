@@ -30,7 +30,7 @@ export function Navbar({ isDApp }: Props) {
             isLoading={loading}
             onPressStart={() => {
               setLoading(true);
-              router.push('/staking');
+              router.push('/platform');
               setLoading(false);
             }}
             color="primary"

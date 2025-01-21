@@ -22,7 +22,7 @@ import { Button, useDisclosure } from '@nextui-org/react';
 import Staking from '@/src/components/Staking/Staking';
 import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
@@ -38,7 +38,6 @@ import { base, sepolia as Sepolia } from 'wagmi/chains';
 import { getBoosterValue, getNextLevelPos } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
-import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
 import { NetworkNames } from '@/src/addresses';
 import { local } from '@/src/wagmi';
@@ -107,7 +106,6 @@ export default function Page() {
   const signer = useEthersSigner();
   const depositDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
-  const swapDisclosure = useDisclosure();
 
   const [depositAmount, setDepositAmount] = React.useState('');
 
@@ -558,19 +556,6 @@ export default function Page() {
         gap: '20px',
       }}
     >
-      <SwapModal {...swapDisclosure} />
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       {stakingRewardGlobal && (
         <DepositModal
           topStakers={topStakersWithAssetsAndEarnings}

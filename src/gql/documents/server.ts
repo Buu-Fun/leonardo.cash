@@ -26,19 +26,25 @@ export const GetSignedStakingReward = gql`
 export const LoginChallengeMutation = gql`
   mutation LoginChallenge($account: String!) {
     loginChallenge(account: $account) {
-      domain {
-        name
-        version
-      }
-      types {
-        Login {
+      ... on LoginChallenge {
+        domain {
           name
-          type
+          version
+        }
+        types {
+          Login {
+            name
+            type
+          }
+        }
+        value {
+          account
+          nonce
         }
       }
-      value {
-        account
-        nonce
+      ... on Error {
+        code
+        message
       }
     }
   }
@@ -47,9 +53,15 @@ export const LoginChallengeMutation = gql`
 export const LoginAuthMutation = gql`
   mutation LoginAuth($input: LoginAuthInput!) {
     loginAuth(input: $input) {
-      refreshToken
-      token
-      tokenExpiry
+      ... on LoginAuth {
+        refreshToken
+        token
+        tokenExpiry
+      }
+      ... on Error {
+        code
+        message
+      }
     }
   }
 `;
@@ -57,9 +69,15 @@ export const LoginAuthMutation = gql`
 export const LoginRefreshMutation = gql`
   mutation LoginRefresh($input: LoginRefreshInput!) {
     loginRefresh(input: $input) {
-      refreshToken
-      token
-      tokenExpiry
+      ... on LoginAuth {
+        refreshToken
+        token
+        tokenExpiry
+      }
+      ... on Error {
+        code
+        message
+      }
     }
   }
 `;

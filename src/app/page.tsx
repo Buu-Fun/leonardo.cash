@@ -231,14 +231,17 @@ export default function Page() {
 
             <Box
               className={styles.stakeBox}
-              onClick={() => router.push('/staking')}
+              onClick={() => router.push('/platform/staking')}
             >
               <span className={styles.stakeBoxFirst}>REWARDING ONLY THE</span>
               <div className={styles.stakeBoxSecond}>
                 <div className={styles.stakeBoxSecondInnerFirst}>TOP 100</div>
                 <div className={styles.stakeBoxSecondInnerSecond}>STAKERS</div>
               </div>
-              <Button color="primary" onPress={() => router.push('/staking')}>
+              <Button
+                color="primary"
+                onPress={() => router.push('/platform/staking')}
+              >
                 STAKE NOW
               </Button>
             </Box>
