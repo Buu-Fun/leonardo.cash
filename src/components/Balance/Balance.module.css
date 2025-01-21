@@ -9,8 +9,12 @@
 .amount {
   display: flex;
   transition: all 0.3s ease;
-  color: var(--primary-color);
   height: 48px;
+  font-size: 16px;
+}
+
+.amountSymbol {
+  color: var(--primary-color);
 }
 
 .balanceButton {
