@@ -15,10 +15,13 @@ import {
   ArrowLeftCircleIcon,
   CheckIcon,
   ClipboardIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export const AccountButton = () => {
+  const router = useRouter();
   const { disconnect } = useDisconnect();
   const { openConnectModal } = useConnectModal();
   const { address, isConnected } = useAccount();
@@ -70,6 +73,19 @@ export const AccountButton = () => {
               </div>
             )}
             <span className={styles.copy}>Copy address</span>
+          </div>
+        </DropdownItem>
+        <DropdownItem key="settings" isReadOnly>
+          <div
+            onClick={() => {
+              router.push('/platform/account');
+            }}
+            className={styles.dropdownItem}
+          >
+            <div className={styles.icon}>
+              <Cog6ToothIcon />
+            </div>
+            <span>Settings</span>
           </div>
         </DropdownItem>
         <DropdownItem key="disconnect" color="danger">
