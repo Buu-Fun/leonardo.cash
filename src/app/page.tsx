@@ -1,17 +1,17 @@
 'use client';
-import { Button, Chip, useDisclosure } from '@nextui-org/react';
+import { Button, Chip } from '@nextui-org/react';
 import React from 'react';
 import Image from 'next/image';
 import { Footer } from '../components/Footer/Footer';
-import { ASSET_ADDRESS } from '../config';
 import { splitStringIntoChunks } from '../utils/format';
 import Copy from '../components/Copy/Copy';
 import clsx from 'clsx';
-import { SwapModal } from '../components/SwapModal/SwapModal';
 
 import styles from './page.module.css';
 import { Navbar } from '../components/Navbar/Navbar';
 import { useRouter } from 'next/navigation';
+import { getAddresses } from '../addresses';
+import { CHAINS } from '../config';
 
 const Box = ({
   children,
@@ -56,14 +56,12 @@ const Box = ({
 };
 
 export default function Page() {
-  const chunkedAddress = splitStringIntoChunks(ASSET_ADDRESS, 17);
-  const swapDisclosure = useDisclosure();
+  const assetAddress = getAddresses(CHAINS[0]).asset;
+  const chunkedAddress = splitStringIntoChunks(assetAddress, 17);
   const router = useRouter();
 
   return (
     <div className="layout">
-      <SwapModal {...swapDisclosure} />
-
       <Navbar isDApp={false} />
 
       <main
@@ -119,7 +117,7 @@ export default function Page() {
                   return (
                     <div key={chunk} className={styles.contractAddressSplit}>
                       <div>{chunk}</div>
-                      <Copy text={ASSET_ADDRESS} />
+                      <Copy text={assetAddress} />
                     </div>
                   );
                 }

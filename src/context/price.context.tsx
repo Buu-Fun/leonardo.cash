@@ -8,18 +8,11 @@ import React, {
 } from 'react';
 import { Contract, ethers } from 'ethers';
 
-import {
-  ASSET_ADDRESS,
-  ASSET_METADATA_DECIMALS,
-  CHAIN,
-  POOL_ADDRESS,
-  USDC_ADDRESS,
-  USDC_POOL_ADDRESS,
-  WETH_ADDRESS,
-} from '@/src/config';
+import { ASSET_METADATA_DECIMALS } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
-import { NetworkNames } from '../addresses';
+import { getAddresses, NetworkNames } from '../addresses';
+import { useAccount } from 'wagmi';
 
 interface Props {
   children: React.ReactNode;
@@ -37,31 +30,38 @@ const PriceContext = createContext<PriceState>({
 });
 
 export const PriceProvider = ({ children }: Props) => {
+  const { chain } = useAccount();
   const provider = useEthersProvider();
+  const addresses = getAddresses(chain?.id);
+  const assetAddress = addresses.asset;
+  const wethAddress = addresses.weth;
+  const usdcAddress = addresses.usdc;
+  const poolAddress = addresses.uniswapV3Pool;
+  const usdcPoolAddress = addresses.usdcPool;
 
   // State
   const [price, setPrice] = React.useState(0);
 
   const fetchPrice = useCallback(async () => {
-    if (CHAIN === NetworkNames.Local) {
-      setPrice(0.0015);
-    }
-    if (!provider) {
+    if (!provider || !chain) {
       setPrice(0);
       return;
     }
+    if (chain?.name === NetworkNames.Local) {
+      setPrice(0.0008);
+    }
     const assetContract = new Contract(
-      ASSET_ADDRESS,
+      assetAddress,
       IERC20Metadata.abi,
       provider,
     );
     const wethContract = new Contract(
-      WETH_ADDRESS,
+      wethAddress,
       IERC20Metadata.abi,
       provider,
     );
     const usdcContract = new Contract(
-      USDC_ADDRESS,
+      usdcAddress,
       IERC20Metadata.abi,
       provider,
     );
@@ -73,11 +73,11 @@ export const PriceProvider = ({ children }: Props) => {
       usdcInUsdcPool,
       usdcDecimals,
     ] = await Promise.all([
-      assetContract.balanceOf(POOL_ADDRESS),
-      wethContract.balanceOf(POOL_ADDRESS),
+      assetContract.balanceOf(poolAddress),
+      wethContract.balanceOf(poolAddress),
       wethContract.decimals(),
-      wethContract.balanceOf(USDC_POOL_ADDRESS),
-      usdcContract.balanceOf(USDC_POOL_ADDRESS),
+      wethContract.balanceOf(usdcPoolAddress),
+      usdcContract.balanceOf(usdcPoolAddress),
       usdcContract.decimals(),
     ]);
 
@@ -99,7 +99,7 @@ export const PriceProvider = ({ children }: Props) => {
       (parseFloat(wethAmountInPool) / parseFloat(assetAmountInPool)) *
       wethPrice;
     setPrice(price);
-  }, [provider]);
+  }, [chain, provider]);
 
   useEffect(() => {
     fetchPrice();

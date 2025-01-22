@@ -3,15 +3,17 @@ import React from 'react';
 import { useAccount } from 'wagmi';
 import { Button } from '@nextui-org/react';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
+import { useWallet } from '@/src/context/wallet.context';
+import { Socials } from '@/src/components/Socials/Socials';
 
 export default function Page() {
   // Hooks
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
   const { chain, address } = useAccount();
-  // const signer = useEthersSigner();
-
-  // const { accessTokens } = useWallet();
+  const { loading, accounts, connectTwitterAccount, disconnectTwitterAccount } =
+    useWallet();
+  const account = address ? accounts[address as string] : undefined;
 
   return (
     <main
@@ -48,6 +50,16 @@ export default function Page() {
         >
           Wrong network
         </Button>
+      )}
+
+      {account && (
+        <Socials
+          loading={loading}
+          account={account}
+          address={address as string}
+          connectTwitterAccount={connectTwitterAccount}
+          disconnectTwitterAccount={disconnectTwitterAccount}
+        />
       )}
     </main>
   );

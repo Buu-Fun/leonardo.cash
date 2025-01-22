@@ -1,8 +1,12 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { base as Base, sepolia as Sepolia } from 'wagmi/chains';
-import { CHAIN, ALCHEMY_API_KEY, WALLETCONNECT_API_KEY } from './config';
+import {
+  NODE_ENV,
+  CHAINS,
+  ALCHEMY_API_KEY,
+  WALLETCONNECT_API_KEY,
+} from './config';
 import { defineChain } from 'viem';
-import { NetworkNames } from './addresses';
 
 let sepolia = Sepolia;
 let base = Base;
@@ -46,15 +50,24 @@ export const local = defineChain({
   testnet: true,
 });
 
+// const chains = CHAINS.map((chain) => {
+//   const response = [];
+//   if (chain === 'local') {
+//     response.push(local);
+//   }
+//   if (chain === 'sepolia') {
+//     response.push(sepolia);
+//   }
+//   if (chain === 'base') {
+//     response.push(base);
+//   }
+//   return response;
+// });
+
 const config = getDefaultConfig({
   appName: 'Leonardo AI',
   projectId: WALLETCONNECT_API_KEY as string,
-  chains:
-    CHAIN === NetworkNames.Local
-      ? [local]
-      : CHAIN === NetworkNames.Base
-        ? [base]
-        : [sepolia],
+  chains: NODE_ENV === 'development' ? [sepolia] : [base],
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
 

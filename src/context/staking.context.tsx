@@ -8,9 +8,7 @@ import React, {
 } from 'react';
 import { useAccount } from 'wagmi';
 import { Contract } from 'ethers';
-import { base, sepolia as Sepolia } from 'wagmi/chains';
 
-import { CHAIN, ASSET_ADDRESS, STAKING_ADDRESS } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import StakingUpgradeable from '@/src/abis/StakingUpgradeable.json';
@@ -27,8 +25,7 @@ import {
 } from '@/src/gql/types/graphql';
 import { usePrice } from './price.context';
 import { Chain } from '@rainbow-me/rainbowkit';
-import { NetworkNames } from '../addresses';
-import { local } from '../wagmi';
+import { getAddresses } from '../addresses';
 
 export type StakerWithAssets = Staker & {
   assets: bigint;
@@ -92,6 +89,9 @@ export const StakingProvider = ({ children }: Props) => {
   const { chain, address } = useAccount();
   const provider = useEthersProvider();
   const { price } = usePrice();
+  const addresses = getAddresses(chain?.id);
+  const assetAddress = addresses.asset;
+  const stakingAddress = addresses.staking;
 
   // State
   const [topStakers, setTopStakers] = React.useState<StakerWithAssets[]>([]);
@@ -124,13 +124,13 @@ export const StakingProvider = ({ children }: Props) => {
       return;
     }
     const assetContract = new Contract(
-      ASSET_ADDRESS,
+      assetAddress,
       IERC20Metadata.abi,
       provider,
     );
 
     const stakingContract = new Contract(
-      STAKING_ADDRESS,
+      stakingAddress,
       StakingUpgradeable.abi,
       provider,
     );
@@ -138,7 +138,7 @@ export const StakingProvider = ({ children }: Props) => {
     const [innerAssetBalance, innerStakingAllowance, innerSharesBalance] =
       await Promise.all([
         assetContract.balanceOf(address),
-        assetContract.allowance(address, STAKING_ADDRESS),
+        assetContract.allowance(address, stakingAddress),
         stakingContract.balanceOf(address),
       ]);
     setAssetBalance(innerAssetBalance);
@@ -154,12 +154,7 @@ export const StakingProvider = ({ children }: Props) => {
     }
     const variables = {
       where: {
-        chainId:
-          CHAIN === NetworkNames.Local
-            ? local.id
-            : CHAIN === NetworkNames.Base
-              ? base.id
-              : Sepolia.id,
+        chainId: chain.id,
         staker: address,
       },
       limit: 1,
@@ -195,13 +190,8 @@ export const StakingProvider = ({ children }: Props) => {
     }
     const variables = {
       where: {
-        chainId:
-          CHAIN === NetworkNames.Local
-            ? local.id
-            : CHAIN === NetworkNames.Base
-              ? base.id
-              : Sepolia.id,
-        address: STAKING_ADDRESS,
+        chainId: chain.id,
+        address: stakingAddress,
         staker: address,
       },
       limit: 1,
@@ -221,13 +211,8 @@ export const StakingProvider = ({ children }: Props) => {
     // Fetch top stakers
     const variables = {
       where: {
-        address: STAKING_ADDRESS,
-        chainId:
-          CHAIN === NetworkNames.Local
-            ? local.id
-            : CHAIN === NetworkNames.Base
-              ? base.id
-              : Sepolia.id,
+        address: stakingAddress,
+        chainId: chain?.id,
         computing_gt: '0',
       },
       limit: nTopStakers,
@@ -256,12 +241,7 @@ export const StakingProvider = ({ children }: Props) => {
   const fetchStakingRewardGlobal = useCallback(async () => {
     const variables = {
       where: {
-        chainId:
-          CHAIN === NetworkNames.Local
-            ? local.id
-            : CHAIN === NetworkNames.Base
-              ? base.id
-              : Sepolia.id,
+        chainId: chain?.id,
       },
       limit: 1,
     };

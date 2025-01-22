@@ -79,3 +79,43 @@ export const LoginRefreshMutation = gql`
     }
   }
 `;
+
+export const GetMyAccount = gql`
+  query GetMyAccount {
+    getMyAccount {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const DisconnectTwitter = gql`
+  mutation DisconnectTwitter {
+    disconnectTwitter {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;

@@ -60,7 +60,7 @@ export const Addresses = {
   };
 };
 
-export const getAddresses = (chainId: number | NetworkNames) => {
+export const getAddresses = (chainId: number | NetworkNames | undefined) => {
   if (typeof chainId === 'number') {
     switch (chainId) {
       case 11155111:

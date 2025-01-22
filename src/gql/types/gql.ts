@@ -21,6 +21,8 @@ const documents = {
     "\n  mutation LoginChallenge($account: String!) {\n    loginChallenge(account: $account) {\n      ... on LoginChallenge {\n        domain {\n          name\n          version\n        }\n        types {\n          Login {\n            name\n            type\n          }\n        }\n        value {\n          account\n          nonce\n        }\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n": types.LoginChallengeDocument,
     "\n  mutation LoginAuth($input: LoginAuthInput!) {\n    loginAuth(input: $input) {\n      ... on LoginAuth {\n        token\n        tokenExpiry\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n": types.LoginAuthDocument,
     "\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      ... on LoginAuth {\n        token\n        tokenExpiry\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n": types.LoginRefreshDocument,
+    "\n  query GetMyAccount {\n    getMyAccount {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n": types.GetMyAccountDocument,
+    "\n  mutation DisconnectTwitter {\n    disconnectTwitter {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n": types.DisconnectTwitterDocument,
 };
 
 /**
@@ -65,6 +67,14 @@ export function graphql(source: "\n  mutation LoginAuth($input: LoginAuthInput!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      ... on LoginAuth {\n        token\n        tokenExpiry\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation LoginRefresh($input: LoginRefreshInput!) {\n    loginRefresh(input: $input) {\n      ... on LoginAuth {\n        token\n        tokenExpiry\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetMyAccount {\n    getMyAccount {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetMyAccount {\n    getMyAccount {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DisconnectTwitter {\n    disconnectTwitter {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation DisconnectTwitter {\n    disconnectTwitter {\n      ... on Account {\n        address\n        twitterId\n        twitterName\n        twitterUsername\n        twitterAvatar\n        createdAt\n        updatedAt\n      }\n      ... on Error {\n        code\n        message\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
