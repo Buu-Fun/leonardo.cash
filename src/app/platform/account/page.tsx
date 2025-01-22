@@ -5,9 +5,12 @@ import { Button } from '@nextui-org/react';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useWallet } from '@/src/context/wallet.context';
 import { Socials } from '@/src/components/Socials/Socials';
+// import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
   // Hooks
+  const router = useRouter();
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
   const { chain, address } = useAccount();
@@ -30,6 +33,12 @@ export default function Page() {
         gap: '20px',
       }}
     >
+      <Button
+        // startContent={<ChevronLeftIcon />}
+        onPress={() => router.push('/platform')}
+      >
+        Back to platform
+      </Button>
       {chain && !address && (
         <Button
           color="primary"
