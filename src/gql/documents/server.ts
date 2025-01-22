@@ -89,6 +89,7 @@ export const GetMyAccount = gql`
         twitterName
         twitterUsername
         twitterAvatar
+        telegramId
         telegramName
         telegramUsername
         telegramAvatar
@@ -112,6 +113,7 @@ export const DisconnectTwitter = gql`
         twitterName
         twitterUsername
         twitterAvatar
+        telegramId
         telegramName
         telegramUsername
         telegramAvatar
@@ -135,6 +137,7 @@ export const DisconnectTelegram = gql`
         twitterName
         twitterUsername
         twitterAvatar
+        telegramId
         telegramName
         telegramUsername
         telegramAvatar

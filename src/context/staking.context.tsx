@@ -90,7 +90,6 @@ export const StakingProvider = ({ children }: Props) => {
   const { chain: accountChain, address } = useAccount();
   const chain = accountChain || defaultChain;
   const provider = useEthersProvider();
-  console.log('provider', provider);
   const { price } = usePrice();
   const addresses = getAddresses(chain?.id);
   const assetAddress = addresses.asset;
@@ -318,8 +317,6 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     ],
   );
-
-  console.log('staking context', value);
 
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>

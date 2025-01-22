@@ -120,7 +120,7 @@ export default function Page() {
     convertSharesToAssets,
   } = useStaking();
 
-  const { accessTokens } = useWallet();
+  const { getAccessToken } = useWallet();
 
   const handleTx = useCallback(
     async ({
@@ -366,7 +366,7 @@ export default function Page() {
   const claim = React.useCallback(async () => {
     if (!address || !signer) return;
 
-    const accessToken = accessTokens[address];
+    const accessToken = getAccessToken(address);
     if (!accessToken) {
       toast.error(
         <Toast
@@ -436,7 +436,7 @@ export default function Page() {
       )} ${ASSET_METADATA_SYMBOL} was successful`,
       tx,
     });
-  }, [accessTokens, address, signer, stakingReward]);
+  }, [address, signer, stakingReward]);
 
   const now = BigInt(Math.floor(Date.now() / 1000));
   // const now = useMemo(() => BigInt(Math.floor(Date.now() / 1000)), []);
