@@ -27,6 +27,8 @@ import {
 } from '@/src/gql/types/graphql';
 import { usePrice } from './price.context';
 import { Chain } from '@rainbow-me/rainbowkit';
+import { NetworkNames } from '../addresses';
+import { local } from '../wagmi';
 
 export type StakerWithAssets = Staker & {
   assets: bigint;
@@ -152,7 +154,12 @@ export const StakingProvider = ({ children }: Props) => {
     }
     const variables = {
       where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        chainId:
+          CHAIN === NetworkNames.Local
+            ? local.id
+            : CHAIN === NetworkNames.Base
+              ? base.id
+              : Sepolia.id,
         staker: address,
       },
       limit: 1,
@@ -188,7 +195,12 @@ export const StakingProvider = ({ children }: Props) => {
     }
     const variables = {
       where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        chainId:
+          CHAIN === NetworkNames.Local
+            ? local.id
+            : CHAIN === NetworkNames.Base
+              ? base.id
+              : Sepolia.id,
         address: STAKING_ADDRESS,
         staker: address,
       },
@@ -210,7 +222,12 @@ export const StakingProvider = ({ children }: Props) => {
     const variables = {
       where: {
         address: STAKING_ADDRESS,
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        chainId:
+          CHAIN === NetworkNames.Local
+            ? local.id
+            : CHAIN === NetworkNames.Base
+              ? base.id
+              : Sepolia.id,
         computing_gt: '0',
       },
       limit: nTopStakers,
@@ -239,7 +256,12 @@ export const StakingProvider = ({ children }: Props) => {
   const fetchStakingRewardGlobal = useCallback(async () => {
     const variables = {
       where: {
-        chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+        chainId:
+          CHAIN === NetworkNames.Local
+            ? local.id
+            : CHAIN === NetworkNames.Base
+              ? base.id
+              : Sepolia.id,
       },
       limit: 1,
     };

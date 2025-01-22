@@ -8,6 +8,7 @@
     "depcheck": "node_modules/.bin/depcheck",
     "build": "next build",
     "dev": "cp .env.development .env.local && next dev",
+    "dev:sand": "cp .env.sandbox .env.local && next dev",
     "dev:prod": "cp .env.production .env.local && next dev",
     "start": "next start",
     "seed": "node -r dotenv/config ./scripts/seed.js",

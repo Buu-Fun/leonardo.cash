@@ -11,6 +11,7 @@ import { Contract, ethers } from 'ethers';
 import {
   ASSET_ADDRESS,
   ASSET_METADATA_DECIMALS,
+  CHAIN,
   POOL_ADDRESS,
   USDC_ADDRESS,
   USDC_POOL_ADDRESS,
@@ -18,6 +19,7 @@ import {
 } from '@/src/config';
 import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
+import { NetworkNames } from '../addresses';
 
 interface Props {
   children: React.ReactNode;
@@ -44,6 +46,9 @@ export const PriceProvider = ({ children }: Props) => {
   const [wethPrice, setWETHPrice] = React.useState(0);
 
   const fetchPrice = useCallback(async () => {
+    if (CHAIN === NetworkNames.Local) {
+      setPrice(0.0015);
+    }
     if (!provider) {
       setPrice(0);
       return;

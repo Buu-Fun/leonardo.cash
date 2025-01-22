@@ -40,7 +40,8 @@ import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
 import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
-import Buy from '@/src/components/Buy/Buy';
+import { NetworkNames } from '@/src/addresses';
+import { local } from '@/src/wagmi';
 
 const nTopStakers = 100;
 
@@ -148,7 +149,12 @@ export default function Page() {
           />,
           { autoClose: false },
         );
-        const response = await tx;
+        const response = await Promise.race([
+          tx,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), 60000),
+          ),
+        ]);
         toast.dismiss(confirmingToast);
 
         processingToast = toast.info(
@@ -168,9 +174,18 @@ export default function Page() {
             description={successDescription}
           />,
         );
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        if (error?.code === 'ACTION_REJECTED') {
+        if (error.message === 'timeout') {
+          toast.error(
+            <Toast
+              type="error"
+              title="Timeout"
+              description={'The transaction took too long to be confirmed'}
+            />,
+          );
+          return;
+        }
+        if (error.code === 'ACTION_REJECTED') {
           toast.error(
             <Toast
               type="error"
@@ -178,16 +193,15 @@ export default function Page() {
               description={'The transaction was rejected by the user'}
             />,
           );
-        } else {
-          console.error(error);
-          toast.error(
-            <Toast
-              type="error"
-              title="An error occurred"
-              description={'An error occurred while processing the transaction'}
-            />,
-          );
+          return;
         }
+        toast.error(
+          <Toast
+            type="error"
+            title="An error occurred"
+            description={'An error occurred while processing the transaction'}
+          />,
+        );
       } finally {
         if (confirmingToast) {
           toast.dismiss(confirmingToast);
@@ -361,7 +375,12 @@ export default function Page() {
       GetSignedStakingReward,
       {
         input: {
-          chainId: CHAIN === 'base' ? base.id : Sepolia.id,
+          chainId:
+            CHAIN === NetworkNames.Local
+              ? local.id
+              : CHAIN === NetworkNames.Base
+                ? base.id
+                : Sepolia.id,
           stakerAddress: address,
         },
       },
@@ -625,9 +644,20 @@ export default function Page() {
           >
             Stake LEONAI
           </Button>
-        ) : null
+        ) : (
+          <Button
+            onPressStart={() =>
+              window.open(
+                'https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base',
+              )
+            }
+            color="primary"
+            fullWidth
+          >
+            Buy LEONAI
+          </Button>
+        )
       ) : null}
-      <Buy />
 
       <Cooldown
         coolingDown={BigInt(staker?.coolingDown || 0)}
