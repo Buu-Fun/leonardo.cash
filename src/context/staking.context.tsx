@@ -26,6 +26,7 @@ import {
 import { usePrice } from './price.context';
 import { Chain } from '@rainbow-me/rainbowkit';
 import { getAddresses } from '../addresses';
+import { defaultChain, local } from '../wagmi';
 
 export type StakerWithAssets = Staker & {
   assets: bigint;
@@ -86,8 +87,10 @@ const StakingContext = createContext<StakingState>({
 });
 
 export const StakingProvider = ({ children }: Props) => {
-  const { chain, address } = useAccount();
+  const { chain: accountChain, address } = useAccount();
+  const chain = accountChain || defaultChain;
   const provider = useEthersProvider();
+  console.log('provider', provider);
   const { price } = usePrice();
   const addresses = getAddresses(chain?.id);
   const assetAddress = addresses.asset;
@@ -315,6 +318,8 @@ export const StakingProvider = ({ children }: Props) => {
       convertSharesToAssets,
     ],
   );
+
+  console.log('staking context', value);
 
   return (
     <StakingContext.Provider value={value}>{children}</StakingContext.Provider>

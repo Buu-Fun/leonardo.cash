@@ -43,6 +43,15 @@ export default function RootLayout({
           `,
           }}
         />
+
+        <script
+          async
+          src="https://telegram.org/js/telegram-widget.js?22"
+          data-telegram-login="leonardoai_auth_bot"
+          data-size="medium"
+          data-auth-url="http://localhost:4003/auth/telegram"
+          data-request-access="write"
+        ></script>
       </head>
       <body>
         <div

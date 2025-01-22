@@ -9,6 +9,8 @@ interface Props {
   address: string;
   connectTwitterAccount: (address: string) => Promise<void>;
   disconnectTwitterAccount: (address: string) => Promise<void>;
+  connectTelegramAccount: (address: string) => Promise<void>;
+  disconnectTelegramAccount: (address: string) => Promise<void>;
 }
 
 export const Socials = ({
@@ -17,6 +19,8 @@ export const Socials = ({
   address,
   connectTwitterAccount,
   disconnectTwitterAccount,
+  connectTelegramAccount,
+  disconnectTelegramAccount,
 }: Props) => {
   return (
     <div className={styles.container}>
@@ -34,6 +38,7 @@ export const Socials = ({
 
         {account?.twitterUsername && (
           <Button
+            fullWidth
             disabled={loading}
             onPressStart={
               loading
@@ -41,7 +46,7 @@ export const Socials = ({
                 : () => disconnectTwitterAccount(address as string)
             }
           >
-            Disconnect Twitter
+            Disconnect
           </Button>
         )}
 
@@ -56,7 +61,49 @@ export const Socials = ({
                 : () => connectTwitterAccount(address as string)
             }
           >
-            Connect Twitter
+            Connect
+          </Button>
+        )}
+      </div>
+      <div className={styles.telegram}>
+        <div className={styles.title}>Link your Telegram account</div>
+
+        {account?.telegramUsername && (
+          <User
+            avatarProps={{
+              src: account.telegramAvatar || undefined,
+            }}
+            description={account.telegramUsername}
+            name={account.telegramName}
+          />
+        )}
+
+        {account?.telegramUsername && (
+          <Button
+            fullWidth
+            disabled={loading}
+            onPressStart={
+              loading
+                ? undefined
+                : () => disconnectTelegramAccount(address as string)
+            }
+          >
+            Disconnect
+          </Button>
+        )}
+
+        {!account?.telegramUsername && (
+          <Button
+            fullWidth
+            color="primary"
+            disabled={loading}
+            onPressStart={
+              loading
+                ? undefined
+                : () => connectTelegramAccount(address as string)
+            }
+          >
+            Connect
           </Button>
         )}
       </div>

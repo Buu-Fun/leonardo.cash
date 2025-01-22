@@ -3,6 +3,7 @@ import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { useAccountEffect, useDisconnect } from 'wagmi';
 import { serverRequest } from '../gql/client';
 import {
+  DisconnectTelegram,
   DisconnectTwitter,
   GetMyAccount,
   LoginAuthMutation,
@@ -12,6 +13,7 @@ import {
 import { Account, LoginAuth } from '../gql/types/graphql';
 import { useEthersSigner } from '../utils/ethersAdapter';
 import { ethers } from 'ethers';
+import { truncateAddress } from '../utils/format';
 
 interface Props {
   children: React.ReactNode;
@@ -23,6 +25,8 @@ interface WalletContextType {
   accessTokens: Authenticated;
   connectTwitterAccount: (account: string) => Promise<void>;
   disconnectTwitterAccount: (account: string) => Promise<void>;
+  connectTelegramAccount: (account: string) => Promise<void>;
+  disconnectTelegramAccount: (account: string) => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
@@ -152,6 +156,29 @@ export const WalletProvider = ({ children }: Props) => {
     [accessTokens],
   );
 
+  const connectTelegramAccount = useCallback(
+    async (account: string) => {
+      const text = `Hey! Please link my wallet ${truncateAddress(account)} to my Telegram account. My auth token is: $${accessTokens[account]}$ Thanks!`;
+      const url = `https://t.me/leonardoai_auth_bot?text=${text}`;
+      window.open(url, '_blank');
+    },
+    [accessTokens],
+  );
+
+  const disconnectTelegramAccount = useCallback(
+    async (account: string) => {
+      await serverRequest(
+        DisconnectTelegram,
+        {},
+        {
+          Authorization: `Bearer ${accessTokens[account]}`,
+        },
+      );
+      await fetchAccounts();
+    },
+    [accessTokens],
+  );
+
   useAccountEffect({
     onDisconnect() {
       setAccessTokens({});
@@ -180,6 +207,8 @@ export const WalletProvider = ({ children }: Props) => {
       accessTokens,
       connectTwitterAccount,
       disconnectTwitterAccount,
+      connectTelegramAccount,
+      disconnectTelegramAccount,
     }),
     [
       loading,
@@ -187,6 +216,8 @@ export const WalletProvider = ({ children }: Props) => {
       accessTokens,
       connectTwitterAccount,
       disconnectTwitterAccount,
+      connectTelegramAccount,
+      disconnectTelegramAccount,
     ],
   );
 

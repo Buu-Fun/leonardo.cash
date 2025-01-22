@@ -13,6 +13,7 @@ import { useEthersProvider } from '@/src/utils/ethersAdapter';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
 import { getAddresses, NetworkNames } from '../addresses';
 import { useAccount } from 'wagmi';
+import { defaultChain } from '../wagmi';
 
 interface Props {
   children: React.ReactNode;
@@ -30,7 +31,8 @@ const PriceContext = createContext<PriceState>({
 });
 
 export const PriceProvider = ({ children }: Props) => {
-  const { chain } = useAccount();
+  const { chain: accountChain } = useAccount();
+  const chain = accountChain || defaultChain;
   const provider = useEthersProvider();
   const addresses = getAddresses(chain?.id);
   const assetAddress = addresses.asset;
@@ -117,6 +119,8 @@ export const PriceProvider = ({ children }: Props) => {
     }),
     [price, fetchPrice],
   );
+
+  console.log('price context', value);
 
   return (
     <PriceContext.Provider value={value}>{children}</PriceContext.Provider>

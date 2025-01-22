@@ -50,6 +50,8 @@ export const local = defineChain({
   testnet: true,
 });
 
+export const defaultChain = NODE_ENV === 'development' ? sepolia : base;
+
 // const chains = CHAINS.map((chain) => {
 //   const response = [];
 //   if (chain === 'local') {

@@ -11,8 +11,14 @@ export default function Page() {
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
   const { chain, address } = useAccount();
-  const { loading, accounts, connectTwitterAccount, disconnectTwitterAccount } =
-    useWallet();
+  const {
+    loading,
+    accounts,
+    connectTwitterAccount,
+    disconnectTwitterAccount,
+    connectTelegramAccount,
+    disconnectTelegramAccount,
+  } = useWallet();
   const account = address ? accounts[address as string] : undefined;
 
   return (
@@ -59,6 +65,8 @@ export default function Page() {
           address={address as string}
           connectTwitterAccount={connectTwitterAccount}
           disconnectTwitterAccount={disconnectTwitterAccount}
+          connectTelegramAccount={connectTelegramAccount}
+          disconnectTelegramAccount={disconnectTelegramAccount}
         />
       )}
     </main>
