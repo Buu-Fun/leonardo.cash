@@ -40,7 +40,7 @@ export const Socials = ({
           <Button
             fullWidth
             disabled={loading}
-            onPressStart={
+            onPress={
               loading
                 ? undefined
                 : () => disconnectTwitterAccount(address as string)
@@ -55,7 +55,7 @@ export const Socials = ({
             fullWidth
             color="primary"
             disabled={loading}
-            onPressStart={
+            onPress={
               loading
                 ? undefined
                 : () => connectTwitterAccount(address as string)
@@ -82,7 +82,7 @@ export const Socials = ({
           <Button
             fullWidth
             disabled={loading}
-            onPressStart={
+            onPress={
               loading
                 ? undefined
                 : () => disconnectTelegramAccount(address as string)
@@ -97,7 +97,7 @@ export const Socials = ({
             fullWidth
             color="primary"
             disabled={loading}
-            onPressStart={
+            onPress={
               loading
                 ? undefined
                 : () => connectTelegramAccount(address as string)

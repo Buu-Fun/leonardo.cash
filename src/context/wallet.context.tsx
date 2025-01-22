@@ -13,7 +13,6 @@ import {
 import { Account, LoginAuth } from '../gql/types/graphql';
 import { useEthersSigner } from '../utils/ethersAdapter';
 import { ethers } from 'ethers';
-import { truncateAddress } from '../utils/format';
 
 interface Props {
   children: React.ReactNode;
@@ -22,6 +21,8 @@ interface Props {
 interface WalletContextType {
   loading: boolean;
   accounts: { [key: string]: Account };
+  fetchAccount: (account: string) => Promise<Account | undefined>;
+  fetchAccounts: () => Promise<void>;
   getAccessToken: (account: string) => string | null;
   connectTwitterAccount: (account: string) => Promise<void>;
   disconnectTwitterAccount: (account: string) => Promise<void>;
@@ -163,12 +164,12 @@ export const WalletProvider = ({ children }: Props) => {
       setLoading(false);
       return;
     }
-    const accounts = (
+    const innerAccounts = (
       await Promise.all(
         addresses.map((account) => fetchAccount(account as string)),
       )
     ).filter((account) => account) as Account[];
-    const newAccounts = accounts.reduce(
+    const newAccounts = innerAccounts.reduce(
       (acc, account) => {
         acc[account.address] = account;
         return acc;
@@ -199,8 +200,8 @@ export const WalletProvider = ({ children }: Props) => {
   }, []);
 
   const connectTelegramAccount = useCallback(async (account: string) => {
-    const text = `Hey! Please link my wallet ${truncateAddress(account)} to my Telegram account. My auth token is: $${getAccessToken(account)}$ Thanks!`;
-    const url = `https://t.me/leonardoai_auth_bot?text=${text}`;
+    const text = `Hey!\n\nPlease link my wallet ${account} to my Telegram account.\n\nMy verification code is:\n\n$${getAccessToken(account)}$\n\nThanks!`;
+    const url = `https://t.me/leonardoai_auth_bot?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   }, []);
 
@@ -244,6 +245,8 @@ export const WalletProvider = ({ children }: Props) => {
     () => ({
       loading,
       accounts,
+      fetchAccount,
+      fetchAccounts,
       getAccessToken,
       connectTwitterAccount,
       disconnectTwitterAccount,
@@ -253,6 +256,8 @@ export const WalletProvider = ({ children }: Props) => {
     [
       loading,
       accounts,
+      fetchAccount,
+      fetchAccounts,
       getAccessToken,
       connectTwitterAccount,
       disconnectTwitterAccount,

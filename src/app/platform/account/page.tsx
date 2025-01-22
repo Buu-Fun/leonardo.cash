@@ -1,12 +1,13 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { Button } from '@nextui-org/react';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { useWallet } from '@/src/context/wallet.context';
 import { Socials } from '@/src/components/Socials/Socials';
-// import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { Id, toast } from 'react-toastify';
+import { Toast } from '@/src/components/Toast/Toast';
 
 export default function Page() {
   // Hooks
@@ -21,8 +22,48 @@ export default function Page() {
     disconnectTwitterAccount,
     connectTelegramAccount,
     disconnectTelegramAccount,
+    fetchAccounts,
   } = useWallet();
   const account = address ? accounts[address as string] : undefined;
+  const [updatingNotif, setUpdatingNotif] = React.useState<Id>();
+
+  const handleTelegram =
+    (fn: (a: string) => Promise<void>) => async (a: string) => {
+      await fn(a);
+      const notifId = toast.info(
+        <Toast
+          title="Telegram updating"
+          description="Please wait until your account is updated"
+        />,
+        { autoClose: false },
+      );
+      setUpdatingNotif(notifId);
+    };
+
+  useEffect(() => {
+    if (updatingNotif) {
+      const interval = setInterval(() => {
+        fetchAccounts();
+      }, 2000);
+
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+        toast.dismiss(updatingNotif);
+      }, 10000);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [updatingNotif, fetchAccounts]);
+
+  useEffect(() => {
+    if (updatingNotif) {
+      console.log('telegram id changed', account?.telegramId);
+      toast.dismiss(updatingNotif);
+    }
+  }, [account?.telegramId]);
 
   return (
     <main
@@ -33,16 +74,11 @@ export default function Page() {
         gap: '20px',
       }}
     >
-      <Button
-        // startContent={<ChevronLeftIcon />}
-        onPress={() => router.push('/platform')}
-      >
-        Back to platform
-      </Button>
+      <Button onPress={() => router.push('/platform')}>Back to platform</Button>
       {chain && !address && (
         <Button
           color="primary"
-          onPressStart={openConnectModal}
+          onPress={openConnectModal}
           style={{
             width: '100%',
           }}
@@ -55,7 +91,6 @@ export default function Page() {
         <Button
           color="danger"
           onPressStart={openChainModal}
-          onClick={openChainModal}
           style={{
             width: '100%',
             background: 'var(--danger-color)',
@@ -74,8 +109,8 @@ export default function Page() {
           address={address as string}
           connectTwitterAccount={connectTwitterAccount}
           disconnectTwitterAccount={disconnectTwitterAccount}
-          connectTelegramAccount={connectTelegramAccount}
-          disconnectTelegramAccount={disconnectTelegramAccount}
+          connectTelegramAccount={handleTelegram(connectTelegramAccount)}
+          disconnectTelegramAccount={handleTelegram(disconnectTelegramAccount)}
         />
       )}
     </main>
