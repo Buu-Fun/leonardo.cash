@@ -109,7 +109,7 @@ export default class BigIntInput extends HTMLInputElement {
   }
 
   #update() {
-    if (!this.#amount) return;
+    if (this.#amount === undefined) return;
     const value = format(this.#amount, this.#decimals);
     if (this.value === value) return;
     this.value = value;

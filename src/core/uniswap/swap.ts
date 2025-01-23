@@ -4,7 +4,8 @@ import type { Pool } from './pool';
 import { encodeFunctionData, decodeFunctionResult } from 'viem';
 import { call, sendTransaction, waitForTransactionReceipt } from 'viem/actions';
 
-import { IUniswapV3QuoterV2ABI, ISwapRouterABI } from './abi';
+import { abi as IUniswapV3QuoterV2ABI } from '@/src/abis/uniswap/IUniswapV3QuoterV2.json';
+import { abi as ISwapRouterABI } from '@/src/abis/uniswap/ISwapRouter.json';
 
 const QUOTER = '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a' as const;
 const ROUTER = '0x2626664c2603336E57B271c5C0b26F421741e481' as const;
@@ -34,12 +35,12 @@ async function getQuote(client: Client, mode: Mode, path: Hex, amount: bigint) {
     abi,
     functionName,
     data: result.data,
-  }) as any;
+  }) as [bigint, bigint[], number[], bigint];
   return {
-    amount: decoded[0] as bigint,
-    after: decoded[1] as bigint[],
-    ticks: decoded[2] as number[],
-    gas: decoded[3] as bigint,
+    amount: decoded[0],
+    after: decoded[1],
+    ticks: decoded[2],
+    gas: decoded[3],
   };
 }
 
@@ -72,7 +73,6 @@ export async function getQuoteSingle(
     sqrtPriceLimitX96: 0,
   };
 
-  //@ts-expect-error TODO: Fix this
   const data = encodeFunctionData({ abi, functionName, args: [parmas] });
   const result = await call(client, { to: address, data: data });
   if (!result.data) return;
@@ -80,12 +80,12 @@ export async function getQuoteSingle(
     abi,
     functionName,
     data: result.data,
-  }) as any;
+  }) as [bigint, bigint, number, bigint];
   return {
-    amount: decoded[0] as bigint,
-    after: decoded[1] as bigint,
-    tick: decoded[2] as number,
-    gas: decoded[3] as bigint,
+    amount: decoded[0],
+    after: decoded[1],
+    tick: decoded[2],
+    gas: decoded[3],
   };
 }
 

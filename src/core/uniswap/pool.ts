@@ -1,6 +1,6 @@
-import { Abi, Client, Hex } from 'viem';
+import { Client, Hex } from 'viem';
 import { multicall } from 'viem/actions';
-import { IUniswapV3PoolABI as abi } from './abi';
+import { abi } from '@/src/abis/uniswap/IUniswapV3Pool.json';
 
 const Q96 = 2n ** 96n;
 const E18 = 10n ** 18n;
@@ -13,7 +13,7 @@ export type Pool = {
 };
 
 export async function getPoolDetails(client: Client, addresses: Hex[]) {
-  type Contract = { address: Hex; abi: Abi; functionName: string };
+  type Contract = { address: Hex; abi: typeof abi; functionName: string };
   const contracts = new Array<Contract>(addresses.length * 5);
 
   for (let i = 0, j = 0; i < addresses.length; i++, j += 5) {
@@ -25,6 +25,7 @@ export async function getPoolDetails(client: Client, addresses: Hex[]) {
     contracts[j + 4] = { address, abi, functionName: 'token1' };
   }
 
+  //@ts-expect-error TODO: Fix ABI type
   const results = await multicall(client, { contracts });
 
   const details = new Array<Pool>(addresses.length);
