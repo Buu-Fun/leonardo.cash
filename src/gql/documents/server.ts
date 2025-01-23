@@ -80,9 +80,9 @@ export const LoginRefreshMutation = gql`
   }
 `;
 
-export const GetMyAccount = gql`
-  query GetMyAccount {
-    getMyAccount {
+export const Me = gql`
+  query Me {
+    me {
       ... on Account {
         address
         twitterId

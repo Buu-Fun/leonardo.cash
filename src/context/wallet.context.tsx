@@ -5,7 +5,7 @@ import { serverRequest } from '../gql/client';
 import {
   DisconnectTelegram,
   DisconnectTwitter,
-  GetMyAccount,
+  Me,
   LoginAuthMutation,
   LoginChallengeMutation,
   LoginRefreshMutation,
@@ -149,13 +149,13 @@ export const WalletProvider = ({ children }: Props) => {
     const accessToken = getAccessToken(account);
     if (!accessToken) return;
     const response = await serverRequest(
-      GetMyAccount,
+      Me,
       {},
       {
         Authorization: `Bearer ${accessToken}`,
       },
     );
-    return response.getMyAccount;
+    return response.me;
   };
 
   const fetchAccounts = useCallback(async () => {
