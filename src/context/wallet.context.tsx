@@ -184,20 +184,23 @@ export const WalletProvider = ({ children }: Props) => {
     const accessToken = getAccessToken(account);
     if (!accessToken) return;
     const token = encodeURIComponent(accessToken);
-    const url = `http://localhost:4003/auth/twitter?token=${token}`;
+    const url = `http://localhost:4001/auth/twitter?token=${token}`;
     window.location.href = url; // Redirige al backend
   }, []);
 
-  const disconnectTwitterAccount = useCallback(async (account: string) => {
-    await serverRequest(
-      DisconnectTwitter,
-      {},
-      {
-        Authorization: `Bearer ${getAccessToken(account)}`,
-      },
-    );
-    await fetchAccounts();
-  }, []);
+  const disconnectTwitterAccount = useCallback(
+    async (account: string) => {
+      await serverRequest(
+        DisconnectTwitter,
+        {},
+        {
+          Authorization: `Bearer ${getAccessToken(account)}`,
+        },
+      );
+      await fetchAccounts();
+    },
+    [fetchAccounts],
+  );
 
   const connectTelegramAccount = useCallback(async (account: string) => {
     const text = `Hey!\n\nPlease link my wallet ${account} to my Telegram account.\n\nMy verification code is:\n\n$${getAccessToken(account)}$\n\nThanks!`;
@@ -205,16 +208,19 @@ export const WalletProvider = ({ children }: Props) => {
     window.open(url, '_blank');
   }, []);
 
-  const disconnectTelegramAccount = useCallback(async (account: string) => {
-    await serverRequest(
-      DisconnectTelegram,
-      {},
-      {
-        Authorization: `Bearer ${getAccessToken(account)}`,
-      },
-    );
-    await fetchAccounts();
-  }, []);
+  const disconnectTelegramAccount = useCallback(
+    async (account: string) => {
+      await serverRequest(
+        DisconnectTelegram,
+        {},
+        {
+          Authorization: `Bearer ${getAccessToken(account)}`,
+        },
+      );
+      await fetchAccounts();
+    },
+    [fetchAccounts],
+  );
 
   useAccountEffect({
     onDisconnect() {
