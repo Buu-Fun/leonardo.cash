@@ -28,11 +28,13 @@ interface Props {
 // Define the types for the context state
 interface PriceState {
   price: number;
+  wethPrice: number;
   fetchPrice: () => Promise<void>;
 }
 
 const PriceContext = createContext<PriceState>({
   price: 0,
+  wethPrice: 0,
   fetchPrice: async () => {},
 });
 
@@ -41,6 +43,7 @@ export const PriceProvider = ({ children }: Props) => {
 
   // State
   const [price, setPrice] = React.useState(0);
+  const [wethPrice, setWETHPrice] = React.useState(0);
 
   const fetchPrice = useCallback(async () => {
     if (CHAIN === NetworkNames.Local) {
@@ -99,6 +102,7 @@ export const PriceProvider = ({ children }: Props) => {
       (parseFloat(wethAmountInPool) / parseFloat(assetAmountInPool)) *
       wethPrice;
     setPrice(price);
+    setWETHPrice(wethPrice);
   }, [provider]);
 
   useEffect(() => {
@@ -112,10 +116,11 @@ export const PriceProvider = ({ children }: Props) => {
   // Memoize the context value
   const value = useMemo<PriceState>(
     () => ({
+      wethPrice,
       price,
       fetchPrice,
     }),
-    [price, fetchPrice],
+    [wethPrice, price, fetchPrice],
   );
 
   return (

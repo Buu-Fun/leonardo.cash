@@ -38,10 +38,10 @@ import { base, sepolia as Sepolia } from 'wagmi/chains';
 import { getBoosterValue, getNextLevelPos } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
-import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
 import { NetworkNames } from '@/src/addresses';
 import { local } from '@/src/wagmi';
+import BuyModal from '@/src/components/Buy/BuyModal';
 
 const nTopStakers = 100;
 
@@ -105,8 +105,8 @@ export default function Page() {
   const { address } = useAccount();
   const signer = useEthersSigner();
   const depositDisclosure = useDisclosure();
+  const buyDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
-  const swapDisclosure = useDisclosure();
 
   const [depositAmount, setDepositAmount] = React.useState('');
 
@@ -541,7 +541,6 @@ export default function Page() {
         gap: '20px',
       }}
     >
-      <SwapModal {...swapDisclosure} />
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
@@ -570,6 +569,8 @@ export default function Page() {
           {...depositDisclosure}
         />
       )}
+
+      <BuyModal handleTx={handleTx} {...buyDisclosure} />
       <RedeemModal
         stakingBalance={stakingBalance}
         coolingDown={BigInt(staker?.coolingDown || 0)}
@@ -632,32 +633,32 @@ export default function Page() {
         </Button>
       )}
 
-      {chain && address ? (
-        assetBalance > 0n ? (
+      {chain && address && (
+        <>
+          {assetBalance && (
+            <Button
+              color="primary"
+              onPressStart={depositDisclosure.onOpen}
+              onClick={depositDisclosure.onOpen}
+              style={{
+                width: '100%',
+              }}
+            >
+              Stake LEONAI
+            </Button>
+          )}
           <Button
             color="primary"
-            onPressStart={depositDisclosure.onOpen}
-            onClick={depositDisclosure.onOpen}
+            onPressStart={buyDisclosure.onOpen}
+            onClick={buyDisclosure.onOpen}
             style={{
               width: '100%',
             }}
           >
-            Stake LEONAI
-          </Button>
-        ) : (
-          <Button
-            onPressStart={() =>
-              window.open(
-                'https://app.uniswap.org/swap?exactField=output&&outputCurrency=0xb933D4FF5A0e7bFE6AB7Da72b5DCE2259030252f&inputCurrency=ETH&chain=base',
-              )
-            }
-            color="primary"
-            fullWidth
-          >
             Buy LEONAI
           </Button>
-        )
-      ) : null}
+        </>
+      )}
 
       <Cooldown
         coolingDown={BigInt(staker?.coolingDown || 0)}
