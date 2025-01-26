@@ -98,9 +98,7 @@ export default function Page() {
             textTransform: 'uppercase',
           }}
         >
-          {
-            "We're helping launch millions of new LSTs. We're building the future of AI."
-          }
+          {'AI for the bankless, AI for the games'}
         </h3>
 
         <div className={styles.landingBoxes}>
