@@ -1,4 +1,3 @@
-// import { PONDER_URL } from '../config';
 import { GraphQLClient, type RequestDocument } from 'graphql-request';
 import { PONDER_URL, SERVER_URL } from '../config';
 
