@@ -13,7 +13,7 @@ import {
 import { Account, LoginAuth } from '../gql/types/graphql';
 import { useEthersSigner } from '../utils/ethersAdapter';
 import { ethers } from 'ethers';
-import { SERVER_URL } from '../config';
+import { SERVER_URL, TELEGRAM_AUTH_BOT_HANDLE } from '../config';
 
 interface Props {
   children: React.ReactNode;
@@ -205,7 +205,7 @@ export const WalletProvider = ({ children }: Props) => {
 
   const connectTelegramAccount = useCallback(async (account: string) => {
     const text = `Hey!\n\nPlease link my wallet ${account} to my Telegram account.\n\nMy verification code is:\n\n$${getAccessToken(account)}$\n\nThanks!`;
-    const url = `https://t.me/leonardoai_auth_bot?text=${encodeURIComponent(text)}`;
+    const url = `https://t.me/${TELEGRAM_AUTH_BOT_HANDLE}?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
   }, []);
 
