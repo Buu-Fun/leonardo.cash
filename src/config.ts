@@ -1,6 +1,5 @@
 import { NetworkNames } from './addresses';
 
-const NODE_ENV = process.env.NODE_ENV || 'development';
 const NEXT_PUBLIC_CHAINS = process.env.NEXT_PUBLIC_CHAINS || 'local,sepolia';
 const NEXT_PUBLIC_ASSET_METADATA_NAME =
   process.env.NEXT_PUBLIC_ASSET_METADATA_NAME || 'LEONARDO by Virtuals';
@@ -11,7 +10,7 @@ const NEXT_PUBLIC_ASSET_METADATA_DECIMALS =
 const NEXT_PUBLIC_PONDER_URL =
   process.env.NEXT_PUBLIC_PONDER_URL || 'http://localhost:42069';
 const NEXT_PUBLIC_SERVER_URL =
-  process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000/graphql';
+  process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:4000';
 
 const NEXT_PUBLIC_ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
 const NEXT_PUBLIC_WALLETCONNECT_API_KEY =
@@ -29,7 +28,6 @@ const WALLETCONNECT_API_KEY = NEXT_PUBLIC_WALLETCONNECT_API_KEY;
 const BIRDEYE_API_KEY = NEXT_PUBLIC_BIRDEYE_API_KEY;
 
 export {
-  NODE_ENV,
   CHAINS,
   ASSET_METADATA_NAME,
   ASSET_METADATA_SYMBOL,

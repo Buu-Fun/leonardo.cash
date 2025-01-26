@@ -13,6 +13,7 @@ import {
 import { Account, LoginAuth } from '../gql/types/graphql';
 import { useEthersSigner } from '../utils/ethersAdapter';
 import { ethers } from 'ethers';
+import { SERVER_URL } from '../config';
 
 interface Props {
   children: React.ReactNode;
@@ -184,7 +185,7 @@ export const WalletProvider = ({ children }: Props) => {
     const accessToken = getAccessToken(account);
     if (!accessToken) return;
     const token = encodeURIComponent(accessToken);
-    const url = `http://localhost:4001/auth/twitter?token=${token}`;
+    const url = `${SERVER_URL}/accounts/auth/twitter?token=${token}`;
     window.location.href = url; // Redirige al backend
   }, []);
 

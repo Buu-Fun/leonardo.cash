@@ -1,41 +1,12 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { base as Base, sepolia as Sepolia } from 'wagmi/chains';
-import {
-  NODE_ENV,
-  CHAINS,
-  ALCHEMY_API_KEY,
-  WALLETCONNECT_API_KEY,
-} from './config';
+import { ALCHEMY_API_KEY, CHAINS, WALLETCONNECT_API_KEY } from './config';
 import { defineChain } from 'viem';
+import { sepolia as Sepolia, base as Base } from 'viem/chains';
 
-let sepolia = Sepolia;
-let base = Base;
+type DefinedChain = ReturnType<typeof defineChain>;
 
-if (ALCHEMY_API_KEY) {
-  const sepoliaAlchemyRpcUrl = `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-  const baseAlchemyRpcUrl = `https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`;
-  sepolia = {
-    ...Sepolia,
-    rpcUrls: {
-      ...Sepolia.rpcUrls,
-      default: {
-        http: [sepoliaAlchemyRpcUrl as any],
-      },
-    },
-  };
-  base = {
-    ...Base,
-    rpcUrls: {
-      ...Base.rpcUrls,
-      default: {
-        http: [baseAlchemyRpcUrl as any],
-      },
-    },
-  };
-}
-
-export const local = defineChain({
-  name: 'Local',
+const local: DefinedChain = defineChain({
+  name: 'local',
   nativeCurrency: {
     name: 'Ether',
     symbol: 'ETH',
@@ -50,27 +21,43 @@ export const local = defineChain({
   testnet: true,
 });
 
-export const defaultChain = NODE_ENV === 'development' ? sepolia : base;
+const sepolia: DefinedChain = defineChain({
+  ...Sepolia,
+  name: 'sepolia',
+  rpcUrls: {
+    default: {
+      http: [`https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+    },
+  },
+});
 
-// const chains = CHAINS.map((chain) => {
-//   const response = [];
-//   if (chain === 'local') {
-//     response.push(local);
-//   }
-//   if (chain === 'sepolia') {
-//     response.push(sepolia);
-//   }
-//   if (chain === 'base') {
-//     response.push(base);
-//   }
-//   return response;
-// });
+const base: DefinedChain = defineChain({
+  ...Base,
+  name: 'base',
+  rpcUrls: {
+    default: {
+      http: [`https://base-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}`],
+    },
+  },
+});
+
+const allChains = [local, sepolia, base];
+
+const chains = allChains.filter((chain) =>
+  CHAINS.includes(chain.name),
+) as DefinedChain[];
+
+if (chains.length === 0) {
+  throw new Error('No chains found');
+}
 
 const config = getDefaultConfig({
   appName: 'Leonardo AI',
   projectId: WALLETCONNECT_API_KEY as string,
-  chains: NODE_ENV === 'development' ? [sepolia] : [base],
+  chains: chains as any,
   ssr: true, // If your dApp uses server side rendering (SSR)
 });
+
+export const defaultChain = chains[0];
 
 export default config;

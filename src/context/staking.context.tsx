@@ -26,7 +26,7 @@ import {
 import { usePrice } from './price.context';
 import { Chain } from '@rainbow-me/rainbowkit';
 import { getAddresses } from '../addresses';
-import { defaultChain, local } from '../wagmi';
+import { defaultChain } from '../wagmi';
 
 export type StakerWithAssets = Staker & {
   assets: bigint;
