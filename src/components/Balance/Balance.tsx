@@ -12,12 +12,14 @@ export const Balance = () => {
   return (
     <div className={styles.balance}>
       <Button className={styles.amount}>
-        {prettyAmount(
-          parseFloat(
-            ethers.formatUnits(balance, parseInt(ASSET_METADATA_DECIMALS)),
-          ),
-        )}{' '}
-        {ASSET_METADATA_SYMBOL}
+        <span>
+          {prettyAmount(
+            parseFloat(
+              ethers.formatUnits(balance, parseInt(ASSET_METADATA_DECIMALS)),
+            ),
+          )}
+        </span>
+        <span className={styles.amountSymbol}>{ASSET_METADATA_SYMBOL}</span>
       </Button>
 
       <Button

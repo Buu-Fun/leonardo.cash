@@ -1,0 +1,66 @@
+.account {
+  background: #ffffff0d;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+}
+
+.account:hover {
+  background: #ffffff1a;
+}
+
+.accountIdenticon {
+  overflow: hidden;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.dropdown {
+  background: #000000;
+  border-radius: 16px;
+}
+
+.dropdownContent {
+  border: none;
+  background: #000000;
+  border: 0;
+  padding: 10px 0;
+  margin: 0;
+  border-radius: 16px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+}
+
+.dropdownItem:first-child {
+  border-radius: 16px 16px 0 0;
+}
+
+.dropdownItem:last-child {
+  border-radius: 0 0 16px 16px;
+}
+
+.dropdownItem:last-child {
+  border-radius: 0 0 16px 16px;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.button {
+  height: 48px;
+}

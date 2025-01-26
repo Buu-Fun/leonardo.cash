@@ -6,14 +6,7 @@ import React, {
 import { useAccount } from 'wagmi';
 import { Contract, ethers, MaxUint256 } from 'ethers';
 
-import {
-  ASSET_ADDRESS,
-  ASSET_METADATA_DECIMALS,
-  ASSET_METADATA_SYMBOL,
-  CHAIN,
-  REWARDS_ADDRESS,
-  STAKING_ADDRESS,
-} from '@/src/config';
+import { ASSET_METADATA_DECIMALS, ASSET_METADATA_SYMBOL } from '@/src/config';
 import { useEthersSigner } from '@/src/utils/ethersAdapter';
 import RewardsUpgradeable from '@/src/abis/RewardsUpgradeable.json';
 import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
@@ -22,7 +15,7 @@ import { Button, useDisclosure } from '@nextui-org/react';
 import Staking from '@/src/components/Staking/Staking';
 import { DepositModal } from '@/src/components/DepositModal/DepositModal';
 import { RedeemModal } from '@/src/components/RedeemModal/RedeemModal';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
 import { Rewards } from '@/src/components/Rewards/Rewards';
@@ -34,14 +27,12 @@ import {
 import { useStaking } from '@/src/context/staking.context';
 import { serverRequest } from '@/src/gql/client';
 import { GetSignedStakingReward } from '@/src/gql/documents/server';
-import { base, sepolia as Sepolia } from 'wagmi/chains';
 import { getBoosterValue, getNextLevelPos } from '@/src/utils/shares';
 import { prettyAmount } from '@/src/utils/format';
 import Cooldown from '@/src/components/Cooldown/Cooldown';
-import { SwapModal } from '@/src/components/SwapModal/SwapModal';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
-import { NetworkNames } from '@/src/addresses';
-import { local } from '@/src/wagmi';
+import { getAddresses } from '@/src/addresses';
+import { useWallet } from '@/src/context/wallet.context';
 
 const nTopStakers = 100;
 
@@ -102,16 +93,18 @@ export default function Page() {
   // Hooks
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const signer = useEthersSigner();
   const depositDisclosure = useDisclosure();
   const redeemDisclosure = useDisclosure();
-  const swapDisclosure = useDisclosure();
+  const addresses = getAddresses(chain?.id);
+  const assetAddress = addresses.asset;
+  const stakingAddress = addresses.staking;
+  const rewardsAddress = addresses.rewards;
 
   const [depositAmount, setDepositAmount] = React.useState('');
 
   const {
-    chain,
     topStakers,
     assetBalance,
     stakingAllowance,
@@ -126,6 +119,8 @@ export default function Page() {
     fetchAll,
     convertSharesToAssets,
   } = useStaking();
+
+  const { getAccessToken } = useWallet();
 
   const handleTx = useCallback(
     async ({
@@ -219,11 +214,11 @@ export default function Page() {
     async (amount: bigint) => {
       if (!address || !signer) return;
       const assetContract = new Contract(
-        ASSET_ADDRESS,
+        assetAddress,
         IERC20Metadata.abi,
         signer,
       );
-      const tx = assetContract.approve(STAKING_ADDRESS, amount);
+      const tx = assetContract.approve(stakingAddress, amount);
       const prettifiedAmount =
         amount === MaxUint256
           ? 'all'
@@ -246,7 +241,7 @@ export default function Page() {
     async (amount: bigint) => {
       if (!address || !signer) return;
       const stakingContract = new Contract(
-        STAKING_ADDRESS,
+        stakingAddress,
         StakingUpgradeable.abi,
         signer,
       );
@@ -277,7 +272,7 @@ export default function Page() {
     async (amount: bigint) => {
       if (!address || !signer) return;
       const stakingContract = new Contract(
-        STAKING_ADDRESS,
+        stakingAddress,
         StakingUpgradeable.abi,
         signer,
       );
@@ -310,7 +305,7 @@ export default function Page() {
     if (!address || !signer || sharesBalance === 0n) return;
 
     const stakingContract = new Contract(
-      STAKING_ADDRESS,
+      stakingAddress,
       StakingUpgradeable.abi,
       signer,
     );
@@ -333,7 +328,7 @@ export default function Page() {
     if (!address || !signer || sharesBalance === 0n || !staker) return;
 
     const stakingContract = new Contract(
-      STAKING_ADDRESS,
+      stakingAddress,
       StakingUpgradeable.abi,
       signer,
     );
@@ -371,18 +366,27 @@ export default function Page() {
   const claim = React.useCallback(async () => {
     if (!address || !signer) return;
 
+    const accessToken = getAccessToken(address);
+    if (!accessToken) {
+      toast.error(
+        <Toast
+          title="Error"
+          description={'An error occurred while processing the transaction'}
+        />,
+      );
+      return;
+    }
+
     const { getSignedStakingReward } = (await serverRequest(
       GetSignedStakingReward,
       {
         input: {
-          chainId:
-            CHAIN === NetworkNames.Local
-              ? local.id
-              : CHAIN === NetworkNames.Base
-                ? base.id
-                : Sepolia.id,
+          chainId: chain?.id,
           stakerAddress: address,
         },
+      },
+      {
+        authorization: `Bearer ${accessToken}`,
       },
     )) as { getSignedStakingReward: SignedStakingReward | undefined };
     if (!getSignedStakingReward || !getSignedStakingReward?.amount) {
@@ -396,7 +400,7 @@ export default function Page() {
     }
 
     const rewardContract = new Contract(
-      REWARDS_ADDRESS,
+      rewardsAddress,
       RewardsUpgradeable.abi,
       signer,
     );
@@ -541,19 +545,6 @@ export default function Page() {
         gap: '20px',
       }}
     >
-      <SwapModal {...swapDisclosure} />
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       {stakingRewardGlobal && (
         <DepositModal
           topStakers={topStakersWithAssetsAndEarnings}

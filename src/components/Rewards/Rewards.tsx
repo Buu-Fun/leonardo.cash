@@ -1,5 +1,5 @@
 'use client';
-import { ASSET_ADDRESS, ASSET_METADATA_DECIMALS } from '@/src/config';
+import { ASSET_METADATA_DECIMALS } from '@/src/config';
 import { format, prettyAmount, truncateAddress } from '@/src/utils/format';
 import {
   Button,
@@ -23,6 +23,8 @@ import { ethers } from 'ethers';
 import { X } from '../icons/X';
 import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 import { TelegramIcon } from '../icons/TelegramIcon';
+import { useAccount } from 'wagmi';
+import { getAddresses } from '@/src/addresses';
 
 interface Props {
   totalRewards: number;
@@ -37,6 +39,7 @@ export const Rewards = ({
   totalValueLocked,
   mininumRequiredStake,
 }: Props) => {
+  const { chain } = useAccount();
   const now = useMemo(() => Date.now(), [totalRewards, totalRewardsPerDay]);
   const totalRewardsAmount = useDynamicAmount({
     offset: totalRewards,
@@ -45,10 +48,12 @@ export const Rewards = ({
     endTime: now + 86400000,
   });
   const [isCopied, setIsCopied] = useState(false);
+  const addresses = getAddresses(chain?.id);
+  const assetAddress = addresses.asset;
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(ASSET_ADDRESS);
+      await navigator.clipboard.writeText(assetAddress);
       setIsCopied(true);
 
       // Volver al ícono original después de la duración especificada
@@ -79,7 +84,7 @@ export const Rewards = ({
         </div>
         <div className={styles.logoButtons}>
           <Button onPressStart={handleCopy} onClick={handleCopy}>
-            <div>{truncateAddress(ASSET_ADDRESS)}</div>
+            <div>{truncateAddress(assetAddress)}</div>
 
             {isCopied ? (
               <CheckIcon

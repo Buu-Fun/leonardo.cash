@@ -15,6 +15,139 @@ export const GetSignedStakingReward = gql`
         signer
         signature
       }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const LoginChallengeMutation = gql`
+  mutation LoginChallenge($account: String!) {
+    loginChallenge(account: $account) {
+      ... on LoginChallenge {
+        domain {
+          name
+          version
+        }
+        types {
+          Login {
+            name
+            type
+          }
+        }
+        value {
+          account
+          nonce
+        }
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const LoginAuthMutation = gql`
+  mutation LoginAuth($input: LoginAuthInput!) {
+    loginAuth(input: $input) {
+      ... on LoginAuth {
+        token
+        tokenExpiry
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const LoginRefreshMutation = gql`
+  mutation LoginRefresh($input: LoginRefreshInput!) {
+    loginRefresh(input: $input) {
+      ... on LoginAuth {
+        token
+        tokenExpiry
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const Me = gql`
+  query Me {
+    me {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        telegramId
+        telegramName
+        telegramUsername
+        telegramAvatar
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const DisconnectTwitter = gql`
+  mutation DisconnectTwitter {
+    disconnectTwitter {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        telegramId
+        telegramName
+        telegramUsername
+        telegramAvatar
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const DisconnectTelegram = gql`
+  mutation DisconnectTelegram {
+    disconnectTelegram {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        telegramId
+        telegramName
+        telegramUsername
+        telegramAvatar
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
     }
   }
 `;

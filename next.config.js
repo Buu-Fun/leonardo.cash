@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  redirects: async () => {
+    return [
+      {
+        source: '/platform',
+        destination: '/platform/staking',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 // module.exports = nextConfig;
