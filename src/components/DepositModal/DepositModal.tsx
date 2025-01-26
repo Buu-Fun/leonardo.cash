@@ -7,7 +7,7 @@ import styles from './styles.module.css';
 import { extractHours, format } from '@/src/utils/format';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import Disclaimer from '../Disclaimer/Disclaimer';
-import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
+import { StakerWithAssetsAndEarnings } from '@/src/app/platform/staking/page';
 
 interface Props {
   topStakers: StakerWithAssetsAndEarnings[];

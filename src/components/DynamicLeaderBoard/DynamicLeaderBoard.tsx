@@ -11,9 +11,9 @@ import { Button, Chip } from '@nextui-org/react';
 import { FirstCrown } from '../icons/FirstCrown';
 import clsx from 'clsx';
 import styles from './DynamicLeaderBoard.module.css';
-import { StakerWithAssetsAndEarnings } from '@/src/app/(dapp)/staking/page';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpCircleIcon } from '@heroicons/react/24/outline';
+import { StakerWithAssetsAndEarnings } from '@/src/app/platform/staking/page';
 
 // function shuffleArray(array: any[] = []) {
 //   if (array.length <= 1) return array;
