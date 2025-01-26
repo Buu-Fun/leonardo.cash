@@ -108,18 +108,15 @@ export const StakingProvider = ({ children }: Props) => {
   const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
   const [lastBalance, setLastBalance] = React.useState(0n);
 
-  const convertSharesToAssets = useCallback(
-    (shares: bigint) => {
-      if (!stakingRewardGlobal) {
-        return shares;
-      }
-      return (
-        (BigInt(shares) * BigInt(stakingRewardGlobal.totalAssets)) /
-        BigInt(stakingRewardGlobal.totalShares)
-      );
-    },
-    [stakingRewardGlobal],
-  );
+  const convertSharesToAssets = useCallback((shares: bigint) => {
+    if (!stakingRewardGlobal) {
+      return shares;
+    }
+    return (
+      (BigInt(shares) * BigInt(stakingRewardGlobal.totalAssets)) /
+      BigInt(stakingRewardGlobal.totalShares)
+    );
+  }, []);
 
   const fetchData = useCallback(async () => {
     if (!chain || !address) {
@@ -249,12 +246,10 @@ export const StakingProvider = ({ children }: Props) => {
       },
       limit: 1,
     };
-
     const { stakingRewardGlobals } = await ponderRequest(
       GetStakingRewardGlobals,
       variables,
     );
-
     if (stakingRewardGlobals.items.length > 0) {
       setStakingRewardGlobal(stakingRewardGlobals.items[0]);
     }
