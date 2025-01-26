@@ -240,7 +240,7 @@ export const StakingProvider = ({ children }: Props) => {
       );
       setLastBalance(lastBalance);
     }
-  }, [stakingAddress, chain?.id, convertSharesToAssets]);
+  }, [stakingAddress, convertSharesToAssets]);
 
   const fetchStakingRewardGlobal = useCallback(async () => {
     const variables = {
@@ -258,7 +258,7 @@ export const StakingProvider = ({ children }: Props) => {
     if (stakingRewardGlobals.items.length > 0) {
       setStakingRewardGlobal(stakingRewardGlobals.items[0]);
     }
-  }, [chain?.id]);
+  }, []);
 
   const fetchAll = useCallback(async () => {
     await Promise.all([
