@@ -19,6 +19,11 @@ const nextConfig = {
         destination: '/platform/staking',
         permanent: true,
       },
+      {
+        source: '/staking',
+        destination: '/platform/staking',
+        permanent: true,
+      },
     ];
   },
 };
