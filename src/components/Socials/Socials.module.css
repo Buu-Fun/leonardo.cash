@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  /* flex-direction: column; */
+  justify-content: center;
   /* width: 100%; */
   background: black;
   border: 1px solid #302450;

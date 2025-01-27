@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { Button } from '@nextui-org/react';
 import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
@@ -8,21 +8,32 @@ import { Socials } from '@/src/components/Socials/Socials';
 import { useRouter } from 'next/navigation';
 import { Id, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
+import { serverRequest } from '@/src/gql/client';
+import {
+  LinkSolanaRequest,
+  LinkSolanaVerify,
+} from '@/src/gql/documents/server';
+import bs58 from 'bs58';
+import { SolanaConnection } from '@/src/components/SolanaConnection/SolanaConnection';
 
 export default function Page() {
   // Hooks
   const router = useRouter();
+
   const { openConnectModal } = useConnectModal();
   const { openChainModal } = useChainModal();
   const { chain, address } = useAccount();
   const {
     loading,
     accounts,
+    solanaWallet,
     connectTwitterAccount,
     disconnectTwitterAccount,
     connectTelegramAccount,
     disconnectTelegramAccount,
     fetchAccounts,
+    verifySolana,
+    unlinkSolana,
   } = useWallet();
   const account = address ? accounts[address as string] : undefined;
   const [updatingNotif, setUpdatingNotif] = React.useState<Id>();
@@ -111,6 +122,15 @@ export default function Page() {
           disconnectTwitterAccount={disconnectTwitterAccount}
           connectTelegramAccount={handleTelegram(connectTelegramAccount)}
           disconnectTelegramAccount={handleTelegram(disconnectTelegramAccount)}
+        />
+      )}
+
+      {account && (
+        <SolanaConnection
+          account={account}
+          solanaWallet={solanaWallet}
+          verifySolana={verifySolana}
+          disconnectSolana={unlinkSolana}
         />
       )}
     </main>

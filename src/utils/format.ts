@@ -85,6 +85,10 @@ export const truncateAddress = (address: string) => {
   return `${address.slice(2, 8)}`;
 };
 
+export const truncateSolanaAddress = (address: string) => {
+  return `${address.slice(0, 6)}`;
+};
+
 export function splitStringIntoChunks(
   input: string,
   chunkSize: number,

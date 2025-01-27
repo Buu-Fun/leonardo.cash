@@ -93,6 +93,7 @@ export const Me = gql`
         telegramName
         telegramUsername
         telegramAvatar
+        solanaPubKey
         createdAt
         updatedAt
       }
@@ -117,6 +118,7 @@ export const DisconnectTwitter = gql`
         telegramName
         telegramUsername
         telegramAvatar
+        solanaPubKey
         createdAt
         updatedAt
       }
@@ -141,6 +143,71 @@ export const DisconnectTelegram = gql`
         telegramName
         telegramUsername
         telegramAvatar
+        solanaPubKey
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const LinkSolanaRequest = gql`
+  mutation LinkSolanaRequest($pubKey: String!) {
+    linkSolanaRequest(pubKey: $pubKey) {
+      ... on Message {
+        message
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const LinkSolanaVerify = gql`
+  mutation LinkSolanaVerify($signature: String!) {
+    linkSolanaVerify(signature: $signature) {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        telegramId
+        telegramName
+        telegramUsername
+        telegramAvatar
+        solanaPubKey
+        createdAt
+        updatedAt
+      }
+      ... on Error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const UnlinkSolana = gql`
+  mutation UnlinkSolana {
+    unlinkSolana {
+      ... on Account {
+        address
+        twitterId
+        twitterName
+        twitterUsername
+        twitterAvatar
+        telegramId
+        telegramName
+        telegramUsername
+        telegramAvatar
+        solanaPubKey
         createdAt
         updatedAt
       }

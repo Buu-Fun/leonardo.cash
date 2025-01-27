@@ -38,6 +38,7 @@ export const Socials = ({
 
         {account?.twitterUsername && (
           <Button
+            color="danger"
             fullWidth
             disabled={loading}
             onPress={
@@ -46,7 +47,7 @@ export const Socials = ({
                 : () => disconnectTwitterAccount(address as string)
             }
           >
-            Disconnect
+            Unlink
           </Button>
         )}
 
@@ -61,7 +62,7 @@ export const Socials = ({
                 : () => connectTwitterAccount(address as string)
             }
           >
-            Connect
+            Link
           </Button>
         )}
       </div>
@@ -80,6 +81,7 @@ export const Socials = ({
 
         {account?.telegramUsername && (
           <Button
+            color="danger"
             fullWidth
             disabled={loading}
             onPress={
@@ -88,7 +90,7 @@ export const Socials = ({
                 : () => disconnectTelegramAccount(address as string)
             }
           >
-            Disconnect
+            Unlink
           </Button>
         )}
 
@@ -103,7 +105,7 @@ export const Socials = ({
                 : () => connectTelegramAccount(address as string)
             }
           >
-            Connect
+            Link
           </Button>
         )}
       </div>

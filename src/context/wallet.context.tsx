@@ -9,11 +9,19 @@ import {
   LoginAuthMutation,
   LoginChallengeMutation,
   LoginRefreshMutation,
+  LinkSolanaRequest,
+  LinkSolanaVerify,
+  UnlinkSolana,
 } from '../gql/documents/server';
 import { Account, LoginAuth } from '../gql/types/graphql';
 import { useEthersSigner } from '../utils/ethersAdapter';
 import { ethers } from 'ethers';
 import { SERVER_URL, TELEGRAM_AUTH_BOT_HANDLE } from '../config';
+import {
+  useWallet as useSolanaWallet,
+  WalletContextState,
+} from '@solana/wallet-adapter-react';
+import bs58 from 'bs58';
 
 interface Props {
   children: React.ReactNode;
@@ -22,6 +30,7 @@ interface Props {
 interface WalletContextType {
   loading: boolean;
   accounts: { [key: string]: Account };
+  solanaWallet: WalletContextState;
   fetchAccount: (account: string) => Promise<Account | undefined>;
   fetchAccounts: () => Promise<void>;
   getAccessToken: (account: string) => string | null;
@@ -29,12 +38,17 @@ interface WalletContextType {
   disconnectTwitterAccount: (account: string) => Promise<void>;
   connectTelegramAccount: (account: string) => Promise<void>;
   disconnectTelegramAccount: (account: string) => Promise<void>;
+  verifySolana: () => Promise<void>;
+  unlinkSolana: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider = ({ children }: Props) => {
-  const { addresses } = useAccount();
+  const solanaWallet = useSolanaWallet();
+  const solanaWalletAddress = solanaWallet.publicKey?.toString();
+
+  const { address, addresses } = useAccount();
   const signer = useEthersSigner();
   const [loading, setLoading] = React.useState(true);
   const { disconnect } = useDisconnect();
@@ -223,6 +237,60 @@ export const WalletProvider = ({ children }: Props) => {
     [fetchAccounts],
   );
 
+  const verifySolana = useCallback(async () => {
+    try {
+      if (!solanaWallet.signMessage || !solanaWallet || !address) {
+        return;
+      }
+      const { linkSolanaRequest } = await serverRequest(
+        LinkSolanaRequest,
+        {
+          pubKey: solanaWalletAddress,
+        },
+        {
+          Authorization: `Bearer ${getAccessToken(address)}`,
+        },
+      );
+
+      if (linkSolanaRequest?.message) {
+        const encodedMessage = new TextEncoder().encode(
+          linkSolanaRequest.message,
+        );
+        const signedMessage = await solanaWallet.signMessage(encodedMessage);
+        const signature = bs58.encode(signedMessage);
+
+        const { linkSolanaVerify } = await serverRequest(
+          LinkSolanaVerify,
+          {
+            signature,
+          },
+          {
+            Authorization: `Bearer ${getAccessToken(address)}`,
+          },
+        );
+        if (!linkSolanaVerify) {
+          console.error('error verifying solana');
+          return;
+        }
+        fetchAccounts();
+      }
+    } catch (e) {
+      console.error('error', e);
+    }
+  }, [solanaWallet.signMessage, solanaWalletAddress, address, fetchAccounts]);
+
+  const unlinkSolana = useCallback(async () => {
+    if (!address) return;
+    await serverRequest(
+      UnlinkSolana,
+      {},
+      {
+        Authorization: `Bearer ${getAccessToken(address)}`,
+      },
+    );
+    await fetchAccounts();
+  }, [address, fetchAccounts]);
+
   useAccountEffect({
     onDisconnect() {
       const accessTokenKeys = getAccessTokenKeys();
@@ -252,6 +320,7 @@ export const WalletProvider = ({ children }: Props) => {
     () => ({
       loading,
       accounts,
+      solanaWallet,
       fetchAccount,
       fetchAccounts,
       getAccessToken,
@@ -259,10 +328,13 @@ export const WalletProvider = ({ children }: Props) => {
       disconnectTwitterAccount,
       connectTelegramAccount,
       disconnectTelegramAccount,
+      verifySolana,
+      unlinkSolana,
     }),
     [
       loading,
       accounts,
+      solanaWallet,
       fetchAccount,
       fetchAccounts,
       getAccessToken,
@@ -270,6 +342,8 @@ export const WalletProvider = ({ children }: Props) => {
       disconnectTwitterAccount,
       connectTelegramAccount,
       disconnectTelegramAccount,
+      verifySolana,
+      unlinkSolana,
     ],
   );
 
