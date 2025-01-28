@@ -16,8 +16,8 @@ import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 
-import '@solana/wallet-adapter-react-ui/styles.css';
 import { WalletProvider } from '@/src/context/wallet.context';
+import '../../styles/solana-modal.css';
 
 const queryClient = new QueryClient();
 
