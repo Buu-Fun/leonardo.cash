@@ -16,6 +16,7 @@ import {
   CoinbaseWalletAdapter,
   SolflareWalletAdapter,
   LedgerWalletAdapter,
+  PhantomWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
@@ -37,6 +38,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       new CoinbaseWalletAdapter(),
       new SolflareWalletAdapter(),
       new LedgerWalletAdapter(),
+      new PhantomWalletAdapter(),
     ],
     [network],
   );
