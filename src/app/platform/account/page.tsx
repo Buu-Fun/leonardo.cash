@@ -8,11 +8,11 @@ import { Socials } from '@/src/components/Socials/Socials';
 import { useRouter } from 'next/navigation';
 import { Id, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
-import { serverRequest } from '@/src/gql/client';
-import {
-  LinkSolanaRequest,
-  LinkSolanaVerify,
-} from '@/src/gql/documents/server';
+// import { serverRequest } from '@/src/gql/client';
+// import {
+//   LinkSolanaRequest,
+//   LinkSolanaVerify,
+// } from '@/src/gql/documents/server';
 import bs58 from 'bs58';
 import { SolanaConnection } from '@/src/components/SolanaConnection/SolanaConnection';
 
@@ -26,13 +26,12 @@ export default function Page() {
   const {
     loading,
     accounts,
-    solanaWallet,
     connectTwitterAccount,
     disconnectTwitterAccount,
     connectTelegramAccount,
     disconnectTelegramAccount,
     fetchAccounts,
-    verifySolana,
+    linkSolana,
     unlinkSolana,
   } = useWallet();
   const account = address ? accounts[address as string] : undefined;
@@ -128,9 +127,8 @@ export default function Page() {
       {account && (
         <SolanaConnection
           account={account}
-          solanaWallet={solanaWallet}
-          verifySolana={verifySolana}
-          disconnectSolana={unlinkSolana}
+          linkSolana={linkSolana}
+          unlinkSolana={unlinkSolana}
         />
       )}
     </main>

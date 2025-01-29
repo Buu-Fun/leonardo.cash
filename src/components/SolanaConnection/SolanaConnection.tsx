@@ -8,112 +8,152 @@ import {
   DropdownTrigger,
 } from '@nextui-org/react';
 import { Account } from '@/src/gql/types/graphql';
-import {
-  useWallet as useSolanaWallet,
-  WalletContextState,
-} from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { truncateSolanaAddress } from '@/src/utils/format';
+import { PublicKey } from '@solana/web3.js';
 import {
   ArrowLeftCircleIcon,
-  ArrowPathIcon,
+  CheckIcon,
+  ClipboardIcon,
 } from '@heroicons/react/24/outline';
-import { truncateSolanaAddress } from '@/src/utils/format';
-
 interface Props {
   account: Account;
-  solanaWallet: WalletContextState;
-  verifySolana: () => Promise<void>;
-  disconnectSolana: () => Promise<void>;
+  linkSolana: (solanaPubKey: string) => Promise<void>;
+  unlinkSolana: () => Promise<void>;
 }
 
 export const SolanaConnection = ({
   account,
-  solanaWallet,
-  verifySolana,
-  disconnectSolana,
+  linkSolana,
+  unlinkSolana,
 }: Props) => {
-  const { disconnect } = useSolanaWallet();
-  const { setVisible } = useWalletModal();
+  const [solanaPubKey, setSolanaPubKey] = React.useState<string>();
+  const [isCopied, setIsCopied] = React.useState(false);
 
-  const linked = solanaWallet.publicKey?.toString() === account.solanaPubKey;
+  const checkValidSolanaPubKey = (solanaPubKey: string) => {
+    try {
+      const pubKey = new PublicKey(solanaPubKey);
+      if (pubKey) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  };
+
+  const handlePaste = async () => {
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (!clipboardText) {
+        return;
+      }
+      setSolanaPubKey(clipboardText);
+    } catch (error) {
+      console.error('Failed to read clipboard', error);
+    }
+  };
+
+  const handleCopyAddress = async () => {
+    if (!account.solanaPubKey) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(account.solanaPubKey);
+      setIsCopied(true);
+
+      // Volver al ícono original después de la duración especificada
+      setTimeout(() => setIsCopied(false), 1000);
+    } catch (error) {
+      console.error('Failed to copy text to clipboard:', error);
+    }
+  };
+
+  const isValid = checkValidSolanaPubKey(solanaPubKey || '');
+  const isSameWallet = account.solanaPubKey === solanaPubKey;
 
   return (
     <div className={styles.container}>
       <div className={styles.title}>Link your Solana wallet</div>
-
       <div className={styles.subContainer}>
-        <div className={styles.subtitle}>Connected</div>
-        {solanaWallet.connected && solanaWallet.publicKey && (
+        <input
+          placeholder="Link a new wallet here"
+          className={styles.input}
+          value={solanaPubKey}
+          onChange={(e) => setSolanaPubKey(e.target.value)}
+        />
+
+        {solanaPubKey && solanaPubKey !== '' ? (
+          isSameWallet ? (
+            <Button color="default" disabled>
+              Insert a different wallet
+            </Button>
+          ) : isValid ? (
+            <Button color="primary" onPress={() => linkSolana(solanaPubKey)}>
+              Link wallet
+            </Button>
+          ) : (
+            <Button color="danger" disabled>
+              Invalid Solana Wallet
+            </Button>
+          )
+        ) : (
+          <Button color="primary" onPress={handlePaste}>
+            Paste your wallet
+          </Button>
+        )}
+      </div>
+      <div className={styles.subContainer}>
+        <div className={styles.subtitle}>Current wallet</div>
+        {account.solanaPubKey ? (
           <Dropdown
             classNames={{
               content: styles.dropdownContent,
             }}
           >
             <DropdownTrigger>
-              <Button>
-                <span>
-                  {truncateSolanaAddress(solanaWallet.publicKey.toString())}
-                </span>
-              </Button>
+              <div className={styles.account}>
+                <div> {account.solanaPubKey}</div>
+              </div>
             </DropdownTrigger>
             <DropdownMenu
-              aria-label="Static Actions"
+              aria-label="Account actions"
               className={styles.dropdown}
-              style={{
-                margin: 0,
-                padding: 0,
-              }}
             >
-              <DropdownItem key="change">
+              <DropdownItem key="copy" isReadOnly>
                 <div
-                  onClick={() => setVisible(true)}
+                  onClick={handleCopyAddress}
                   className={styles.dropdownItem}
                 >
-                  <ArrowPathIcon width={24} height={24} />
-                  <span>Change wallet</span>
+                  {isCopied ? (
+                    <div
+                      className={styles.icon}
+                      style={{ color: 'var(--success-color)' }}
+                    >
+                      <CheckIcon />
+                    </div>
+                  ) : (
+                    <div className={styles.icon}>
+                      <ClipboardIcon />
+                    </div>
+                  )}
+                  <span className={styles.copy}>Copy address</span>
                 </div>
               </DropdownItem>
-              <DropdownItem key="disconnect">
+              <DropdownItem key="disconnect" color="danger">
                 <div
-                  onClick={() => disconnect()}
+                  onClick={() => unlinkSolana()}
                   className={styles.dropdownItem}
                 >
-                  <ArrowLeftCircleIcon width={24} height={24} />
-                  <span>Disconnect wallet</span>
+                  <div className={styles.icon}>
+                    <ArrowLeftCircleIcon />
+                  </div>
+                  <span>Unlink</span>
                 </div>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-        )}
-        {!solanaWallet.connected && (
-          <Button
-            color="primary"
-            onPress={() => setVisible(true)}
-            style={{
-              width: '100%',
-            }}
-          >
-            Connect wallet
-          </Button>
-        )}
-      </div>
-
-      <div className={styles.subContainer}>
-        <div className={styles.subtitle}>Linked</div>
-        <div>
-          {account.solanaPubKey
-            ? truncateSolanaAddress(account.solanaPubKey)
-            : 'None'}
-        </div>
-        {linked && (
-          <Button color="danger" onPress={disconnectSolana}>
-            Unlink wallet
-          </Button>
-        )}
-        {solanaWallet.connected && !linked && (
-          <Button color="primary" onPress={verifySolana}>
-            Link wallet
-          </Button>
+        ) : (
+          'No wallet linked yet'
         )}
       </div>
     </div>

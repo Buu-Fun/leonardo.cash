@@ -155,23 +155,48 @@ export const DisconnectTelegram = gql`
   }
 `;
 
-export const LinkSolanaRequest = gql`
-  mutation LinkSolanaRequest($pubKey: String!) {
-    linkSolanaRequest(pubKey: $pubKey) {
-      ... on Message {
-        message
-      }
-      ... on Error {
-        code
-        message
-      }
-    }
-  }
-`;
+// export const LinkSolanaRequest = gql`
+//   mutation LinkSolanaRequest($pubKey: String!) {
+//     linkSolanaRequest(pubKey: $pubKey) {
+//       ... on Message {
+//         message
+//       }
+//       ... on Error {
+//         code
+//         message
+//       }
+//     }
+//   }
+// `;
 
-export const LinkSolanaVerify = gql`
-  mutation LinkSolanaVerify($signature: String!) {
-    linkSolanaVerify(signature: $signature) {
+// export const LinkSolanaVerify = gql`
+//   mutation LinkSolanaVerify($signature: String!) {
+//     linkSolanaVerify(signature: $signature) {
+//       ... on Account {
+//         address
+//         twitterId
+//         twitterName
+//         twitterUsername
+//         twitterAvatar
+//         telegramId
+//         telegramName
+//         telegramUsername
+//         telegramAvatar
+//         solanaPubKey
+//         createdAt
+//         updatedAt
+//       }
+//       ... on Error {
+//         code
+//         message
+//       }
+//     }
+//   }
+// `;
+
+export const LinkSolana = gql`
+  mutation LinkSolana($solanaPubKey: String!) {
+    linkSolana(solanaPubKey: $solanaPubKey) {
       ... on Account {
         address
         twitterId
