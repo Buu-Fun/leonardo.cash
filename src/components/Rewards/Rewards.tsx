@@ -3,6 +3,7 @@ import { ASSET_METADATA_DECIMALS } from '@/src/config';
 import { format, prettyAmount, truncateAddress } from '@/src/utils/format';
 import {
   Button,
+  Chip,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -25,6 +26,7 @@ import { useDynamicAmount } from '@/src/hooks/useDynamicAmount';
 import { TelegramIcon } from '../icons/TelegramIcon';
 import { useAccount } from 'wagmi';
 import { getAddresses } from '@/src/addresses';
+import { usePrice } from '@/src/context/price.context';
 
 interface Props {
   totalRewards: number;
@@ -39,6 +41,7 @@ export const Rewards = ({
   totalValueLocked,
   mininumRequiredStake,
 }: Props) => {
+  const { price, priceChange24h } = usePrice();
   const { chain } = useAccount();
   const now = useMemo(() => Date.now(), [totalRewards, totalRewardsPerDay]);
   const totalRewardsAmount = useDynamicAmount({
@@ -203,14 +206,41 @@ export const Rewards = ({
 
         <div className={styles.divider} />
 
-        {/* tvl */}
-        <div className={styles.tvl}>
-          <div className={styles.tvlTitle}>Total Value Locked ($)</div>
-          <div className={styles.tvlAmount}>{`${format({
-            value: totalValueLocked,
-            minDecimals: 2,
-            maxDecimals: 2,
-          })}`}</div>
+        <div className={styles.bottom}>
+          {/* price */}
+          <div className={styles.price}>
+            <div className={styles.priceTitle}>Price ($)</div>
+            <div className={styles.priceAmounts}>
+              <div className={styles.priceAmount}>
+                {`${format({
+                  value: price,
+                  minDecimals: 2,
+                  maxDecimals: 5,
+                })}`}
+              </div>
+
+              <Chip
+                className={styles.priceChange}
+                color={priceChange24h > 0 ? 'success' : 'danger'}
+              >
+                {`${priceChange24h > 0 ? '+' : ''} ${format({
+                  value: priceChange24h,
+                  minDecimals: 2,
+                  maxDecimals: 2,
+                })}%`}
+              </Chip>
+            </div>
+          </div>
+
+          {/* tvl */}
+          <div className={styles.tvl}>
+            <div className={styles.tvlTitle}>Total Value Locked ($)</div>
+            <div className={styles.tvlAmount}>{`${format({
+              value: totalValueLocked,
+              minDecimals: 2,
+              maxDecimals: 2,
+            })}`}</div>
+          </div>
         </div>
       </div>
     </div>

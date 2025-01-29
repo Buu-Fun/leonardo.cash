@@ -6,14 +6,11 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { Contract, ethers } from 'ethers';
-
-import { ASSET_METADATA_DECIMALS } from '@/src/config';
-import { useEthersProvider } from '@/src/utils/ethersAdapter';
-import IERC20Metadata from '@/src/abis/IERC20Metadata.json';
-import { getAddresses, NetworkNames } from '../addresses';
 import { useAccount } from 'wagmi';
 import { defaultChain } from '../wagmi';
+import { BIRDEYE_API_KEY } from '../config';
+import { Chain } from '@rainbow-me/rainbowkit';
+import { getAddresses } from '../addresses';
 
 interface Props {
   children: React.ReactNode;
@@ -22,86 +19,51 @@ interface Props {
 // Define the types for the context state
 interface PriceState {
   price: number;
+  priceChange24h: number;
   fetchPrice: () => Promise<void>;
 }
 
 const PriceContext = createContext<PriceState>({
   price: 0,
+  priceChange24h: 0,
   fetchPrice: async () => {},
 });
 
 export const PriceProvider = ({ children }: Props) => {
   const { chain: accountChain } = useAccount();
-  const chain = accountChain || defaultChain;
-  const provider = useEthersProvider();
+  const chain = accountChain || (defaultChain as Chain);
   const addresses = getAddresses(chain?.id);
   const assetAddress = addresses.asset;
-  const wethAddress = addresses.weth;
-  const usdcAddress = addresses.usdc;
-  const poolAddress = addresses.uniswapV3Pool;
-  const usdcPoolAddress = addresses.usdcPool;
 
   // State
   const [price, setPrice] = React.useState(0);
+  const [priceChange24h, setPriceChange24h] = React.useState(0);
 
   const fetchPrice = useCallback(async () => {
-    if (!provider || !chain) {
-      setPrice(0);
-      return;
-    }
-    if (chain?.name === NetworkNames.Local) {
-      setPrice(0.0008);
-    }
-    const assetContract = new Contract(
-      assetAddress,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const wethContract = new Contract(
-      wethAddress,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const usdcContract = new Contract(
-      usdcAddress,
-      IERC20Metadata.abi,
-      provider,
-    );
-    const [
-      assetBalanceOfPool,
-      wethBalanceOfPool,
-      wethDecimals,
-      wethInUsdcPool,
-      usdcInUsdcPool,
-      usdcDecimals,
-    ] = await Promise.all([
-      assetContract.balanceOf(poolAddress),
-      wethContract.balanceOf(poolAddress),
-      wethContract.decimals(),
-      wethContract.balanceOf(usdcPoolAddress),
-      usdcContract.balanceOf(usdcPoolAddress),
-      usdcContract.decimals(),
-    ]);
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        'x-chain': chain.name,
+        'X-API-KEY': BIRDEYE_API_KEY,
+      },
+    } as RequestInit;
 
-    const wethAmount = ethers.formatUnits(wethInUsdcPool, wethDecimals);
-    const usdcAmount = ethers.formatUnits(usdcInUsdcPool, usdcDecimals);
-
-    const wethPrice = parseFloat(usdcAmount) / parseFloat(wethAmount);
-
-    const wethAmountInPool = ethers.formatUnits(
-      wethBalanceOfPool,
-      wethDecimals,
+    const response = await fetch(
+      `https://public-api.birdeye.so/defi/price?address=${assetAddress}`,
+      options,
     );
-    const assetAmountInPool = ethers.formatUnits(
-      assetBalanceOfPool,
-      parseInt(ASSET_METADATA_DECIMALS),
-    );
-
-    const price =
-      (parseFloat(wethAmountInPool) / parseFloat(assetAmountInPool)) *
-      wethPrice;
-    setPrice(price);
-  }, [chain, provider]);
+    const data = (await response.json()) as {
+      data: {
+        value: number;
+        updateUnixTime: number;
+        updateHumanTime: string;
+        priceChange24h: number;
+      };
+    };
+    setPrice(data.data.value);
+    setPriceChange24h(data.data.priceChange24h);
+  }, [chain, assetAddress]);
 
   useEffect(() => {
     fetchPrice();
@@ -115,9 +77,10 @@ export const PriceProvider = ({ children }: Props) => {
   const value = useMemo<PriceState>(
     () => ({
       price,
+      priceChange24h,
       fetchPrice,
     }),
-    [price, fetchPrice],
+    [price, priceChange24h, fetchPrice],
   );
 
   return (
