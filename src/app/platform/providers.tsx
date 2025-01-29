@@ -12,7 +12,11 @@ import {
   WalletProvider as SolanaWalletProvider,
 } from '@solana/wallet-adapter-react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
-import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
+import {
+  CoinbaseWalletAdapter,
+  SolflareWalletAdapter,
+  LedgerWalletAdapter,
+} from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { clusterApiUrl } from '@solana/web3.js';
 
@@ -29,7 +33,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const endpoint = React.useMemo(() => clusterApiUrl(network), [network]);
 
   const wallets = React.useMemo(
-    () => [new UnsafeBurnerWalletAdapter()],
+    () => [
+      new CoinbaseWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new LedgerWalletAdapter(),
+    ],
     [network],
   );
 
