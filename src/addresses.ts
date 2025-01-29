@@ -65,21 +65,21 @@ export const getAddresses = (chainId: number | NetworkNames | undefined) => {
     switch (chainId) {
       case 11155111:
         return Addresses[NetworkNames.Sepolia];
-      case 8453:
-        return Addresses[NetworkNames.Base];
       case 1337:
-      default:
         return Addresses[NetworkNames.Local];
+      case 8453:
+      default:
+        return Addresses[NetworkNames.Base];
     }
   }
 
   switch (chainId) {
     case NetworkNames.Sepolia:
       return Addresses[NetworkNames.Sepolia];
-    case NetworkNames.Base:
-      return Addresses[NetworkNames.Base];
     case NetworkNames.Local:
-    default:
       return Addresses[NetworkNames.Local];
+    case NetworkNames.Base:
+    default:
+      return Addresses[NetworkNames.Base];
   }
 };
