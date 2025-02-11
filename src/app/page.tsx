@@ -12,6 +12,7 @@ import { Navbar } from '../components/Navbar/Navbar';
 import { useRouter } from 'next/navigation';
 import { getAddresses } from '../addresses';
 import { CHAINS } from '../config';
+import { MigrationBanner } from '../components/MigrationBanner/MigrationBanner';
 
 const Box = ({
   children,
@@ -68,10 +69,11 @@ export default function Page() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          marginTop: '80px',
           marginBottom: '80px',
         }}
       >
+        <MigrationBanner />
+
         <h1
           style={{
             marginTop: '60px',

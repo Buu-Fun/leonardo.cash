@@ -1,0 +1,71 @@
+.migrationBanner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  border: 1px solid var(--primary-color-light);
+  background: rgba(150, 89, 248, 0.2);
+  border-radius: 16px;
+  margin-top: 20px;
+  font-size: 32px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.migrationBannerCA {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.migrationBannerCAText:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.videoOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.videoContainer {
+  position: relative;
+  width: 80%;
+}
+
+.closeIconContainer {
+  position: absolute;
+  top: -60px;
+  right: 0;
+}
+
+.closeIcon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.videoIcon {
+  cursor: pointer;
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.videoIcon:hover {
+  color: rgba(255, 255, 255, 1);
+}

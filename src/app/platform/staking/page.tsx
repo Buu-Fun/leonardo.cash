@@ -33,6 +33,7 @@ import Cooldown from '@/src/components/Cooldown/Cooldown';
 import DynamicLeaderBoard from '@/src/components/DynamicLeaderBoard/DynamicLeaderBoard';
 import { getAddresses } from '@/src/addresses';
 import { useWallet } from '@/src/context/wallet.context';
+import { MigrationBanner } from '@/src/components/MigrationBanner/MigrationBanner';
 
 const nTopStakers = 100;
 
@@ -545,6 +546,8 @@ export default function Page() {
         gap: '20px',
       }}
     >
+      <MigrationBanner />
+
       {stakingRewardGlobal && (
         <DepositModal
           topStakers={topStakersWithAssetsAndEarnings}

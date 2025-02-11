@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Balance } from '../Balance/Balance';
 import { AccountButton } from '../AccountButton/AccountButton';
+import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css';
 
 interface Props {
   isDApp: boolean;
