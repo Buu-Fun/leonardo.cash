@@ -1,7 +1,7 @@
 .migrationBanner {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  gap: 32px;
   align-items: center;
   padding: 32px;
   border: 1px solid var(--primary-color-light);
@@ -13,19 +13,38 @@
   width: 100%;
 }
 
-.migrationBannerCA {
-  color: rgba(255, 255, 255, 0.8);
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.solanaLogo {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.migrationBannerCAText {
   font-size: 20px;
   font-weight: 400;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
 }
 
 .migrationBannerCAText:hover {
   color: rgba(255, 255, 255, 1);
+}
+
+.migrationBannerVideoContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  transition: all 0.3s ease;
 }
 
 .videoOverlay {
@@ -39,12 +58,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 1000;
 }
 
 .videoContainer {
   position: relative;
-  width: 80%;
+  width: 70%;
 }
 
 .closeIconContainer {
@@ -60,12 +79,20 @@
 }
 
 .videoIcon {
-  cursor: pointer;
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
 }
 
 .videoIcon:hover {
   color: rgba(255, 255, 255, 1);
+}
+
+@media screen and (max-width: 768px) {
+  .migrationBanner {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
