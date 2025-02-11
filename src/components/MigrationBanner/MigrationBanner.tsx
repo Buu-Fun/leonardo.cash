@@ -78,7 +78,7 @@ export function MigrationBanner() {
         </div>
         <div className={styles.migrationBannerVideoContainer}>
           <div className={styles.migrationBannerCAText} onClick={() => {}}>
-            {'CA: COMMING SOON'}
+            {'CA: CfscKScJarnPmFokMyK94Do2dpgGLzqrH67bb2vUN1uB'}
           </div>
           <div className={styles.videoIcon} onClick={() => setShowVideo(true)}>
             <VideoCameraIcon />
