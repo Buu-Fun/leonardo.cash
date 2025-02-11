@@ -85,7 +85,7 @@ export function MigrationBanner() {
               );
             }}
           >
-            CA: CfscKScJarnPmFokMyK94Do2dpgGLzqrH67bb2vUN1uB
+            CA: 88n8pBT6doB5rHP7WcAaG8TuVY1baWazzxAS7Bm8virt
           </span>
           <div className={styles.videoIcon} onClick={() => setShowVideo(true)}>
             <VideoCameraIcon />
