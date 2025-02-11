@@ -73,13 +73,20 @@ export function MigrationBanner() {
         </div>
       </div>
       <div className={styles.right}>
-        <div className={styles.migrationBannerText}>
+        <span className={styles.migrationBannerText}>
           WE ARE MIGRATING TO $BUU
-        </div>
+        </span>
         <div className={styles.migrationBannerVideoContainer}>
-          <div className={styles.migrationBannerCAText} onClick={() => {}}>
-            {'CA: CfscKScJarnPmFokMyK94Do2dpgGLzqrH67bb2vUN1uB'}
-          </div>
+          <span
+            className={styles.migrationBannerCAText}
+            onClick={() => {
+              window.open(
+                'https://dexscreener.com/solana/CfscKScJarnPmFokMyK94Do2dpgGLzqrH67bb2vUN1uB',
+              );
+            }}
+          >
+            CA: CfscKScJarnPmFokMyK94Do2dpgGLzqrH67bb2vUN1uB
+          </span>
           <div className={styles.videoIcon} onClick={() => setShowVideo(true)}>
             <VideoCameraIcon />
           </div>
