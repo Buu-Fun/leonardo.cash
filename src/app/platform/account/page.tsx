@@ -1,41 +1,27 @@
 'use client';
-import React, { useCallback, useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import React from 'react';
 import { Button } from '@nextui-org/react';
-import { useChainModal, useConnectModal } from '@rainbow-me/rainbowkit';
-import { useWallet } from '@/src/context/wallet.context';
 import { Socials } from '@/src/components/Socials/Socials';
 import { useRouter } from 'next/navigation';
 import { Id, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
-// import { serverRequest } from '@/src/gql/client';
-// import {
-//   LinkSolanaRequest,
-//   LinkSolanaVerify,
-// } from '@/src/gql/documents/server';
-import bs58 from 'bs58';
-import { SolanaConnection } from '@/src/components/SolanaConnection/SolanaConnection';
+import { useAuthentication } from '@/src/context/account.context';
+import { useWallet } from '@/src/context/wallet.context';
 
 export default function Page() {
   // Hooks
   const router = useRouter();
 
-  const { openConnectModal } = useConnectModal();
-  const { openChainModal } = useChainModal();
-  const { chain, address } = useAccount();
+  const { address, openConnectionModal } = useWallet();
   const {
+    account,
     loading,
-    accounts,
     connectTwitterAccount,
     disconnectTwitterAccount,
     connectTelegramAccount,
     disconnectTelegramAccount,
-    fetchAccounts,
-    linkSolana,
-    unlinkSolana,
-  } = useWallet();
-  const account = address ? accounts[address as string] : undefined;
-  const [updatingNotif, setUpdatingNotif] = React.useState<Id>();
+  } = useAuthentication();
+  const [, setUpdatingNotif] = React.useState<Id>();
 
   const handleTelegram =
     (fn: (a: string) => Promise<void>) => async (a: string) => {
@@ -50,30 +36,32 @@ export default function Page() {
       setUpdatingNotif(notifId);
     };
 
-  useEffect(() => {
-    if (updatingNotif) {
-      const interval = setInterval(() => {
-        fetchAccounts();
-      }, 2000);
+  // useEffect(() => {
+  //   if (updatingNotif) {
+  //     const interval = setInterval(() => {
+  //       fetchAccounts();
+  //     }, 2000);
 
-      const timeout = setTimeout(() => {
-        clearInterval(interval);
-        toast.dismiss(updatingNotif);
-      }, 10000);
+  //     const timeout = setTimeout(() => {
+  //       clearInterval(interval);
+  //       toast.dismiss(updatingNotif);
+  //     }, 10000);
 
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-      };
-    }
-  }, [updatingNotif, fetchAccounts]);
+  //     return () => {
+  //       clearInterval(interval);
+  //       clearTimeout(timeout);
+  //     };
+  //   }
+  // }, [updatingNotif, fetchAccounts]);
 
-  useEffect(() => {
-    if (updatingNotif) {
-      console.log('telegram id changed', account?.telegramId);
-      toast.dismiss(updatingNotif);
-    }
-  }, [account?.telegramId]);
+  // useEffect(() => {
+  //   if (updatingNotif) {
+  //     console.log('telegram id changed', account?.telegramId);
+  //     toast.dismiss(updatingNotif);
+  //   }
+  // }, [account?.telegramId]);
+
+  const chain = 'devnet';
 
   return (
     <main
@@ -88,27 +76,12 @@ export default function Page() {
       {chain && !address && (
         <Button
           color="primary"
-          onPress={openConnectModal}
+          onPress={openConnectionModal}
           style={{
             width: '100%',
           }}
         >
           Connect wallet
-        </Button>
-      )}
-
-      {!chain && address && (
-        <Button
-          color="danger"
-          onPressStart={openChainModal}
-          style={{
-            width: '100%',
-            background: 'var(--danger-color)',
-            fontWeight: 'bold',
-            fontSize: '16px',
-          }}
-        >
-          Wrong network
         </Button>
       )}
 
@@ -121,14 +94,6 @@ export default function Page() {
           disconnectTwitterAccount={disconnectTwitterAccount}
           connectTelegramAccount={handleTelegram(connectTelegramAccount)}
           disconnectTelegramAccount={handleTelegram(disconnectTelegramAccount)}
-        />
-      )}
-
-      {account && (
-        <SolanaConnection
-          account={account}
-          linkSolana={linkSolana}
-          unlinkSolana={unlinkSolana}
         />
       )}
     </main>

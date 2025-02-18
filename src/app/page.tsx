@@ -3,7 +3,6 @@ import { Button, Chip } from '@nextui-org/react';
 import React from 'react';
 import Image from 'next/image';
 import { Footer } from '../components/Footer/Footer';
-import { splitStringIntoChunks } from '../utils/format';
 import Copy from '../components/Copy/Copy';
 import clsx from 'clsx';
 
@@ -13,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { getAddresses } from '../addresses';
 import { CHAINS } from '../config';
 import { MigrationBanner } from '../components/MigrationBanner/MigrationBanner';
+import { splitStringIntoChunks } from '../utils/format';
 
 const Box = ({
   children,

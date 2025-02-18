@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import Providers from './providers';
-import '@rainbow-me/rainbowkit/styles.css';
-// import '../output.css';
 import '../styles/globals.css';
 import Image from 'next/image';
 import Script from 'next/script';

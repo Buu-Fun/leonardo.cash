@@ -1,5 +1,4 @@
 import { getUnixTime } from 'date-fns';
-import { ethers } from 'ethers';
 
 // Formatting numbers
 interface FormatOptions {
@@ -20,7 +19,10 @@ export function format({
   }
   let innerValue = value.toString();
   if (decimalsOffset) {
-    innerValue = ethers.formatUnits(innerValue, decimalsOffset);
+    innerValue = (
+      Number.parseFloat(innerValue) *
+      10 ** decimalsOffset
+    ).toString();
   }
   return Number.parseFloat(innerValue).toLocaleString('en-US', {
     minimumFractionDigits: minDecimals,
@@ -67,7 +69,7 @@ export function extractHours(seconds: number) {
   return Math.floor(seconds / 3600);
 }
 
-export const tokenArgValue = (name: string, symbol: any) => {
+export const tokenArgValue = (name: string, symbol: string) => {
   return `${name} (${symbol})`;
 };
 

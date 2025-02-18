@@ -1,44 +1,11 @@
 import { gql } from 'graphql-request';
 
-export const GetSignedStakingReward = gql`
-  query GetSignedStakingReward($input: GetSignedStakingRewardInput!) {
-    getSignedStakingReward(input: $input) {
-      ... on SignedStakingReward {
-        address
-        amount
-        chainId
-        claimed
-        lastUpdate
-        staker
-        asset
-        vault
-        signer
-        signature
-      }
-      ... on Error {
-        code
-        message
-      }
-    }
-  }
-`;
-
 export const LoginChallengeMutation = gql`
   mutation LoginChallenge($account: String!) {
     loginChallenge(account: $account) {
       ... on LoginChallenge {
-        domain {
-          name
-          version
-        }
-        types {
-          Login {
-            name
-            type
-          }
-        }
-        value {
-          account
+        input {
+          address
           nonce
         }
       }
@@ -51,8 +18,8 @@ export const LoginChallengeMutation = gql`
 `;
 
 export const LoginAuthMutation = gql`
-  mutation LoginAuth($input: LoginAuthInput!) {
-    loginAuth(input: $input) {
+  mutation LoginAuth($output: SolanaSignInOutput!, $input: SolanaSignInInput!) {
+    loginAuth(output: $output, input: $input) {
       ... on LoginAuth {
         token
         tokenExpiry
@@ -133,95 +100,6 @@ export const DisconnectTwitter = gql`
 export const DisconnectTelegram = gql`
   mutation DisconnectTelegram {
     disconnectTelegram {
-      ... on Account {
-        address
-        twitterId
-        twitterName
-        twitterUsername
-        twitterAvatar
-        telegramId
-        telegramName
-        telegramUsername
-        telegramAvatar
-        solanaPubKey
-        createdAt
-        updatedAt
-      }
-      ... on Error {
-        code
-        message
-      }
-    }
-  }
-`;
-
-// export const LinkSolanaRequest = gql`
-//   mutation LinkSolanaRequest($pubKey: String!) {
-//     linkSolanaRequest(pubKey: $pubKey) {
-//       ... on Message {
-//         message
-//       }
-//       ... on Error {
-//         code
-//         message
-//       }
-//     }
-//   }
-// `;
-
-// export const LinkSolanaVerify = gql`
-//   mutation LinkSolanaVerify($signature: String!) {
-//     linkSolanaVerify(signature: $signature) {
-//       ... on Account {
-//         address
-//         twitterId
-//         twitterName
-//         twitterUsername
-//         twitterAvatar
-//         telegramId
-//         telegramName
-//         telegramUsername
-//         telegramAvatar
-//         solanaPubKey
-//         createdAt
-//         updatedAt
-//       }
-//       ... on Error {
-//         code
-//         message
-//       }
-//     }
-//   }
-// `;
-
-export const LinkSolana = gql`
-  mutation LinkSolana($solanaPubKey: String!) {
-    linkSolana(solanaPubKey: $solanaPubKey) {
-      ... on Account {
-        address
-        twitterId
-        twitterName
-        twitterUsername
-        twitterAvatar
-        telegramId
-        telegramName
-        telegramUsername
-        telegramAvatar
-        solanaPubKey
-        createdAt
-        updatedAt
-      }
-      ... on Error {
-        code
-        message
-      }
-    }
-  }
-`;
-
-export const UnlinkSolana = gql`
-  mutation UnlinkSolana {
-    unlinkSolana {
       ... on Account {
         address
         twitterId

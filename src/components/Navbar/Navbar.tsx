@@ -4,7 +4,6 @@ import { PageLogo } from '../PageLogo/PageLogo';
 import styles from './Navbar.module.css';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Balance } from '../Balance/Balance';
 import { AccountButton } from '../AccountButton/AccountButton';
 import 'react-lite-youtube-embed/dist/LiteYouTubeEmbed.css';
 
@@ -23,7 +22,6 @@ export function Navbar({ isDApp }: Props) {
 
         {isDApp ? (
           <div className={styles.right}>
-            <Balance />
             <AccountButton />
           </div>
         ) : (

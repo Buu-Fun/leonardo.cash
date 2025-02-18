@@ -64,68 +64,8 @@
 
 .bottom {
   display: flex;
-  flex-direction: column;
   gap: 20px;
   width: 100%;
-  /* padding: 10px; */
   align-items: flex-end;
   padding: 20px 0;
-}
-
-.amount {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  width: 100%;
-}
-
-.labels {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.label,
-.balance {
-  font-size: 10px;
-  font-weight: 400;
-  margin-left: 4px;
-}
-
-.balance {
-  color: var(--text-color-muted);
-  transition: all 0.3s;
-}
-
-.balance:hover {
-  color: var(--primary-color);
-}
-
-.input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #464646;
-  border-radius: 8px;
-  background: #111111;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 400;
-}
-.input:focus {
-  outline: none;
-}
-
-.disclaimer {
-  display: flex;
-  width: 100%;
-  padding: 10px;
-}
-
-.buttons {
-  display: flex;
-  width: 100%;
-  justify-content: space-evenly;
-  gap: 10px;
 }
