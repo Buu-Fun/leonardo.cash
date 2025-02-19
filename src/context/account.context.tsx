@@ -66,15 +66,19 @@ export const AuthenticationProvider = ({ children }: Props) => {
     if (!address) return;
     const accessToken = getAccessToken(address);
     if (!accessToken) return;
-    const response = await serverRequest(
-      Me,
-      {},
-      {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    );
-    return response.me;
-  }, [address]);
+    try {
+      const response = await serverRequest(
+        Me,
+        {},
+        {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      );
+      return response.me;
+    } catch (error) {
+      console.error('Error fetching account:', error);
+    }
+  }, [getAccessToken, address]);
 
   const authenticate = useCallback(async () => {
     try {

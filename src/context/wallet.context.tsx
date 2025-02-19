@@ -21,6 +21,7 @@ export enum WalletConnectionType {
 }
 
 interface WalletContextType {
+  loading: boolean;
   address?: string | null;
   adapter?: Adapter | ConnectedSolanaWallet;
   connectionType?: WalletConnectionType;
@@ -33,18 +34,26 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 export const WalletProvider = ({ children }: Props) => {
   const connectionDisclosure = useDisclosure();
-  const { login, logout } = usePrivy();
+  const { isModalOpen, user, login, logout } = usePrivy();
   const { wallets } = useSolanaWallets();
-  const { wallet, disconnect: disconnectWeb3Wallet } = useWeb3Wallet();
-  const { setVisible } = useWalletModal();
+  const {
+    connecting,
+    wallet,
+    disconnect: disconnectWeb3Wallet,
+  } = useWeb3Wallet();
+  const { visible, setVisible } = useWalletModal();
   const [connectionType, setConnectionType] =
     React.useState<WalletConnectionType>(WalletConnectionType.Web2);
 
   const disconnect = useCallback(async () => {
     // Disconnect wallet
-    logout();
-    disconnectWeb3Wallet();
-  }, [logout, disconnectWeb3Wallet]);
+    if (user) {
+      logout();
+    }
+    if (wallet) {
+      disconnectWeb3Wallet();
+    }
+  }, [user, logout, disconnectWeb3Wallet]);
 
   const connect = useCallback(
     async (type: WalletConnectionType) => {
@@ -83,9 +92,12 @@ export const WalletProvider = ({ children }: Props) => {
       : wallet?.adapter.publicKey?.toString();
   const adapter =
     connectionType === WalletConnectionType.Web2 ? wallets[0] : wallet?.adapter;
+  const loading =
+    connecting || connectionDisclosure.isOpen || visible || isModalOpen;
 
   const value = useMemo(
     () => ({
+      loading,
       address,
       adapter,
       connectionType,
@@ -94,6 +106,7 @@ export const WalletProvider = ({ children }: Props) => {
       switchConnectionType,
     }),
     [
+      loading,
       address,
       adapter,
       connectionType,

@@ -20,7 +20,7 @@ import { useWallet } from '@/src/context/wallet.context';
 
 export const AccountButton = () => {
   const router = useRouter();
-  const { address, openConnectionModal, disconnect } = useWallet();
+  const { loading, address, openConnectionModal, disconnect } = useWallet();
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -48,6 +48,7 @@ export const AccountButton = () => {
         onPress={openConnectionModal}
         color="primary"
         className={styles.button}
+        isLoading={loading}
       >
         Connect wallet
       </Button>

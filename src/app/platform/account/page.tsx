@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
-import { Button } from '@nextui-org/react';
 import { Socials } from '@/src/components/Socials/Socials';
-import { useRouter } from 'next/navigation';
 import { Id, toast } from 'react-toastify';
 import { Toast } from '@/src/components/Toast/Toast';
 import { useAuthentication } from '@/src/context/account.context';
@@ -10,9 +8,7 @@ import { useWallet } from '@/src/context/wallet.context';
 
 export default function Page() {
   // Hooks
-  const router = useRouter();
-
-  const { address, openConnectionModal } = useWallet();
+  const { address } = useWallet();
   const {
     account,
     loading,
@@ -61,8 +57,6 @@ export default function Page() {
   //   }
   // }, [account?.telegramId]);
 
-  const chain = 'devnet';
-
   return (
     <main
       style={{
@@ -72,19 +66,6 @@ export default function Page() {
         gap: '20px',
       }}
     >
-      <Button onPress={() => router.push('/platform')}>Back to platform</Button>
-      {chain && !address && (
-        <Button
-          color="primary"
-          onPress={openConnectionModal}
-          style={{
-            width: '100%',
-          }}
-        >
-          Connect wallet
-        </Button>
-      )}
-
       {account && (
         <Socials
           loading={loading}
