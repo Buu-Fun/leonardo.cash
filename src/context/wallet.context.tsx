@@ -1,5 +1,11 @@
 'use client';
-import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import {
   ConnectedSolanaWallet,
   usePrivy,
@@ -31,6 +37,7 @@ interface WalletContextType {
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
+const connectedWalletConnectionTypeKey = 'connected-wallet-connection-type';
 
 export const WalletProvider = ({ children }: Props) => {
   const connectionDisclosure = useDisclosure();
@@ -53,21 +60,26 @@ export const WalletProvider = ({ children }: Props) => {
     if (wallet) {
       disconnectWeb3Wallet();
     }
+    localStorage.removeItem(connectedWalletConnectionTypeKey);
   }, [user, logout, disconnectWeb3Wallet]);
 
   const connect = useCallback(
     async (type: WalletConnectionType) => {
       // Connect to wallet
       if (type === WalletConnectionType.Web2) {
-        login();
-        setConnectionType(WalletConnectionType.Web2);
+        if (!user) {
+          login();
+        }
       } else {
-        // Connect to web3 wallet
-        setVisible(true);
-        setConnectionType(WalletConnectionType.Web3);
+        if (!wallet) {
+          // Connect to web3 wallet
+          setVisible(true);
+        }
       }
+      setConnectionType(type);
+      localStorage.setItem(connectedWalletConnectionTypeKey, type);
     },
-    [disconnect, login, setVisible],
+    [user, disconnect, login, setVisible],
   );
 
   const switchConnectionType = useCallback(async () => {
@@ -85,6 +97,13 @@ export const WalletProvider = ({ children }: Props) => {
       }
     }
   }, [connect, connectionType, wallet, wallets]);
+
+  useEffect(() => {
+    const savedType = localStorage.getItem(connectedWalletConnectionTypeKey);
+    if (savedType) {
+      connect(savedType as WalletConnectionType);
+    }
+  }, []);
 
   const address =
     connectionType === WalletConnectionType.Web2
