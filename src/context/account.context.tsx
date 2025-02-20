@@ -8,7 +8,7 @@ import {
   LoginChallengeMutation,
   LoginRefreshMutation,
   Me,
-} from '../gql/documents/server';
+} from '../gql/documents/account';
 import {
   Account,
   LoginAuth,
