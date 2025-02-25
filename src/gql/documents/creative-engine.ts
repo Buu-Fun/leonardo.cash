@@ -15,48 +15,7 @@ export const GenerateSubthreadMutation = gql`
         threadId
         prompt
         style
-        imageRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
-        modelRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
+        imageUrl
       }
       ... on HandledError {
         code
@@ -69,56 +28,35 @@ export const GenerateSubthreadMutation = gql`
 export const GenerateImageMutation = gql`
   mutation GenerateImage($subthreadId: String!) {
     generateImage(subthreadId: $subthreadId) {
-      ... on Subthread {
+      ... on GenRequest {
         _id
+        subthreadId
         address
+        status
+        metadata
+        type
+        images {
+          content_type
+          file_name
+          file_size
+          width
+          height
+          url
+        }
+        model_mesh {
+          content_type
+          file_name
+          file_size
+          width
+          height
+          url
+        }
+        timings {
+          inference
+        }
+        credits
         createdAt
         updatedAt
-        threadId
-        prompt
-        style
-        imageRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
-        modelRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
       }
       ... on HandledError {
         code
@@ -129,58 +67,45 @@ export const GenerateImageMutation = gql`
 `;
 
 export const GenerateModelMutation = gql`
-  mutation GenerateModel($imageRequestId: String!, $subthreadId: String!) {
-    generateModel(imageRequestId: $imageRequestId, subthreadId: $subthreadId) {
-      ... on Subthread {
+  mutation GenerateModel(
+    $subthreadId: String!
+    $imageRequestId: String
+    $imageUrl: String!
+  ) {
+    generateModel(
+      subthreadId: $subthreadId
+      imageRequestId: $imageRequestId
+      imageUrl: $imageUrl
+    ) {
+      ... on GenRequest {
         _id
+        subthreadId
         address
+        status
+        metadata
+        type
+        images {
+          content_type
+          file_name
+          file_size
+          width
+          height
+          url
+        }
+        model_mesh {
+          content_type
+          file_name
+          file_size
+          width
+          height
+          url
+        }
+        timings {
+          inference
+        }
+        credits
         createdAt
         updatedAt
-        threadId
-        prompt
-        style
-        imageRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
-        modelRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
-        }
       }
       ... on HandledError {
         code
@@ -199,6 +124,7 @@ export const GetThreadsQuery = gql`
           createdAt
           updatedAt
           address
+          title
         }
         metadata {
           limit
@@ -221,6 +147,10 @@ export const GetThreadsQuery = gql`
 export const GetSubthreadsQuery = gql`
   query GetSubthreads($pagination: Pagination, $filters: SubthreadFilter) {
     getSubthreads(pagination: $pagination, filters: $filters) {
+      ... on HandledError {
+        code
+        message
+      }
       ... on SubthreadsPage {
         items {
           _id
@@ -231,48 +161,7 @@ export const GetSubthreadsQuery = gql`
           threadId
           prompt
           style
-          imageRequests {
-            _id
-            status
-            metadata
-            type
-            images {
-              content_type
-              file_name
-              file_size
-              url
-            }
-            model_mesh {
-              content_type
-              file_name
-              file_size
-              url
-            }
-            timings {
-              inference
-            }
-          }
-          modelRequests {
-            _id
-            status
-            metadata
-            type
-            images {
-              content_type
-              file_name
-              file_size
-              url
-            }
-            model_mesh {
-              content_type
-              file_name
-              file_size
-              url
-            }
-            timings {
-              inference
-            }
-          }
+          imageUrl
         }
         metadata {
           limit
@@ -283,10 +172,6 @@ export const GetSubthreadsQuery = gql`
           page
           pages
         }
-      }
-      ... on HandledError {
-        code
-        message
       }
     }
   }
@@ -303,8 +188,24 @@ export const GetSubthreadQuery = gql`
         threadId
         prompt
         style
-        imageRequests {
+        imageUrl
+      }
+      ... on HandledError {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const GetSubthreadGenRequestsQuery = gql`
+  query GetSubthreadGenRequests($subthreadId: String!) {
+    getSubthreadGenRequests(subthreadId: $subthreadId) {
+      ... on GenRequestsPage {
+        items {
           _id
+          subthreadId
+          address
           status
           metadata
           type
@@ -312,39 +213,73 @@ export const GetSubthreadQuery = gql`
             content_type
             file_name
             file_size
+            width
+            height
             url
           }
           model_mesh {
             content_type
             file_name
             file_size
+            width
+            height
             url
           }
           timings {
             inference
           }
+          credits
+          createdAt
+          updatedAt
         }
-        modelRequests {
-          _id
-          status
-          metadata
-          type
-          images {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          model_mesh {
-            content_type
-            file_name
-            file_size
-            url
-          }
-          timings {
-            inference
-          }
+        metadata {
+          limit
+          offset
+          orderBy
+          orderDirection
+          numElements
+          total
+          page
+          pages
         }
+      }
+      ... on HandledError {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const GetMyCreditsQuery = gql`
+  query GetMyCredits {
+    getMyCredits {
+      ... on Credit {
+        _id
+        available
+        pending
+        confirmed
+        updatedAt
+        createdAt
+      }
+      ... on HandledError {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const RedeemVoucherMutation = gql`
+  mutation RedeemVoucher($code: String!) {
+    redeemVoucher(code: $code) {
+      ... on Credit {
+        _id
+        available
+        pending
+        confirmed
+        updatedAt
+        createdAt
       }
       ... on HandledError {
         code
