@@ -65,13 +65,13 @@ export const PriceProvider = ({ children }: Props) => {
     setPriceChange24h(data.data.priceChange24h);
   }, [chain, assetAddress]);
 
-  useEffect(() => {
-    fetchPrice();
-    const interval = setInterval(() => {
-      fetchPrice();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [fetchPrice]);
+  // useEffect(() => {
+  //   fetchPrice();
+  //   const interval = setInterval(() => {
+  //     fetchPrice();
+  //   }, 60000);
+  //   return () => clearInterval(interval);
+  // }, [fetchPrice]);
 
   // Memoize the context value
   const value = useMemo<PriceState>(

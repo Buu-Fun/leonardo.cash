@@ -108,179 +108,179 @@ export const StakingProvider = ({ children }: Props) => {
   const [coolingDownAssets, setCoolingDownAssets] = React.useState(0n);
   const [lastBalance, setLastBalance] = React.useState(0n);
 
-  const convertSharesToAssets = useCallback(
-    (shares: bigint) => {
-      if (!stakingRewardGlobal) {
-        return shares;
-      }
-      return (
-        (BigInt(shares) * BigInt(stakingRewardGlobal.totalAssets)) /
-        BigInt(stakingRewardGlobal.totalShares)
-      );
-    },
-    [stakingRewardGlobal?.totalAssets, stakingRewardGlobal?.totalShares],
-  );
+  // const convertSharesToAssets = useCallback(
+  //   (shares: bigint) => {
+  //     if (!stakingRewardGlobal) {
+  //       return shares;
+  //     }
+  //     return (
+  //       (BigInt(shares) * BigInt(stakingRewardGlobal.totalAssets)) /
+  //       BigInt(stakingRewardGlobal.totalShares)
+  //     );
+  //   },
+  //   [stakingRewardGlobal?.totalAssets, stakingRewardGlobal?.totalShares],
+  // );
 
-  const fetchData = useCallback(async () => {
-    if (!chain || !address) {
-      setAssetBalance(0n);
-      setStakingAllowance(0n);
-      return;
-    }
-    const assetContract = new Contract(
-      assetAddress,
-      IERC20Metadata.abi,
-      provider,
-    );
+  // const fetchData = useCallback(async () => {
+  //   if (!chain || !address) {
+  //     setAssetBalance(0n);
+  //     setStakingAllowance(0n);
+  //     return;
+  //   }
+  //   const assetContract = new Contract(
+  //     assetAddress,
+  //     IERC20Metadata.abi,
+  //     provider,
+  //   );
 
-    const stakingContract = new Contract(
-      stakingAddress,
-      StakingUpgradeable.abi,
-      provider,
-    );
+  //   const stakingContract = new Contract(
+  //     stakingAddress,
+  //     StakingUpgradeable.abi,
+  //     provider,
+  //   );
 
-    const [innerAssetBalance, innerStakingAllowance, innerSharesBalance] =
-      await Promise.all([
-        assetContract.balanceOf(address),
-        assetContract.allowance(address, stakingAddress),
-        stakingContract.balanceOf(address),
-      ]);
-    setAssetBalance(innerAssetBalance);
-    setStakingAllowance(innerStakingAllowance);
-    setSharesBalance(innerSharesBalance);
-  }, [chain, address, provider]);
+  //   const [innerAssetBalance, innerStakingAllowance, innerSharesBalance] =
+  //     await Promise.all([
+  //       assetContract.balanceOf(address),
+  //       assetContract.allowance(address, stakingAddress),
+  //       stakingContract.balanceOf(address),
+  //     ]);
+  //   setAssetBalance(innerAssetBalance);
+  //   setStakingAllowance(innerStakingAllowance);
+  //   setSharesBalance(innerSharesBalance);
+  // }, [chain, address, provider]);
 
-  const fetchStaker = useCallback(async () => {
-    if (!chain || !address) {
-      setStaker(undefined);
-      setStakingBalance(0n);
-      return;
-    }
-    const variables = {
-      where: {
-        chainId: chain.id,
-        staker: address,
-      },
-      limit: 1,
-    };
-    const { stakers } = await ponderRequest(GetStakers, variables);
-    if (stakers.items.length > 0) {
-      const innerStakingBalance = convertSharesToAssets(
-        BigInt(stakers.items[0].shares),
-      );
-      const innerCoolingDownAssets = convertSharesToAssets(
-        BigInt(stakers.items[0].coolingDown),
-      );
-      setStaker({
-        ...stakers.items[0],
-        assets: convertSharesToAssets(BigInt(stakers.items[0].shares)),
-        coolingDownAssets: convertSharesToAssets(
-          BigInt(stakers.items[0].coolingDown),
-        ),
-      });
-      setStakingBalance(innerStakingBalance);
-      setCoolingDownAssets(innerCoolingDownAssets);
-    } else {
-      setStaker(undefined);
-      setStakingBalance(0n);
-      setCoolingDownAssets(0n);
-    }
-  }, [chain, address, convertSharesToAssets]);
+  // const fetchStaker = useCallback(async () => {
+  //   if (!chain || !address) {
+  //     setStaker(undefined);
+  //     setStakingBalance(0n);
+  //     return;
+  //   }
+  //   const variables = {
+  //     where: {
+  //       chainId: chain.id,
+  //       staker: address,
+  //     },
+  //     limit: 1,
+  //   };
+  //   const { stakers } = await ponderRequest(GetStakers, variables);
+  //   if (stakers.items.length > 0) {
+  //     const innerStakingBalance = convertSharesToAssets(
+  //       BigInt(stakers.items[0].shares),
+  //     );
+  //     const innerCoolingDownAssets = convertSharesToAssets(
+  //       BigInt(stakers.items[0].coolingDown),
+  //     );
+  //     setStaker({
+  //       ...stakers.items[0],
+  //       assets: convertSharesToAssets(BigInt(stakers.items[0].shares)),
+  //       coolingDownAssets: convertSharesToAssets(
+  //         BigInt(stakers.items[0].coolingDown),
+  //       ),
+  //     });
+  //     setStakingBalance(innerStakingBalance);
+  //     setCoolingDownAssets(innerCoolingDownAssets);
+  //   } else {
+  //     setStaker(undefined);
+  //     setStakingBalance(0n);
+  //     setCoolingDownAssets(0n);
+  //   }
+  // }, [chain, address, convertSharesToAssets]);
 
-  const fetchStakingReward = useCallback(async () => {
-    if (!chain || !address) {
-      setStakingReward(undefined);
-      return;
-    }
-    const variables = {
-      where: {
-        chainId: chain.id,
-        address: stakingAddress,
-        staker: address,
-      },
-      limit: 1,
-    };
+  // const fetchStakingReward = useCallback(async () => {
+  //   if (!chain || !address) {
+  //     setStakingReward(undefined);
+  //     return;
+  //   }
+  //   const variables = {
+  //     where: {
+  //       chainId: chain.id,
+  //       address: stakingAddress,
+  //       staker: address,
+  //     },
+  //     limit: 1,
+  //   };
 
-    const { stakingRewards } = await ponderRequest(
-      GetStakingRewards,
-      variables,
-    );
+  //   const { stakingRewards } = await ponderRequest(
+  //     GetStakingRewards,
+  //     variables,
+  //   );
 
-    if (stakingRewards.items.length > 0) {
-      setStakingReward(stakingRewards.items[0]);
-    }
-  }, [chain, address]);
+  //   if (stakingRewards.items.length > 0) {
+  //     setStakingReward(stakingRewards.items[0]);
+  //   }
+  // }, [chain, address]);
 
-  const fetchTopStakers = useCallback(async () => {
-    // Fetch top stakers
-    const variables = {
-      where: {
-        address: stakingAddress,
-        chainId: chain?.id,
-        computing_gt: '0',
-      },
-      limit: nTopStakers,
-      orderBy: 'computing',
-      orderDirection: 'desc',
-    };
-    const { stakers } = await ponderRequest(GetStakers, variables);
-    const { items } = stakers;
-    if (items.length > 0) {
-      // setTopStakers(mockLeaderBoard(items[0], nTopStakers));
-      setTopStakers(
-        items.map((staker: Staker) => ({
-          ...staker,
-          assets: convertSharesToAssets(BigInt(staker.shares)),
-          coolingDownAssets: convertSharesToAssets(BigInt(staker.coolingDown)),
-        })),
-      );
-      const lastBalance = convertSharesToAssets(
-        BigInt(items[items.length - 1].shares) -
-          BigInt(items[items.length - 1].coolingDown),
-      );
-      setLastBalance(lastBalance);
-    }
-  }, [stakingAddress, convertSharesToAssets]);
+  // const fetchTopStakers = useCallback(async () => {
+  //   // Fetch top stakers
+  //   const variables = {
+  //     where: {
+  //       address: stakingAddress,
+  //       chainId: chain?.id,
+  //       computing_gt: '0',
+  //     },
+  //     limit: nTopStakers,
+  //     orderBy: 'computing',
+  //     orderDirection: 'desc',
+  //   };
+  //   const { stakers } = await ponderRequest(GetStakers, variables);
+  //   const { items } = stakers;
+  //   if (items.length > 0) {
+  //     // setTopStakers(mockLeaderBoard(items[0], nTopStakers));
+  //     setTopStakers(
+  //       items.map((staker: Staker) => ({
+  //         ...staker,
+  //         assets: convertSharesToAssets(BigInt(staker.shares)),
+  //         coolingDownAssets: convertSharesToAssets(BigInt(staker.coolingDown)),
+  //       })),
+  //     );
+  //     const lastBalance = convertSharesToAssets(
+  //       BigInt(items[items.length - 1].shares) -
+  //         BigInt(items[items.length - 1].coolingDown),
+  //     );
+  //     setLastBalance(lastBalance);
+  //   }
+  // }, [stakingAddress, convertSharesToAssets]);
 
-  const fetchStakingRewardGlobal = useCallback(async () => {
-    const variables = {
-      where: {
-        chainId: chain?.id,
-      },
-      limit: 1,
-    };
-    const { stakingRewardGlobals } = await ponderRequest(
-      GetStakingRewardGlobals,
-      variables,
-    );
-    if (stakingRewardGlobals.items.length > 0) {
-      setStakingRewardGlobal(stakingRewardGlobals.items[0]);
-    }
-  }, []);
+  // const fetchStakingRewardGlobal = useCallback(async () => {
+  //   const variables = {
+  //     where: {
+  //       chainId: chain?.id,
+  //     },
+  //     limit: 1,
+  //   };
+  //   const { stakingRewardGlobals } = await ponderRequest(
+  //     GetStakingRewardGlobals,
+  //     variables,
+  //   );
+  //   if (stakingRewardGlobals.items.length > 0) {
+  //     setStakingRewardGlobal(stakingRewardGlobals.items[0]);
+  //   }
+  // }, []);
 
-  const fetchAll = useCallback(async () => {
-    await Promise.all([
-      fetchData(),
-      fetchTopStakers(),
-      fetchStaker(),
-      fetchStakingReward(),
-      fetchStakingRewardGlobal(),
-    ]);
-  }, [
-    fetchData,
-    fetchTopStakers,
-    fetchStaker,
-    fetchStakingReward,
-    fetchStakingRewardGlobal,
-  ]);
+  // const fetchAll = useCallback(async () => {
+  //   await Promise.all([
+  //     fetchData(),
+  //     fetchTopStakers(),
+  //     fetchStaker(),
+  //     fetchStakingReward(),
+  //     fetchStakingRewardGlobal(),
+  //   ]);
+  // }, [
+  //   fetchData,
+  //   fetchTopStakers,
+  //   fetchStaker,
+  //   fetchStakingReward,
+  //   fetchStakingRewardGlobal,
+  // ]);
 
-  useEffect(() => {
-    fetchAll();
-    const interval = setInterval(() => {
-      fetchAll();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [fetchAll]);
+  // useEffect(() => {
+  //   fetchAll();
+  //   const interval = setInterval(() => {
+  //     fetchAll();
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, [fetchAll]);
 
   // Memoize the context value
   const value = useMemo<StakingState>(
@@ -297,8 +297,10 @@ export const StakingProvider = ({ children }: Props) => {
       stakingReward,
       stakingRewardGlobal,
       coolingDownAssets,
-      fetchAll,
-      convertSharesToAssets,
+      // fetchAll,
+      // convertSharesToAssets,
+      fetchAll: async () => {},
+      convertSharesToAssets: (shares: bigint) => shares,
     }),
     [
       chain,
@@ -313,8 +315,8 @@ export const StakingProvider = ({ children }: Props) => {
       stakingReward,
       stakingRewardGlobal,
       coolingDownAssets,
-      fetchAll,
-      convertSharesToAssets,
+      // fetchAll,
+      // convertSharesToAssets,
     ],
   );
 
