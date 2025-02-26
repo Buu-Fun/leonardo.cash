@@ -5,8 +5,18 @@ export const GenerateSubthreadMutation = gql`
     $prompt: String!
     $style: SubthreadStyle
     $threadId: String
+    $imageUrl: String
+    $numImages: Float
+    $strength: Float
   ) {
-    generateSubthread(prompt: $prompt, style: $style, threadId: $threadId) {
+    generateSubthread(
+      prompt: $prompt
+      style: $style
+      threadId: $threadId
+      imageUrl: $imageUrl
+      numImages: $numImages
+      strength: $strength
+    ) {
       ... on Subthread {
         _id
         address
@@ -16,6 +26,7 @@ export const GenerateSubthreadMutation = gql`
         prompt
         style
         imageUrl
+        strength
       }
       ... on HandledError {
         code
@@ -162,6 +173,7 @@ export const GetSubthreadsQuery = gql`
           prompt
           style
           imageUrl
+          strength
         }
         metadata {
           limit
@@ -189,6 +201,7 @@ export const GetSubthreadQuery = gql`
         prompt
         style
         imageUrl
+        strength
       }
       ... on HandledError {
         code
